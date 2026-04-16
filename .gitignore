@@ -1,0 +1,43 @@
+# 通用Python忽略规则
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 编译输出
+build/
+dist/
+*.egg-info/
+
+# 虚拟环境
+venv/
+env/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+
+# 测试文件
+.coverage
+
+# 本项目专属忽略规则
+# 打包生成的可执行文件
+NetworkConfigTool.exe
+NetworkConfigTools.exe
+
+# 配置脚本模板（可根据需要调整）
+# 006_配置脚本模板/
+
+# 备份文件
+*_backup.py
+*_new.py
+*_v*.py
