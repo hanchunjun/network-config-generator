@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 from utils.resource_path import resource_path
 
@@ -134,11 +135,13 @@ class DeviceSelectionPage(QWidget):
                 background-color: #FFFFFF;
                 border: 1px solid #E5E6EB;
                 border-radius: 8px;
-                font-size: 18px;
+                font-size: 16px;
+                color: #4E5969;
             }
             QPushButton:hover {
                 border: 2px solid #165DFF;
                 background-color: #F5F7FA;
+                color: #165DFF;
             }
         """)
         layout.addWidget(button)

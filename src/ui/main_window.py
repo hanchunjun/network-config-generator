@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QPushButton, QWidget
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon
 from utils.resource_path import resource_path
 from ui.config_pages.ruijie.access_switch_config import RuijieAccessSwitchConfig
 from ui.config_pages.ruijie.core_switch_config import RuijieCoreSwitchConfig
@@ -325,56 +325,48 @@ class MainWindow(QMainWindow):
         """显示关于对话框"""
         from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton
         from PyQt5.QtCore import Qt
-        
+
         dialog = QDialog(self)
         dialog.setWindowTitle('关于')
-        dialog.setFixedSize(400, 220)
+        dialog.setFixedSize(500, 280)
         dialog.setWindowModality(Qt.ApplicationModal)
-        
+
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 15, 20, 15)
-        layout.setSpacing(8)
-        
-        # 标题
-        title_label = QLabel('网络设备配置脚本生成工具')
+        layout.setSpacing(10)
+
+        # 标题和版本
+        title_label = QLabel('网络设备配置脚本生成工具 V1.0.0 测试版')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
         layout.addWidget(title_label)
-        
-        # 版本
-        version_label = QLabel('V1.0.0 测试版')
-        version_label.setAlignment(Qt.AlignLeft)
-        version_label.setStyleSheet('font-size: 14px;')
-        layout.addWidget(version_label)
-        
-        # 描述
-        desc1 = QLabel('一款面向网络工程师的多厂商设备配置脚本生成工具，支持锐捷、华为、华三、思科等设备命令生成')
+
+        # 描述和开源地址
+        desc1 = QLabel('本软件为一款面向网络工程师，多厂商网络设备配置脚本生成工具，支持锐捷、华为、华三、思科等设备命令生成。开源项目地址: https://github.com/hanchunjun/network-config-generator')
         desc1.setAlignment(Qt.AlignLeft)
-        desc1.setStyleSheet('font-size: 14px;')
+        desc1.setStyleSheet('font-size: 13px;')
         desc1.setWordWrap(True)
         layout.addWidget(desc1)
-        
-        desc2 = QLabel('开源项目地址: https://github.com/hanchunjun/network-config-generator')
-        desc2.setAlignment(Qt.AlignLeft)
-        desc2.setStyleSheet('font-size: 14px;')
-        layout.addWidget(desc2)
-        
-        desc3 = QLabel('Copyright @ 2026 laohan')
-        desc3.setAlignment(Qt.AlignLeft)
-        desc3.setStyleSheet('font-size: 14px;')
-        layout.addWidget(desc3)
-        
-        desc4 = QLabel('Released under the MIT License')
-        desc4.setAlignment(Qt.AlignLeft)
-        desc4.setStyleSheet('font-size: 14px;')
-        layout.addWidget(desc4)
-        
-        desc5 = QLabel('本软件为开源免费工具，仅供学习交流与工程实施使用。不代表任何厂商官方立场，无任何官方认证')
-        desc5.setAlignment(Qt.AlignLeft)
-        desc5.setStyleSheet('font-size: 14px;')
-        desc5.setWordWrap(True)
-        layout.addWidget(desc5)
-        
+
+        # 版权信息
+        copyright_label = QLabel('Copyright @ 2026 laohan')
+        copyright_label.setAlignment(Qt.AlignLeft)
+        copyright_label.setStyleSheet('font-size: 13px;')
+        layout.addWidget(copyright_label)
+
+        # 许可证信息
+        license_label = QLabel('Released under the MIT License')
+        license_label.setAlignment(Qt.AlignLeft)
+        license_label.setStyleSheet('font-size: 13px;')
+        layout.addWidget(license_label)
+
+        # 免责声明
+        disclaimer = QLabel('本软件为开源免费工具，仅供学习交流与工程实施使用。不代表任何厂商官方立场，无任何官方认证。')
+        disclaimer.setAlignment(Qt.AlignLeft)
+        disclaimer.setStyleSheet('font-size: 13px;')
+        disclaimer.setWordWrap(True)
+        layout.addWidget(disclaimer)
+
         # 关闭按钮
         close_button = QPushButton('关闭')
         close_button.setFixedSize(100, 40)
@@ -391,11 +383,11 @@ class MainWindow(QMainWindow):
             }
         """)
         close_button.clicked.connect(dialog.close)
-        
+
         button_layout = QVBoxLayout()
         button_layout.addWidget(close_button)
         button_layout.setAlignment(Qt.AlignCenter)
         layout.addLayout(button_layout)
-        
+
         dialog.setLayout(layout)
         dialog.exec_()
