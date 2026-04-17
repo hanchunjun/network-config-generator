@@ -1,0 +1,53 @@
+name: 全平台打包 Windows/Mac/Linux
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python 3.11.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install --upgrade pip
+      - run: pip install pyqt5 pygame pyinstaller qt-material
+      - run: pyinstaller -w -F main.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NetworkConfig-Windows
+          path: dist/*.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python 3.11.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install --upgrade pip
+      - run: pip install pyqt5 pygame pyinstaller qt-material
+      - run: pyinstaller -w -F main.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NetworkConfig-Mac
+          path: dist/*
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python 3.11.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install --upgrade pip
+      - run: pip install pyqt5 pygame pyinstaller qt-material
+      - run: pyinstaller -w -F main.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NetworkConfig-Linux
+          path: dist/*
