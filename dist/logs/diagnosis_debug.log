@@ -136,3 +136,18 @@ NameError: name 'glob' is not defined. Did you forget to import 'glob'?
   File "src\ui\single_device_page.py", line 2758, in refresh_diagnosis_list
 AttributeError: 'SingleDevicePage' object has no attribute '_fmt_size'
 
+[15:39:51.134] THREAD START (v2 dual-layer)
+[15:39:51.228] local_diagnostic done: 2 findings, 90ms
+[15:39:51.229] needs_ai=True (C:2 H:0 M:0)
+[15:39:51.230] agent file loaded, len=1274
+[15:39:51.232] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=7.7KB
+[15:41:22.785] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[15:41:22.787] THREAD END
+[15:41:22.787] [CB] _on_diagnose_finished START
+[15:41:22.789] [CB] report saved: diagnosis_20260520_154122.md
+[15:41:22.789] [CB] refreshing diagnosis list...
+[15:41:22.790] [CB] refresh list error: AttributeError: 'SingleDevicePage' object has no attribute '_fmt_size'
+[15:41:22.790] [CB] setting content to diagnosis widget...
+[15:41:22.793] [CB] switching to diagnosis tab...
+[15:41:22.794] [CB] restoring button state...
+[15:41:22.795] [CB] _on_diagnose_finished END OK
