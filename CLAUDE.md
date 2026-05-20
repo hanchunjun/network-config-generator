@@ -23,6 +23,14 @@
 
 ### 二、提交前自检（每次改动必做，1-2分钟）
 
+**方式一：自动化脚本（推荐，约15秒）**
+
+```bash
+python scripts/pre_commit_check.py --quick
+```
+
+**方式二：手动分步**
+
 ```bash
 # 1. 语法检查（改动的文件）
 python -m py_compile <改动文件>
@@ -30,8 +38,8 @@ python -m py_compile <改动文件>
 # 2. 类型检查
 py -3.11 -m mypy src/utils/ src/core/key_manager.py src/core/secure_config.py src/core/logger.py
 
-# 3. 单元测试（全部通过）
-py -3.11 -m pytest tests/ -v
+# 3. 单元测试 + 覆盖率（全部通过，核心模块≥80%）
+py -3.11 -m pytest tests/ -v --cov=src/core --cov=src/utils --cov-report=term-missing --cov-fail-under=80
 
 # 4. 安全扫描（无新增 High/Medium）
 py -3.11 -m bandit -r src/ -c bandit.yaml -ll
@@ -40,6 +48,15 @@ py -3.11 -m bandit -r src/ -c bandit.yaml -ll
 详细清单见：[docs/CODEMAPS/review-checklist.md](docs/CODEMAPS/review-checklist.md)
 
 ### 三、打包前验证（发布版本必做，按顺序执行，任一失败停止）
+
+**方式一：自动化脚本（推荐）**
+
+```bash
+# 完整检查（17项，含radon复杂度）
+python scripts/pre_commit_check.py
+```
+
+**方式二：手动分步（调试时使用）**
 
 ```bash
 # 1. 全量语法检查
@@ -62,8 +79,8 @@ python -c "from src.core.local_diagnostic_engine import LocalDiagnosticEngine; p
 # 3. 类型检查
 py -3.11 -m mypy src/utils/ src/core/key_manager.py src/core/secure_config.py src/core/logger.py
 
-# 4. 单元测试
-py -3.11 -m pytest tests/ -v
+# 4. 单元测试 + 覆盖率（核心模块≥80%）
+py -3.11 -m pytest tests/ -v --cov=src/core --cov=src/utils --cov-report=term-missing --cov-fail-under=80
 
 # 5. 安全扫描
 py -3.11 -m bandit -r src/ -c bandit.yaml -ll
