@@ -1,3 +1,0 @@
-# 格式：IP,厂商,设备类型,用户名,密码,协议,特权密码,分组,标签
-# 密码已加密存储（ENC:前缀），请勿手动编辑
-172.20.100.254,锐捷,接入交换机,admin,ENC:v2:+opjSlcl1xEJuiLA3W+e0b1zbiAJiCMQGTsYzixf+nr46g==,ssh,ENC:v2:WMZELHa4LnCBdKvEG0l0IeLcaUXPVYsbR6hg9REi6CN5Aw==,,
