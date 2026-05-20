@@ -15,13 +15,13 @@ class NetOpsLogger:
     LOG_FILE = f"{LOG_DIR}/netops_{datetime.now().strftime('%Y%m%d')}.log"
 
     def __init__(self):
+        self.logger: logging.Logger = logging.getLogger("NetOps")
         self._setup_logger()
 
     def _setup_logger(self):
         """配置日志系统（文件 + 控制台双输出）。"""
         os.makedirs(self.LOG_DIR, exist_ok=True)
 
-        self.logger = logging.getLogger("NetOps")
         self.logger.setLevel(logging.DEBUG)
 
         # 防止重复添加处理器

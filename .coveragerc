@@ -1,0 +1,28 @@
+[run]
+source =
+    src/core
+    src/utils
+omit =
+    src/core/config_generator.py
+    src/utils/resource_path.py
+
+[report]
+# 覆盖率低于此阈值时返回非零退出码
+fail_under = 80
+
+# 显示未覆盖的行号
+show_missing = true
+
+# 排除这些模式（不计入覆盖率统计）
+exclude_lines =
+    # 标准 pragma
+    pragma: no cover
+    # 调试代码
+    def __repr__
+    def __str__
+    # 主入口
+    if __name__ == .__main__.:
+    # 类型检查保护
+    TYPE_CHECKING
+    # PyInstaller 运行时检测
+    if getattr(sys, 'frozen', False)

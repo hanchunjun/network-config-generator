@@ -5,10 +5,13 @@ import uuid
 import socket
 import subprocess
 import platform
+import logging
 import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any
+
+_logger = logging.getLogger("NetOps.KeyManager")
 from src.utils.resource_path import get_config_path
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
@@ -44,7 +47,7 @@ class KeyManager:
         if self.KEY_FILE.exists():
             try:
                 with open(self.KEY_FILE, 'r', encoding='utf-8') as f:
-                    key_info = json.load(f)
+                    key_info: Dict[str, Any] = json.load(f)
 
                 # 验证密钥信息完整性
                 if not self._validate_key_info(key_info):
@@ -57,7 +60,7 @@ class KeyManager:
                 return key_info
             except Exception as e:
                 # 密钥文件损坏，重新生成
-                print(f"加载密钥信息失败，重新生成: {e}")
+                _logger.warning(f"加载密钥信息失败，重新生成: {e}")
                 return self._create_new_key_info()
 
         # 创建新的密钥信息
@@ -102,7 +105,7 @@ class KeyManager:
 
     def _upgrade_key_info(self, old_key_info: Dict[str, Any]) -> Dict[str, Any]:
         """升级密钥信息到当前版本"""
-        print(f"升级密钥信息从 {old_key_info.get('version')} 到 {self.CURRENT_VERSION}")
+        _logger.info(f"升级密钥信息从 {old_key_info.get('version')} 到 {self.CURRENT_VERSION}")
 
         new_key_info = {
             "version": self.CURRENT_VERSION,

@@ -222,5 +222,5 @@ def _test_encryption():
         print(f"{k}: {v}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     _test_encryption()

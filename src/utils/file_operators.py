@@ -1,9 +1,12 @@
 import os
+import json
+import logging
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Union, Optional, List, Any
-import json
+
+_logger = logging.getLogger("NetOps.FileOperators")
 
 class AtomicFileWriter:
     """原子文件写入器，防止写入过程中文件损坏"""
@@ -101,7 +104,7 @@ class JSONFileManager:
                     json.dump(data, f, indent=indent, ensure_ascii=False)
             return True
         except Exception as e:
-            print(f"保存JSON文件失败: {e}")
+            _logger.error(f"保存JSON文件失败: {e}")
             return False
 
 
@@ -147,5 +150,5 @@ class DeviceFileManager:
                     f.writelines(lines)
             return True
         except Exception as e:
-            print(f"保存设备列表失败: {e}")
+            _logger.error(f"保存设备列表失败: {e}")
             return False

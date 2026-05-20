@@ -1,17 +1,17 @@
-# Bandit 安全扫描配置
-# 排除配置生成器模板代码的固有误报
+# Bandit security scan config
+# Skip false positives from config generator templates
 
 skips:
-  # B104: 配置模板中的 0.0.0.0 是路由默认值，非绑定所有接口
+  # B104: 0.0.0.0 in templates is a route default, not interface binding
   - B104
-  # B105/B106/B107: 配置模板中的硬编码密码是占位符，非真实凭据
+  # B105/B106/B107: Hardcoded passwords in templates are placeholders
   - B105
   - B106
   - B107
-  # B311: 配置模板中的 random 用于生成示例数据，非密码学用途
+  # B311: random in templates is for sample data, not cryptography
   - B311
 
-# 排除测试目录
+# Exclude non-source directories
 exclude_dirs:
   - tests
   - docs

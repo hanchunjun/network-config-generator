@@ -48,9 +48,10 @@ class SecureConfigFile:
                     raw = f.read().strip()
                 if self._enc.is_encrypted(raw):
                     decrypted = self._enc.decrypt(raw)
-                    return json.loads(decrypted)
+                    result: Dict[str, Any] = json.loads(decrypted)
+                    return result
                 else:
-                    data = json.loads(raw)
+                    data: Dict[str, Any] = json.loads(raw)
                     if path == filepath and os.path.exists(enc_path):
                         pass
                     else:
