@@ -347,8 +347,11 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ### 测试框架
 
-- ⚪ V0.9 时期测试用例（test_security.py / test_functionality.py / test_config_generator.py / test_backup_security.py，共 35 个用例）已随架构升级废弃，V2.1 待重建
-- 当前打包前验证通过 `py_compile` 语法检查 + 导入链检查替代
+- ✅ **V2.1 测试体系已重建**：232 个单元测试用例，覆盖 `src/core/` 和 `src/utils/` 全部核心模块
+- ✅ 核心模块覆盖率 **80.71%**（阈值 ≥80%，`.coveragerc` 排除 UI 模板和 PyInstaller 运行时检测）
+- ✅ 自动化流水线：`scripts/pre_commit_check.py` 17 项质量门禁（语法/导入/类型/测试+覆盖率/安全/复杂度）
+- ⚪ V0.9 时期测试用例（test_security.py 等，共 35 个用例）已随架构升级废弃，由新测试体系替代
+- ⚪ UI 层集成测试和 E2E 测试待后续补充
 
 ### V2.0 架构升级（2026-05-19 更新）
 
@@ -358,7 +361,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ✅ 导航改名：「运维工具箱→项目运维」「单点巡检→单点运维」「AI分析→专家工作站」
 - ✅ AI能力三层架构落地（嵌入式按钮 → Agent快捷指令 → 自由对话）
 - ✅ 文件管理三件套统一标准（🔄刷新/📂打开/🗑删除）
-- ✅ 全量52源文件编译通过，14模块导入链验证通过
+- ✅ 全量40个源文件编译通过，14模块导入链验证通过
 
 ### 功能增强（2026-05-18 更新）
 
@@ -432,7 +435,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 ### 可执行文件
 
 - **位置：** `dist/NetworkConfigGenerator.exe`
-- **大小：** 约48.7MB
+- **大小：** 约47.1MB
 - **状态：** V2.0 架构升级版，可直接使用
 
 ### 源代码结构
@@ -440,7 +443,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - **核心模块：** src/core/ (5文件), src/ui/ (7文件), src/utils/ (3文件)
 - **业务脚本：** scripts/ (3文件)
 - **AI Agent：** agents/ (2个系统提示词)
-- **测试用例：** tests/ (35个测试场景)
+- **测试用例：** tests/ (232个单元测试，核心模块覆盖率≥80%)
 
 ### 文档
 
@@ -547,7 +550,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 四厂商配置脚本集成
 - AES-GCM加密体系搭建
 - 安全加固9项 + 性能优化4项
-- 测试框架35个用例
+- 测试框架232个用例
 
 ---
 

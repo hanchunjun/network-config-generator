@@ -8,6 +8,15 @@ dist/
 build/
 *.spec
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+
 # Coverage
 .coverage
 htmlcov/

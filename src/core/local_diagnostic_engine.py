@@ -188,7 +188,7 @@ class DiagResult:
         merged_ranges.append((start, end))
 
         # 提取区间内容
-        parts = []
+        parts: List[str] = []
         for s, e in merged_ranges:
             if parts:
                 parts.append("\n...（省略中间无关内容）...\n")

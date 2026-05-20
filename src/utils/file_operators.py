@@ -33,6 +33,9 @@ class AtomicFileWriter:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """退出时原子替换文件"""
+        if self.temp_path is None:
+            return False
+
         if exc_type is not None:
             # 发生异常，删除临时文件
             try:

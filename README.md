@@ -92,20 +92,33 @@
 
 ## 项目目录结构
 
-### 程序根目录
+### 程序根目录（三区分离架构）
 ```
-NetworkConfigGenerator/
-├── scripts/                   # 公共运维脚本库
-│   ├── backup_all_config.py    # 批量配置备份
-│   ├── network_inspect.py      # 全网健康巡检
-│   └── run_trouble_cmd.py      # 故障二次核查
-├── agents/                     # AI代理规则
-├── src/                        # 源代码
-├── docs/                       # 文档
-├── projects/                   # 项目数据目录
-├── ai_config.json              # AI配置文件
-├── projects_config.json        # 项目配置文件
-└── NetworkConfigGenerator.exe  # 主程序
+程序根目录/
+├── NetworkConfigGenerator.exe     ← 主程序（唯一顶层文件）
+│
+├── config/                        ← 🔧 系统配置
+│   ├── key_info.json              ← 加密密钥（AES-GCM V2）
+│   ├── machine_id.json            ← 机器绑定ID
+│   ├── ai_config.json.enc         ← AI模型配置（加密存储）
+│   ├── projects_config.json       ← 项目列表索引
+│   └── ai_recent_files.json       ← AI最近文件记录
+│
+├── logs/                          ← 📝 运行日志
+│   └── netops_YYYYMMDD.log        ← 按日期分割
+│
+├── single/                        ← 🔍 单点运维全量隔离
+│   ├── single_devices.json.enc    ← 单点设备清单（加密）
+│   ├── config_backup/             ← 单点配置备份
+│   ├── output/single_exception/   ← 单点巡检异常
+│   └── report/                    ← 单点报告
+│
+└── projects/                      ← 📁 项目数据
+    └── 01_项目名称/
+        ├── config/device_list.txt
+        ├── config_backup/
+        ├── output/
+        └── report/
 ```
 
 ### 项目标准结构

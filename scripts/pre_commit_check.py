@@ -24,7 +24,8 @@ def run(step: str, cmd: str) -> bool:
     print(f"\n{'='*60}")
     print(f"[{step}]")
     print(f"{'='*60}")
-    result = subprocess.run(cmd, shell=True)
+    # shell=True 必要：命令为硬编码字符串，含 shell 语法（管道/重定向），无外部输入，无注入风险
+    result = subprocess.run(cmd, shell=True)  # nosec B602
     ok = result.returncode == 0
     status = "[PASS]" if ok else "[FAIL]"
     print(f"  -> {status}")
@@ -42,7 +43,7 @@ def main():
 
     steps = []
 
-    # 1. 语法检查
+    # 1. 语法检查（全量核心源文件）
     py_files = [
         "main.py",
         "src/ui/main_window.py",
@@ -51,25 +52,41 @@ def main():
         "src/ui/ai_analysis_page.py",
         "src/ui/project_manager_page.py",
         "src/ui/system_settings_page.py",
+        "src/core/config_generator.py",
+        "src/core/crypto_utils.py",
+        "src/core/device_manager.py",
+        "src/core/key_manager.py",
         "src/core/local_audit_engine.py",
         "src/core/local_diagnostic_engine.py",
+        "src/core/secure_config.py",
+        "src/core/logger.py",
         "src/utils/resource_path.py",
+        "src/utils/file_operators.py",
+        "src/utils/validators.py",
     ]
     for f in py_files:
         steps.append(("语法检查", f"python -m py_compile {f}"))
 
-    # 2. 导入链验证
+    # 2. 导入链验证（全量核心模块）
     imports = [
         "from src.ui.main_window import MainWindow",
+        "from src.core.config_generator import ConfigGenerator",
+        "from src.core.crypto_utils import encrypt_password, decrypt_password",
+        "from src.core.device_manager import DeviceManager",
+        "from src.core.key_manager import KeyManager, EncryptedDataManager",
         "from src.core.local_audit_engine import LocalAuditEngine",
         "from src.core.local_diagnostic_engine import LocalDiagnosticEngine",
+        "from src.core.secure_config import SecureConfigFile",
+        "from src.core.logger import netops_logger",
+        "from src.utils.file_operators import AtomicFileWriter, JSONFileManager, DeviceFileManager",
+        "from src.utils.validators import DeviceValidator, ProjectValidator, IPValidator",
     ]
     for imp in imports:
         steps.append(("导入链验证", f'python -c "{imp}; print(\'OK\')"'))
 
-    # 3. 类型检查
+    # 3. 类型检查（全量核心模块）
     steps.append(("类型检查",
-                  "py -3.11 -m mypy src/utils/ src/core/key_manager.py src/core/secure_config.py src/core/logger.py"))
+                  "py -3.11 -m mypy src/core/ src/utils/"))
 
     # 4. 单元测试 + 覆盖率
     #    覆盖率统计范围：核心业务逻辑模块（排除UI模板生成器和PyInstaller运行时检测）

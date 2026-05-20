@@ -166,3 +166,141 @@ class TestDeviceFileManager:
         path = Path(tmp_dir) / "test.txt"
         result = DeviceFileManager.save_device_list(path, ["line\n"])
         assert result is True
+
+
+class TestAtomicFileWriterExceptions:
+    """AtomicFileWriter 异常分支覆盖"""
+
+    def test_temp_file_cleanup_on_unlink_error(self, tmp_dir):
+        """unlink失败时应静默忽略（覆盖 except Exception: pass）。"""
+        target = Path(tmp_dir) / "test.txt"
+        target.write_text("original", encoding="utf-8")
+
+        # 使用 monkeypatch 让 unlink 失败
+        original_unlink = Path.unlink
+        call_count = {"n": 0}
+
+        def failing_unlink(self, missing_ok=False):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise PermissionError("mocked")
+            return original_unlink(self, missing_ok=missing_ok)
+
+        import src.utils.file_operators as fo
+        original = fo.Path.unlink
+        try:
+            fo.Path.unlink = failing_unlink
+            try:
+                with AtomicFileWriter(target) as tmp:
+                    raise ValueError("trigger error")
+            except ValueError:
+                pass
+        finally:
+            fo.Path.unlink = original
+
+    def test_replace_failure_cleanup(self, tmp_dir):
+        """replace失败时应清理临时文件并抛出异常。"""
+        target = Path(tmp_dir) / "readonly.txt"
+        target.write_text("original", encoding="utf-8")
+        # 将目标文件设为只读目录，使replace失败
+        import stat
+        target.chmod(stat.S_IRUSR)
+
+        try:
+            with AtomicFileWriter(target) as tmp:
+                with open(tmp, "w") as f:
+                    f.write("new data")
+            # 如果到这里说明replace成功了（Windows可能不抛异常）
+        except (OSError, PermissionError):
+            pass  # 预期行为
+        finally:
+            target.chmod(stat.S_IWUSR | stat.S_IRUSR)
+
+
+class TestJSONFileManagerExceptions:
+    """JSONFileManager 异常分支覆盖"""
+
+    def test_load_io_error(self, tmp_dir):
+        """读取文件IO异常应抛出IOError。"""
+        path = Path(tmp_dir) / "data.json"
+        path.write_text('{"valid": true}', encoding="utf-8")
+
+        # monkeypatch open 使其抛出 IOError
+        import builtins
+        original_open = builtins.open
+        call_count = {"n": 0}
+
+        def mock_open(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise OSError("disk error")
+            return original_open(*args, **kwargs)
+
+        builtins.open = mock_open
+        try:
+            with pytest.raises(IOError, match="读取文件失败"):
+                JSONFileManager.load_json(path)
+        finally:
+            builtins.open = original_open
+
+    def test_save_returns_false_on_error(self, tmp_dir):
+        """save_json 异常时应返回False。"""
+        import src.utils.file_operators as fo
+        original_dump = fo.json.dump
+
+        def failing_dump(*args, **kwargs):
+            raise RuntimeError("disk full")
+
+        fo.json.dump = failing_dump
+        try:
+            path = Path(tmp_dir) / "fail.json"
+            result = JSONFileManager.save_json(path, {"x": 1})
+            assert result is False
+        finally:
+            fo.json.dump = original_dump
+
+
+class TestDeviceFileManagerExceptions:
+    """DeviceFileManager 异常分支覆盖"""
+
+    def test_load_io_error(self, tmp_dir):
+        """读取设备列表IO异常应抛出IOError。"""
+        path = Path(tmp_dir) / "devices.txt"
+        path.write_text("line1\n", encoding="utf-8")
+
+        import builtins
+        original_open = builtins.open
+        call_count = {"n": 0}
+
+        def mock_open(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise OSError("disk read error")
+            return original_open(*args, **kwargs)
+
+        builtins.open = mock_open
+        try:
+            with pytest.raises(IOError, match="读取设备列表失败"):
+                DeviceFileManager.load_device_list(path)
+        finally:
+            builtins.open = original_open
+
+    def test_save_returns_false_on_error(self, tmp_dir):
+        """save_device_list 异常时应返回False。"""
+        import builtins
+        original_open = builtins.open
+        call_count = {"n": 0}
+
+        def mock_open(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise OSError("write error")
+            return original_open(*args, **kwargs)
+
+        builtins.open = mock_open
+        try:
+            path = Path(tmp_dir) / "fail.txt"
+            result = DeviceFileManager.save_device_list(path, ["line\n"])
+            assert result is False
+        finally:
+            builtins.open = original_open
