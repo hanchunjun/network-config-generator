@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(*)"
+    ],
+    "deny": [
+      "Write(C:\\*)",
+      "Edit(C:\\*)"
+    ]
+  }
+}

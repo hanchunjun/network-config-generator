@@ -1,0 +1,644 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+NetOps网络自动化运维工具主窗口
+"""
+
+import json
+import os
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional, Any
+
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout,
+                               QPushButton, QWidget, QLabel, QDialog, QStatusBar, QMessageBox)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QKeySequence
+
+# UI页面导入
+from src.ui.system_settings_page import SystemSettingsPage
+from src.ui.project_manager_page import ProjectManagerPage
+from src.ui.ops_toolbox_page import OpsToolboxPage
+from src.ui.single_device_page import SingleDevicePage
+from src.ui.ai_analysis_page import AIAnalysisPage
+
+# 配置页面导入（按厂商分组）
+from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
+from src.ui.config_pages.huawei import HuaweiAccessSwitchConfig, HuaweiCoreSwitchConfig, HuaweiRouterConfig, HuaweiACConfig
+from src.ui.config_pages.h3c import H3CAccessSwitchConfig, H3CCoreSwitchConfig, H3CRouterConfig, H3CACConfig
+from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchConfig, CiscoRouterConfig, CiscoACConfig
+
+from src.utils.resource_path import get_config_path, ensure_dirs
+from src.core.logger import netops_logger
+from src.utils.validators import ProjectValidator
+from src.utils.file_operators import JSONFileManager
+
+# 常量定义
+PROJECTS_CONFIG: str = get_config_path("config/projects_config.json")
+MODULES: List[Tuple[str, str, str]] = [
+    ("config", "设备配置", "🖥"),
+    ("project", "新建项目", "📁"),
+    ("ops", "项目运维", "🔧"),
+    ("single", "单点运维", "🔍"),
+    ("ai", "专家工作站", "🤖"),
+    ("system", "模型设置", "⚙"),
+]
+
+# 厂商配置映射
+VENDOR_CONFIG_MAP: Dict[str, Dict[str, type]] = {
+    "锐捷": {
+        "接入交换机": RuijieAccessSwitchConfig,
+        "核心交换机": RuijieCoreSwitchConfig,
+        "路由器": RuijieRouterConfig,
+        "AC控制器": RuijieACConfig,
+    },
+    "华为": {
+        "接入交换机": HuaweiAccessSwitchConfig,
+        "核心交换机": HuaweiCoreSwitchConfig,
+        "路由器": HuaweiRouterConfig,
+        "AC控制器": HuaweiACConfig,
+    },
+    "H3C": {
+        "接入交换机": H3CAccessSwitchConfig,
+        "核心交换机": H3CCoreSwitchConfig,
+        "路由器": H3CRouterConfig,
+        "AC控制器": H3CACConfig,
+    },
+    "思科": {
+        "接入交换机": CiscoAccessSwitchConfig,
+        "核心交换机": CiscoCoreSwitchConfig,
+        "路由器": CiscoRouterConfig,
+        "AC控制器": CiscoACConfig,
+    },
+}
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        ensure_dirs()
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V1.0 试用版')
+
+        # 初始化窗口尺寸
+        screen = QApplication.primaryScreen().availableGeometry()
+        self._init_window_geometry(screen)
+
+        # 初始化状态变量
+        self.current_project: Optional[Dict[str, Any]] = None
+        self.selected_vendor: Optional[str] = None
+        self.selected_device: Optional[str] = None
+        self.config_pages: Dict[str, QWidget] = {}
+
+        # 设置全局样式
+        self.setup_global_style()
+
+        # 创建主布局和导航
+        main_widget = self._create_main_layout()
+        self.setCentralWidget(main_widget)
+
+        # 创建模块堆栈和配置页面
+        self._create_module_stack(main_widget.layout())
+        self._init_config_module()
+
+        # 初始化UI状态
+        self.module_stack.setCurrentWidget(self.config_container)
+        self._update_nav_buttons("config")
+
+        # 创建状态栏
+        self._create_status_bar()
+
+        # 加载项目配置（必须在UI创建之后）
+        self._load_current_project()
+
+        # 加载项目配置（必须在UI创建之后）
+        self._load_current_project()
+
+    def _init_window_geometry(self, screen):
+        """初始化窗口几何尺寸
+
+        Args:
+            screen: 屏幕几何信息
+        """
+        w = int(screen.width() * 0.80)
+        h = int(screen.height() * 0.65)
+        x = screen.x() + (screen.width() - w) // 2
+        y = screen.y() + (screen.height() - h) // 2
+        self.setGeometry(x, y, w, h)
+
+    def _show_warning(self, message):
+        QMessageBox.warning(self, "提示", message)
+
+    def _show_info(self, message):
+        QMessageBox.information(self, "提示", message)
+
+    def _show_critical(self, message):
+        QMessageBox.critical(self, "错误", message)
+
+    def _create_main_layout(self) -> QWidget:
+        """创建主布局
+
+        Returns:
+            主布局组件
+        """
+        main_widget = QWidget()
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        main_widget.setLayout(main_layout)
+
+        self.create_top_nav_bar(main_layout)
+
+        return main_widget
+
+    def _create_module_stack(self, main_layout: QVBoxLayout):
+        """创建模块堆栈
+
+        Args:
+            main_layout: 主布局
+        """
+        self.module_stack = QStackedWidget()
+        main_layout.addWidget(self.module_stack)
+
+        # 创建各功能页面
+        self.system_page = SystemSettingsPage(self)
+        self.project_page = ProjectManagerPage(self)
+        self.ops_page = OpsToolboxPage(self)
+        self.single_page = SingleDevicePage(self)
+        self.ai_page = AIAnalysisPage(self)
+        self.config_container = QWidget()
+
+        # 添加到堆栈
+        self.module_stack.addWidget(self.system_page)
+        self.module_stack.addWidget(self.project_page)
+        self.module_stack.addWidget(self.ops_page)
+        self.module_stack.addWidget(self.single_page)
+        self.module_stack.addWidget(self.ai_page)
+        self.module_stack.addWidget(self.config_container)
+
+    def _create_status_bar(self):
+        self.status_bar = QStatusBar()
+        self.status_bar.setStyleSheet("""
+            QStatusBar {
+                background-color: #FFFFFF;
+                border-top: 1px solid #E5E6EB;
+                font-size: 12px;
+                color: #86909C;
+                padding: 2px 12px;
+            }
+        """)
+        self.setStatusBar(self.status_bar)
+        self.status_bar.showMessage("就绪 | Ctrl+1~6 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 AI分析 · Ctrl+6 模型设置")
+
+    def keyPressEvent(self, event):
+        if event.modifiers() == Qt.ControlModifier:
+            key = event.key()
+            shortcuts = {
+                Qt.Key_1: "config",
+                Qt.Key_2: "project",
+                Qt.Key_3: "ops",
+                Qt.Key_4: "single",
+                Qt.Key_5: "ai",
+                Qt.Key_6: "system",
+            }
+            if key in shortcuts:
+                self.switch_module(shortcuts[key])
+                module_names = {
+                    "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
+                    "single": "单点巡检", "ai": "AI分析", "config": "设备配置"
+                }
+                self.status_bar.showMessage(f"已切换到：{module_names[shortcuts[key]]} | Ctrl+1~6 切换模块", 3000)
+                return
+        super().keyPressEvent(event)
+
+    def _load_current_project(self):
+        try:
+            if not os.path.exists(PROJECTS_CONFIG):
+                logger = netops_logger.get_logger()
+                logger.info("项目配置文件不存在，等待用户创建项目")
+                return
+
+            config = JSONFileManager.load_json(PROJECTS_CONFIG, {"projects": {}, "current": None})
+
+            if not isinstance(config, dict):
+                return
+
+            current_name = config.get("current")
+            projects = config.get("projects", {})
+
+            if not current_name or not isinstance(projects, dict):
+                return
+
+            if current_name not in projects:
+                return
+
+            proj_data = projects[current_name]
+            if isinstance(proj_data, str):
+                self.current_project = {"name": current_name, "path": proj_data}
+                self._update_project_status_label(current_name)
+                return
+            elif isinstance(proj_data, dict):
+                project_path = proj_data.get("path")
+                if project_path:
+                    is_valid, error = ProjectValidator.validate_project_path(project_path)
+                    if not is_valid:
+                        return
+                self.current_project = proj_data
+                self._update_project_status_label(current_name)
+
+            logger = netops_logger.get_logger()
+            logger.info(f"成功加载项目: {current_name}")
+
+        except json.JSONDecodeError as e:
+            self._show_critical(f"项目配置文件格式错误: {str(e)}")
+            logger = netops_logger.get_logger()
+            logger.error(f"项目配置JSON格式错误: {e}")
+        except Exception as e:
+            self._show_critical(f"加载项目配置失败: {str(e)}")
+            logger = netops_logger.get_logger()
+            logger.error(f"加载项目配置失败: {e}")
+
+    def _update_project_status_label(self, project_name=None):
+        if project_name:
+            self.project_status_label.setText(f"当前项目：{project_name}")
+            self.project_status_label.setStyleSheet("font-size: 12px; color: #00B42A; padding-right: 12px; font-weight: bold;")
+        else:
+            self.project_status_label.setText("未选择项目")
+            self.project_status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-right: 12px;")
+
+    def refresh_project_status(self):
+        try:
+            if os.path.exists(PROJECTS_CONFIG):
+                with open(PROJECTS_CONFIG, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                if not isinstance(config, dict):
+                    return
+                current_name = config.get("current")
+                projects = config.get("projects", {})
+                if not isinstance(projects, dict):
+                    return
+                if current_name and current_name in projects:
+                    proj_data = projects[current_name]
+                    if isinstance(proj_data, str):
+                        self.current_project = {"name": current_name, "path": proj_data}
+                    else:
+                        self.current_project = proj_data
+                    self._update_project_status_label(current_name)
+                else:
+                    self.current_project = None
+                    self._update_project_status_label(None)
+        except Exception:
+            pass
+
+    def setup_global_style(self):
+        font = QFont("Microsoft YaHei", 9)
+        self.setFont(font)
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #F5F7FA;
+            }
+            QWidget {
+                font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+                font-size: 14px;
+                color: #1D2129;
+            }
+        """)
+
+    def create_top_nav_bar(self, main_layout):
+        nav_bar = QWidget()
+        nav_bar.setFixedHeight(56)
+        nav_bar.setStyleSheet("""
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E5E6EB;
+        """)
+        nav_layout = QHBoxLayout()
+        nav_layout.setContentsMargins(16, 0, 16, 0)
+        nav_layout.setSpacing(4)
+        nav_bar.setLayout(nav_layout)
+
+        logo_label = QLabel("  NetOps")
+        logo_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #165DFF; padding-right: 20px;")
+        nav_layout.addWidget(logo_label)
+
+        self.nav_buttons = {}
+        for module_id, module_name, icon in MODULES:
+            btn = QPushButton(f" {icon}  {module_name}")
+            btn.setFixedHeight(40)
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 6px 16px;
+                    font-size: 14px;
+                    color: #4E5969;
+                }
+                QPushButton:hover {
+                    background-color: #F2F3F5;
+                    color: #1D2129;
+                }
+                QPushButton[active="true"] {
+                    background-color: #E8F3FF;
+                    color: #165DFF;
+                    font-weight: bold;
+                }
+            """)
+            btn.clicked.connect(lambda checked, mid=module_id: self.switch_module(mid))
+            self.nav_buttons[module_id] = btn
+            nav_layout.addWidget(btn)
+
+        nav_layout.addStretch()
+
+        self.project_status_label = QLabel("未选择项目")
+        self.project_status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-right: 12px;")
+        nav_layout.addWidget(self.project_status_label)
+
+        about_btn = QPushButton("关于")
+        about_btn.setFixedSize(60, 32)
+        about_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #F5F7FA;
+                border: 1px solid #E5E6EB;
+                border-radius: 4px;
+                font-size: 13px;
+            }
+            QPushButton:hover { border: 1px solid #165DFF; }
+        """)
+        about_btn.clicked.connect(self.show_about_dialog)
+        nav_layout.addWidget(about_btn)
+
+        main_layout.addWidget(nav_bar)
+
+    def switch_module(self, module_id):
+        page_map = {
+            "system": self.system_page,
+            "project": self.project_page,
+            "ops": self.ops_page,
+            "single": self.single_page,
+            "ai": self.ai_page,
+            "config": self.config_container,
+        }
+        if module_id in page_map:
+            self.module_stack.setCurrentWidget(page_map[module_id])
+            self._update_nav_buttons(module_id)
+            self.refresh_project_status()
+            if module_id == "project":
+                self.project_page.refresh_project_list()
+            module_names = {
+                "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
+                "single": "单点巡检", "ai": "AI分析", "config": "设备配置"
+            }
+            self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~6 切换模块")
+
+    def _update_nav_buttons(self, active_id):
+        for mid, btn in self.nav_buttons.items():
+            if mid == active_id:
+                btn.setProperty("active", "true")
+            else:
+                btn.setProperty("active", "false")
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
+
+    def _init_config_module(self):
+        config_layout = QVBoxLayout()
+        config_layout.setContentsMargins(0, 0, 0, 0)
+        config_layout.setSpacing(0)
+        self.config_container.setLayout(config_layout)
+
+        self.create_config_selection_bar(config_layout)
+
+        self.config_stack = QStackedWidget()
+        config_layout.addWidget(self.config_stack)
+
+        default_page = QWidget()
+        default_layout = QVBoxLayout()
+        default_page.setLayout(default_layout)
+        label = QLabel('请选择厂家和设备类型')
+        label.setAlignment(Qt.AlignCenter)
+        label.setStyleSheet('font-size: 24px; color: #86909C;')
+        default_layout.addWidget(label)
+        self.config_stack.addWidget(default_page)
+
+    def create_config_selection_bar(self, parent_layout):
+        top_bar = QWidget()
+        top_layout = QHBoxLayout()
+        top_bar.setLayout(top_layout)
+        top_bar.setStyleSheet('background-color: white; padding: 10px; border-bottom: 1px solid #E5E6EB;')
+
+        vendor_layout = QHBoxLayout()
+        vendor_label = QPushButton('厂家选择:')
+        vendor_label.setStyleSheet('font-weight: bold; border: none; background: none;')
+        vendor_layout.addWidget(vendor_label)
+
+        self.vendor_buttons = {}
+        vendors = ['锐捷', '华为', '华三', '思科']
+        vendor_ids = ['ruijie', 'huawei', 'h3c', 'cisco']
+
+        for name, vendor_id in zip(vendors, vendor_ids):
+            button = QPushButton(name)
+            button.setFixedSize(100, 40)
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #F5F7FA;
+                    border: 1px solid #E5E6EB;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+                QPushButton:hover { border: 1px solid #165DFF; }
+            """)
+            button.clicked.connect(lambda checked, vid=vendor_id: self.on_vendor_clicked(vid))
+            self.vendor_buttons[vendor_id] = button
+            vendor_layout.addWidget(button)
+
+        device_layout = QHBoxLayout()
+        device_label = QPushButton('设备类型:')
+        device_label.setStyleSheet('font-weight: bold; border: none; background: none;')
+        device_layout.addWidget(device_label)
+
+        self.device_buttons = {}
+        devices = ['接入交换机', '核心交换机', '路由器', 'AC']
+        device_ids = ['access_switch', 'core_switch', 'router', 'ac']
+
+        for name, device_id in zip(devices, device_ids):
+            button = QPushButton(name)
+            button.setFixedSize(120, 40)
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #F5F7FA;
+                    border: 1px solid #E5E6EB;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+                QPushButton:hover { border: 1px solid #165DFF; }
+            """)
+            button.clicked.connect(lambda checked, did=device_id: self.on_device_clicked(did))
+            self.device_buttons[device_id] = button
+            device_layout.addWidget(button)
+
+        top_layout.addLayout(vendor_layout)
+        top_layout.addStretch()
+        top_layout.addLayout(device_layout)
+
+        parent_layout.addWidget(top_bar)
+
+    def on_vendor_clicked(self, vendor):
+        for vid, button in self.vendor_buttons.items():
+            if vid == vendor:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #165DFF;
+                        color: white;
+                        border: 1px solid #165DFF;
+                        border-radius: 4px;
+                        font-size: 14px;
+                    }
+                """)
+            else:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #F5F7FA;
+                        border: 1px solid #E5E6EB;
+                        border-radius: 4px;
+                        font-size: 14px;
+                    }
+                    QPushButton:hover { border: 1px solid #165DFF; }
+                """)
+        self.selected_vendor = vendor
+        self.try_show_config_page()
+
+    def on_device_clicked(self, device_type):
+        for did, button in self.device_buttons.items():
+            if did == device_type:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #165DFF;
+                        color: white;
+                        border: 1px solid #165DFF;
+                        border-radius: 4px;
+                        font-size: 14px;
+                    }
+                """)
+            else:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #F5F7FA;
+                        border: 1px solid #E5E6EB;
+                        border-radius: 4px;
+                        font-size: 14px;
+                    }
+                    QPushButton:hover { border: 1px solid #165DFF; }
+                """)
+        self.selected_device = device_type
+        self.try_show_config_page()
+
+    def try_show_config_page(self):
+        if self.selected_vendor and self.selected_device:
+            self.show_config_page(self.selected_vendor, self.selected_device)
+
+    def show_config_page(self, vendor, device_type):
+        page_key = f"{vendor}_{device_type}"
+        config_page = None
+
+        if vendor == 'ruijie':
+            if device_type == 'access_switch':
+                config_page = RuijieAccessSwitchConfig(self)
+            elif device_type == 'core_switch':
+                config_page = RuijieCoreSwitchConfig(self)
+            elif device_type == 'router':
+                config_page = RuijieRouterConfig(self)
+            elif device_type == 'ac':
+                config_page = RuijieACConfig(self)
+        elif vendor == 'huawei':
+            if device_type == 'access_switch':
+                config_page = HuaweiAccessSwitchConfig(self)
+            elif device_type == 'core_switch':
+                config_page = HuaweiCoreSwitchConfig(self)
+            elif device_type == 'router':
+                config_page = HuaweiRouterConfig(self)
+            elif device_type == 'ac':
+                config_page = HuaweiACConfig(self)
+        elif vendor == 'h3c':
+            if device_type == 'access_switch':
+                config_page = H3CAccessSwitchConfig(self)
+            elif device_type == 'core_switch':
+                config_page = H3CCoreSwitchConfig(self)
+            elif device_type == 'router':
+                config_page = H3CRouterConfig(self)
+            elif device_type == 'ac':
+                config_page = H3CACConfig(self)
+        elif vendor == 'cisco':
+            if device_type == 'access_switch':
+                config_page = CiscoAccessSwitchConfig(self)
+            elif device_type == 'core_switch':
+                config_page = CiscoCoreSwitchConfig(self)
+            elif device_type == 'router':
+                config_page = CiscoRouterConfig(self)
+            elif device_type == 'ac':
+                config_page = CiscoACConfig(self)
+
+        if config_page:
+            if page_key in self.config_pages:
+                old_page = self.config_pages[page_key]
+                self.config_stack.removeWidget(old_page)
+                old_page.deleteLater()
+
+            self.config_pages[page_key] = config_page
+            self.config_stack.addWidget(config_page)
+            self.config_stack.setCurrentWidget(config_page)
+
+    def show_about_dialog(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('关于')
+        dialog.setFixedSize(500, 300)
+        dialog.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+        layout.setContentsMargins(20, 15, 20, 15)
+        layout.setSpacing(10)
+
+        title_label = QLabel('NetOps 企业网络自动化运维平台 V1.0 试用版')
+        title_label.setAlignment(Qt.AlignLeft)
+        title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
+        layout.addWidget(title_label)
+
+        desc1 = QLabel('面向网络工程师的多厂商网络设备配置脚本生成与自动化运维工具，支持锐捷、华为、华三、思科等设备。\n开源项目地址: https://github.com/hanchunjun/network-config-generator')
+        desc1.setAlignment(Qt.AlignLeft)
+        desc1.setStyleSheet('font-size: 13px;')
+        desc1.setWordWrap(True)
+        layout.addWidget(desc1)
+
+        copyright_label = QLabel('Copyright @ 2026 laohan')
+        copyright_label.setAlignment(Qt.AlignLeft)
+        copyright_label.setStyleSheet('font-size: 13px;')
+        layout.addWidget(copyright_label)
+
+        license_label = QLabel('Released under the MIT License')
+        license_label.setAlignment(Qt.AlignLeft)
+        license_label.setStyleSheet('font-size: 13px;')
+        layout.addWidget(license_label)
+
+        disclaimer = QLabel('本软件为开源免费工具，仅供学习交流与工程实施使用。不代表任何厂商官方立场，无任何官方认证。')
+        disclaimer.setAlignment(Qt.AlignLeft)
+        disclaimer.setStyleSheet('font-size: 13px;')
+        disclaimer.setWordWrap(True)
+        layout.addWidget(disclaimer)
+
+        close_button = QPushButton('关闭')
+        close_button.setFixedSize(100, 40)
+        close_button.setStyleSheet("""
+            QPushButton {
+                background-color: #165DFF;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            QPushButton:hover { background-color: #0E42D2; }
+        """)
+        close_button.clicked.connect(dialog.close)
+
+        button_layout = QVBoxLayout()
+        button_layout.addWidget(close_button)
+        button_layout.setAlignment(Qt.AlignCenter)
+        layout.addLayout(button_layout)
+
+        dialog.setLayout(layout)
+        dialog.exec_()

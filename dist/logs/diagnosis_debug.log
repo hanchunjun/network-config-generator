@@ -1,0 +1,138 @@
+[15:10:24.926] THREAD START
+[15:10:24.927] agent file loaded, len=8732
+[15:10:24.928] prompt built, content_len=160298, truncated=8000
+[15:10:24.928] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[15:11:42.893] response status=200
+[15:11:42.893] diagnosis report generated, len=4377
+[15:11:42.897] THREAD END
+[15:15:18.791] THREAD START
+[15:15:18.791] agent file loaded, len=8732
+[15:15:18.791] prompt built, content_len=160298, truncated=8000
+[15:15:18.791] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[15:16:26.576] response status=200
+[15:16:26.576] diagnosis report generated, len=4329
+[15:16:26.576] THREAD END
+[15:21:11.688] THREAD START
+[15:21:11.689] agent file loaded, len=8732
+[15:21:11.689] prompt built, content_len=160298, truncated=8000
+[15:21:11.691] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[15:22:25.320] response status=200
+[15:22:25.321] diagnosis report generated, len=4150
+[15:22:25.323] THREAD END
+[15:34:21.867] THREAD START
+[15:34:21.869] agent file loaded, len=8732
+[15:34:21.869] prompt built, content_len=160298, truncated=8000
+[15:34:21.869] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[15:36:50.642] THREAD START
+[15:36:50.643] agent file loaded, len=8732
+[15:36:50.643] prompt built, content_len=160298, truncated=8000
+[15:36:50.644] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[15:36:55.028] THREAD START
+[15:36:55.030] agent file loaded, len=8732
+[15:36:55.030] prompt built, content_len=160872, truncated=8000
+[15:36:55.031] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.4KB
+[16:16:48.348] THREAD START
+[16:16:48.349] agent file loaded, len=8732
+[16:16:48.349] prompt built, content_len=160227, truncated=8000
+[16:16:48.350] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[16:27:32.586] THREAD START
+[16:27:32.586] agent file loaded, len=8732
+[16:27:32.587] prompt built, content_len=160227, truncated=8000
+[16:27:32.587] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[16:28:54.782] response status=200
+[16:28:54.783] diagnosis report generated, len=3557
+[16:28:54.783] THREAD END
+[16:28:54.784] [CB] _on_diagnose_finished START
+[16:28:54.786] [CB] refreshing diagnosis list...
+[16:28:54.787] [CB] _on_diagnose_finished CRASH: NameError: name 'glob' is not defined
+[16:28:54.788] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2394, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2625, in refresh_diagnosis_list
+NameError: name 'glob' is not defined. Did you forget to import 'glob'?
+
+[16:30:38.252] THREAD START
+[16:30:38.252] agent file loaded, len=8732
+[16:30:38.253] prompt built, content_len=160227, truncated=8000
+[16:30:38.253] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[16:32:20.431] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[16:32:20.433] THREAD END
+[16:48:48.626] THREAD START
+[16:48:48.627] agent file loaded, len=8732
+[16:48:48.627] prompt built, content_len=160298, truncated=8000
+[16:48:48.628] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=28.3KB
+[16:50:15.222] response status=200
+[16:50:15.222] diagnosis report generated, len=3563
+[16:50:15.223] THREAD END
+[16:50:15.223] [CB] _on_diagnose_finished START
+[16:50:15.225] [CB] refreshing diagnosis list...
+[16:50:15.225] [CB] _on_diagnose_finished CRASH: NameError: name 'glob' is not defined
+[16:50:15.226] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2394, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2625, in refresh_diagnosis_list
+NameError: name 'glob' is not defined. Did you forget to import 'glob'?
+
+[17:28:43.766] THREAD START (v2 dual-layer)
+[17:28:43.853] local_diagnostic done: 2 findings, 86ms
+[17:28:43.854] needs_ai=True (C:2 H:0 M:0)
+[17:28:43.855] agent file loaded, len=9145
+[17:28:43.855] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=29.6KB
+[17:29:25.526] THREAD START (v2 dual-layer)
+[17:29:25.612] local_diagnostic done: 1 findings, 85ms
+[17:29:25.613] needs_ai=True (C:1 H:0 M:0)
+[17:29:25.614] agent file loaded, len=9145
+[17:29:25.615] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=29.2KB
+[17:30:56.360] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[17:30:56.361] THREAD END
+[17:30:56.361] [CB] _on_diagnose_finished START
+[17:30:56.362] [CB] refreshing diagnosis list...
+[17:30:56.362] [CB] _on_diagnose_finished CRASH: NameError: name 'glob' is not defined
+[17:30:56.363] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2531, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2762, in refresh_diagnosis_list
+NameError: name 'glob' is not defined. Did you forget to import 'glob'?
+
+[09:18:55.264] THREAD START (v2 dual-layer)
+[09:18:55.402] local_diagnostic done: 2 findings, 134ms
+[09:18:55.403] needs_ai=True (C:2 H:0 M:0)
+[09:18:55.404] agent file loaded, len=1274
+[09:18:55.413] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=151.6KB
+[09:20:39.241] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[09:20:39.243] THREAD END
+[09:20:39.243] [CB] _on_diagnose_finished START
+[09:20:39.244] [CB] refreshing diagnosis list...
+[09:20:39.245] [CB] _on_diagnose_finished CRASH: NameError: name 'glob' is not defined
+[09:20:39.246] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2522, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2753, in refresh_diagnosis_list
+NameError: name 'glob' is not defined. Did you forget to import 'glob'?
+
+[10:10:15.306] THREAD START (v2 dual-layer)
+[10:10:15.451] local_diagnostic done: 2 findings, 144ms
+[10:10:15.452] needs_ai=True (C:2 H:0 M:0)
+[10:10:15.453] agent file loaded, len=1274
+[10:10:15.458] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=7.7KB
+[10:11:59.001] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[10:11:59.002] THREAD END
+[10:11:59.003] [CB] _on_diagnose_finished START
+[10:11:59.004] [CB] refreshing diagnosis list...
+[10:11:59.004] [CB] _on_diagnose_finished CRASH: NameError: name 'glob' is not defined
+[10:11:59.005] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2522, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2753, in refresh_diagnosis_list
+NameError: name 'glob' is not defined. Did you forget to import 'glob'?
+
+[10:33:41.282] THREAD START (v2 dual-layer)
+[10:33:41.376] local_diagnostic done: 2 findings, 93ms
+[10:33:41.378] needs_ai=True (C:2 H:0 M:0)
+[10:33:41.379] agent file loaded, len=1274
+[10:33:41.381] sending POST to https://api.longcat.chat/openai/chat/completions, model=LongCat-2.0-Preview, size=7.7KB
+[10:35:24.932] connection error: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+[10:35:24.933] THREAD END
+[10:35:24.933] [CB] _on_diagnose_finished START
+[10:35:24.935] [CB] refreshing diagnosis list...
+[10:35:24.935] [CB] _on_diagnose_finished CRASH: AttributeError: 'SingleDevicePage' object has no attribute '_fmt_size'
+[10:35:24.936] [CB] Traceback (most recent call last):
+  File "src\ui\single_device_page.py", line 2524, in _on_diagnose_finished
+  File "src\ui\single_device_page.py", line 2758, in refresh_diagnosis_list
+AttributeError: 'SingleDevicePage' object has no attribute '_fmt_size'
+

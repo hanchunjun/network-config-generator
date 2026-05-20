@@ -1,0 +1,14 @@
+# 开发工具依赖（仅开发/打包时需要，运行时不需要）
+# 安装：pip install -r requirements-dev.txt
+
+# 测试框架
+pytest==9.0.3
+
+# 类型检查
+mypy==2.1.0
+
+# 安全扫描
+bandit==1.9.4
+
+# 代码复杂度
+radon==7.0.1

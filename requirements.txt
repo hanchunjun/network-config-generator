@@ -1,0 +1,37 @@
+# NetOps V2.1 运行时依赖（Python 3.11）
+# 安装：pip install -r requirements.txt
+
+# 核心框架
+PyQt5==5.15.10
+PyQt5-Qt5==5.15.2
+PyQt5_sip==12.18.0
+
+# 加密
+cryptography==46.0.6
+bcrypt==5.0.0
+PyNaCl==1.6.2
+
+# 网络连接
+netmiko==4.7.0
+paramiko==4.0.0
+scp==0.15.0
+pyserial==3.5
+
+# HTTP请求
+requests==2.33.1
+certifi==2026.2.25
+
+# 数据解析
+PyYAML==6.0.3
+lxml==6.0.3
+textfsm==2.1.0
+ntc_templates==9.1.0
+
+# 文件处理
+openpyxl==3.1.5
+python-docx==1.2.0
+
+# 打包
+pyinstaller==6.0.0
+pyinstaller-hooks-contrib==2026.4
+requests-toolbelt==1.0.0

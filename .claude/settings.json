@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b)",
+      "Bash(pyinstaller --onefile --windowed --name=\"NetOps_Automation_Tool\" --icon=assets/app.ico main.py)",
+      "Bash(pyinstaller --onefile --windowed --name=\"NetOps_Automation_Tool\" main.py)",
+      "Bash(dist\\\\NetOps_Automation_Tool.exe --help)",
+      "Bash(start NetOps_Automation_Tool.exe)",
+      "Bash(python Functional_Test.py)",
+      "Bash(python Code_Quality_Review.py)",
+      "Bash(python create_delivery_package.py)",
+      "Bash(wmic datafile *)",
+      "Bash(xargs ls -la)",
+      "Bash(rtk pytest *)",
+      "Bash(python -c \"from test_device_manager import TestDeviceManager; t = TestDeviceManager\\(\\); print\\('测试类导入成功'\\)\")",
+      "Bash(rtk git *)",
+      "Bash(claude skills *)",
+      "Bash(python main.py --version)"
+    ]
+  }
+}
