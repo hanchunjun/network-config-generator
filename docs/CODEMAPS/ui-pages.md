@@ -276,6 +276,6 @@ config_pages/
 | 一键生成激活码 | 调用 `admin_keygen.generate_code_for_machine()` |
 | 一键复制激活码 | 复制到剪贴板 |
 | 用户信息备注 | 姓名/用途/备注 |
-| 台账自动保存 | 写入 `config/admin_records.json` |
+| 台账自动保存 | 写入 `admin_data/records.dat`（AES-GCM加密） |
 | 黑名单快捷添加 | 一键将机器码加入黑名单 |
 | 黑名单导出 | 导出为可上传云端的TXT格式 |

@@ -30,8 +30,9 @@ src/core/
 | 算法 | 说明 |
 |------|------|
 | 机器码 | CPU序列号 + 硬盘物理序列号 → MD5 → 32位大写 |
-| 激活码 | 机器码 + 内置私钥 → MD5 → 前16位大写 |
-| 授权存储 | AES-GCM加密 → `config/license.dat` |
+| 激活码 | 机器码 + 内置私钥 → MD5 → 前16位大写（旧格式） |
+| 激活码（新） | 16位基础码 + 2位hex有效期索引 → 18位（如 `F1637109D2A857DE05`） |
+| 授权存储 | AES-GCM加密 → `activation/license.dat` |
 
 ### 关键方法
 | 方法 | 说明 |
@@ -86,7 +87,7 @@ src/core/
 |------|------|
 | `name` | 用户姓名/标识 |
 | `machine_code` | 32位机器码 |
-| `activation_code` | 16位激活码 |
+| `activation_code` | 16位或18位激活码（18位含有效期编码） |
 | `note` | 备注信息 |
 | `created_at` | 授权时间（格式：YYYY-MM-DD HH:MM:SS） |
 | `validity_days` | 有效期天数，0=永久 |
@@ -95,7 +96,7 @@ src/core/
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
-| `generate_code_for_machine(machine_code)` | 为指定机器码生成激活码 |
+| `generate_code_for_machine(machine_code, validity_days=0)` | 为指定机器码生成18位激活码（含有效期编码） |
 | `save_record(name, mc, code, note, validity_days)` | 保存台账记录（加密追加，含有效期，validity_days=0永久） |
 | `load_records()` | 加载所有台账记录（自动解密） |
 | `format_record_time(iso_str)` | 格式化时间字符串为友好显示 |
