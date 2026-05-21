@@ -654,8 +654,8 @@ class MainWindow(QMainWindow):
         # 提示正文
         msg = QLabel(
             "当前为试用模式，仅可使用「锐捷接入交换机配置」功能。\n\n"
-            "如需使用全部功能（多厂商配置、项目管理、运维巡检、AI分析等），"
-            "请联系管理员激活软件。"
+            "软件全功能使用需授权激活。如需开通全部功能"
+            "（多厂商配置、项目管理、运维巡检、AI分析等），请联系管理员激活。"
         )
         msg.setFont(QFont("Microsoft YaHei", 10))
         msg.setWordWrap(True)
@@ -733,7 +733,7 @@ class MainWindow(QMainWindow):
         license_label.setStyleSheet('font-size: 13px;')
         layout.addWidget(license_label)
 
-        disclaimer = QLabel('本软件为开源免费工具，仅供学习交流与工程实施使用。不代表任何厂商官方立场，无任何官方认证。')
+        disclaimer = QLabel('本软件源码基于 MIT License 开源发布，可自由获取与修改。软件全功能使用需授权激活，不代表任何厂商官方立场，无任何官方认证。')
         disclaimer.setAlignment(Qt.AlignLeft)
         disclaimer.setStyleSheet('font-size: 13px;')
         disclaimer.setWordWrap(True)
