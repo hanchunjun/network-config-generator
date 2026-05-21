@@ -362,12 +362,20 @@ class AdminToolWindow(QMainWindow):
         if len(machine_code) != 32:
             QMessageBox.warning(self, "提示", "机器码格式不正确，应为32位")
             return
-        code = generate_code_for_machine(machine_code)
-        self._code_result.setText(code)
-        # 显示生成时间
-        from datetime import datetime
+        # 获取当前选择的有效期天数
+        validity_idx = self._validity_combo.currentIndex()
+        validity_days = [0, 1825, 3650, 1095, 730, 365, 180, 90, 30, 7][validity_idx]
+        # 生成18位激活码（含有效期编码）
+        full_code = generate_code_for_machine(machine_code, validity_days)
+        self._code_result.setText(full_code)
+        # 显示生成时间和有效期信息
+        from datetime import datetime, timedelta
         gen_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self._gen_time_label.setText(f"⏱ 生成时间：{gen_time}")
+        if validity_days > 0:
+            expire_at = (datetime.now() + timedelta(days=validity_days)).strftime("%Y-%m-%d")
+            self._gen_time_label.setText(f"⏱ {gen_time}  |  有效期{validity_days}天  到期{expire_at}")
+        else:
+            self._gen_time_label.setText(f"⏱ {gen_time}  |  永久授权")
 
     def _copy_code(self) -> None:
         code = self._code_result.text()
