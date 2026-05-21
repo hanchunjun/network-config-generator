@@ -46,6 +46,8 @@ from src.core.admin_keygen import (
     restore_backup,
     export_records_to_json,
     import_records_from_json,
+    format_record_time,
+    get_record_expire_status,
 )
 from src.core.activation_engine import get_machine_code
 from src.utils.resource_path import get_admin_data_dir
@@ -154,6 +156,28 @@ class AdminToolWindow(QMainWindow):
         info_layout.addWidget(self._note_input)
         mg_layout.addLayout(info_layout)
 
+        # 有效期选择 + 生成时间显示
+        validity_layout = QHBoxLayout()
+        validity_layout.addWidget(QLabel("有效期："))
+        self._validity_combo = QComboBox()
+        self._validity_combo.addItems([
+            "永久（方案A）",
+            "180天（方案B·半年）",
+            "365天（一年）",
+            "90天（季度）",
+            "30天（月度）",
+            "7天（周度）",
+        ])
+        self._validity_combo.setMinimumHeight(30)
+        validity_layout.addWidget(self._validity_combo)
+        validity_layout.addStretch()
+        # 生成时间标签
+        self._gen_time_label = QLabel("")
+        self._gen_time_label.setFont(QFont("Microsoft YaHei", 9))
+        self._gen_time_label.setStyleSheet("color: #00B42A;")
+        validity_layout.addWidget(self._gen_time_label)
+        mg_layout.addLayout(validity_layout)
+
         save_btn = QPushButton("💾 保存台账")
         save_btn.setMinimumHeight(36)
         save_btn.setCursor(Qt.PointingHandCursor)
@@ -204,11 +228,13 @@ class AdminToolWindow(QMainWindow):
         rg_layout = QVBoxLayout(record_group)
 
         self._records_table = QTableWidget()
-        self._records_table.setColumnCount(5)
+        self._records_table.setColumnCount(6)
         self._records_table.setHorizontalHeaderLabels(
-            ["姓名", "机器码", "激活码", "备注", "授权时间"]
+            ["姓名", "机器码", "激活码", "授权时间", "有效期", "备注"]
         )
         self._records_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self._records_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)  # 机器码固定宽度
+        self._records_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)  # 激活码固定宽度
         self._records_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._records_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         rg_layout.addWidget(self._records_table)
@@ -334,6 +360,10 @@ class AdminToolWindow(QMainWindow):
             return
         code = generate_code_for_machine(machine_code)
         self._code_result.setText(code)
+        # 显示生成时间
+        from datetime import datetime
+        gen_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self._gen_time_label.setText(f"⏱ 生成时间：{gen_time}")
 
     def _copy_code(self) -> None:
         code = self._code_result.text()
@@ -348,11 +378,29 @@ class AdminToolWindow(QMainWindow):
         if not machine_code or not code:
             QMessageBox.warning(self, "提示", "请先生成激活码")
             return
-        if save_record(name or "未命名", machine_code, code, note):
-            QMessageBox.information(self, "成功", "台账记录已保存（加密存储）")
+
+        # 解析有效期
+        validity_map = {
+            0: 0,    # 永久
+            1: 180,  # 半年
+            2: 365,  # 一年
+            3: 90,   # 季度
+            4: 30,   # 月度
+            5: 7,    # 周度
+        }
+        validity_days = validity_map.get(self._validity_combo.currentIndex(), 0)
+
+        if save_record(name or "未命名", machine_code, code, note, validity_days):
+            expire_info = ""
+            if validity_days > 0:
+                from datetime import datetime, timedelta
+                expire_at = (datetime.now() + timedelta(days=validity_days)).strftime("%Y-%m-%d")
+                expire_info = f"\n\n有效期：{validity_days}天\n到期时间：{expire_at}"
+            QMessageBox.information(self, "成功", f"台账记录已保存（加密存储）{expire_info}")
             self._refresh_records()
             self._name_input.clear()
             self._note_input.clear()
+            self._gen_time_label.clear()
         else:
             QMessageBox.critical(self, "错误", "保存失败")
 
@@ -476,8 +524,18 @@ class AdminToolWindow(QMainWindow):
             mc = rec.get("machine_code", "")
             self._records_table.setItem(i, 1, QTableWidgetItem(mc[:12] + "..." if len(mc) > 12 else mc))
             self._records_table.setItem(i, 2, QTableWidgetItem(rec.get("activation_code", "")))
-            self._records_table.setItem(i, 3, QTableWidgetItem(rec.get("note", "")))
-            self._records_table.setItem(i, 4, QTableWidgetItem(rec.get("created_at", "")[:19]))
+            # 格式化时间显示
+            self._records_table.setItem(i, 3, QTableWidgetItem(format_record_time(rec.get("created_at", ""))))
+            # 有效期状态
+            expire_text = get_record_expire_status(rec)
+            expire_item = QTableWidgetItem(expire_text)
+            # 永久有效绿色，有期限蓝色
+            if rec.get("validity_days", 0) == 0:
+                expire_item.setForeground(Qt.darkGreen)
+            else:
+                expire_item.setForeground(Qt.darkBlue)
+            self._records_table.setItem(i, 4, expire_item)
+            self._records_table.setItem(i, 5, QTableWidgetItem(rec.get("note", "")))
 
     def _refresh_blacklist(self) -> None:
         codes = load_blacklist()

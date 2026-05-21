@@ -67,12 +67,25 @@ src/core/
 | 本地黑名单 | `admin_data/blacklist.txt` | 每行一个机器码 |
 | 台账备份 | `admin_data/backup/records_YYYYMMDD_HHMMSS.dat` | 带时间戳的加密副本 |
 
+### 台账记录字段
+| 字段 | 说明 |
+|------|------|
+| `name` | 用户姓名/标识 |
+| `machine_code` | 32位机器码 |
+| `activation_code` | 16位激活码 |
+| `note` | 备注信息 |
+| `created_at` | 授权时间（格式：YYYY-MM-DD HH:MM:SS） |
+| `validity_days` | 有效期天数，0=永久 |
+| `expire_at` | 到期时间（格式：YYYY-MM-DD HH:MM），永久为空 |
+
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
 | `generate_code_for_machine(machine_code)` | 为指定机器码生成激活码 |
-| `save_record(name, mc, code, note)` | 保存台账记录（加密追加） |
+| `save_record(name, mc, code, note, validity_days)` | 保存台账记录（加密追加，含有效期） |
 | `load_records()` | 加载所有台账记录（自动解密） |
+| `format_record_time(iso_str)` | 格式化时间字符串为友好显示 |
+| `get_record_expire_status(rec)` | 获取记录有效期状态描述 |
 | `delete_record(index)` | 删除指定记录 |
 | `backup_records()` | 创建台账备份（带时间戳） |
 | `list_backups()` | 列出所有备份文件 |

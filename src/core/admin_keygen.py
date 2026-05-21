@@ -118,7 +118,7 @@ def generate_code_for_machine(machine_code: str) -> str:
 # ═══════════════════════════════════════════════════════════════
 
 def save_record(name: str, machine_code: str, activation_code: str,
-                note: str = "") -> bool:
+                note: str = "", validity_days: int = 0) -> bool:
     """保存授权台账记录（追加模式，加密存储）。
 
     Args:
@@ -126,6 +126,7 @@ def save_record(name: str, machine_code: str, activation_code: str,
         machine_code: 机器码
         activation_code: 激活码
         note: 备注信息
+        validity_days: 有效期天数，0=永久（方案A），180=方案B半年，365=一年，以此类推
 
     Returns:
         bool: 保存是否成功
@@ -133,12 +134,21 @@ def save_record(name: str, machine_code: str, activation_code: str,
     try:
         _ensure_admin_dirs()
         records = load_records()
+
+        now = datetime.now()
+        expire_at = ""
+        if validity_days > 0:
+            from datetime import timedelta
+            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d %H:%M")
+
         record = {
             "name": name,
             "machine_code": machine_code.strip().upper(),
             "activation_code": activation_code,
             "note": note,
-            "created_at": datetime.now().isoformat(),
+            "created_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "validity_days": validity_days,
+            "expire_at": expire_at,
         }
         records.append(record)
 
@@ -155,6 +165,48 @@ def save_record(name: str, machine_code: str, activation_code: str,
     except Exception as e:
         netops_logger.get_logger().error(f"台账保存失败: {e}")
         return False
+
+
+def format_record_time(iso_str: str) -> str:
+    """将台账时间字符串格式化为友好显示格式。
+
+    支持两种输入：
+    - 新格式："2026-05-21 14:30:00" → "2026-05-21 14:30"
+    - 旧格式："2026-05-21T14:30:00" → "2026-05-21 14:30"
+
+    Args:
+        iso_str: 时间字符串
+
+    Returns:
+        str: 格式化后的时间字符串
+    """
+    if not iso_str:
+        return "未知"
+    # 兼容旧版 ISO 格式和新版格式
+    t = iso_str.replace("T", " ")
+    # 截取到分钟
+    if len(t) > 16:
+        t = t[:16]
+    return t
+
+
+def get_record_expire_status(rec: dict) -> str:
+    """获取记录的有效期状态描述。
+
+    Args:
+        rec: 台账记录字典
+
+    Returns:
+        str: 有效期状态描述
+    """
+    validity = rec.get("validity_days", 0)
+    expire_at = rec.get("expire_at", "")
+
+    if validity == 0:
+        return "永久有效"
+    if expire_at:
+        return f"有效期至 {expire_at}"
+    return f"{validity}天有效"
 
 
 def load_records() -> List[dict]:
