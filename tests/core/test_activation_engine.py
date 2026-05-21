@@ -409,12 +409,13 @@ class TestAdminKeygen:
         shutil.rmtree(self._tmpdir, ignore_errors=True)
 
     def test_generate_code_matches_engine(self):
-        """制码工具生成的激活码应与引擎一致"""
+        """制码工具生成的激活码前16位应与引擎一致"""
         from src.core.admin_keygen import generate_code_for_machine
         mc = "A" * 32
-        code1 = generate_code_for_machine(mc)
-        code2 = generate_activation_code(mc)
-        assert code1 == code2
+        code1 = generate_code_for_machine(mc)  # 18位（含2位有效期编码）
+        code2 = generate_activation_code(mc)   # 16位基础激活码
+        assert code1[:16] == code2
+        assert len(code1) == 18  # 新格式为18位
 
     def test_save_and_load_records(self):
         """台账保存和读取"""

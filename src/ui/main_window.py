@@ -787,7 +787,7 @@ class MainWindow(QMainWindow):
 
         # 联系信息
         contact = QLabel(
-            "📞 联系管理员：天技老韩\n"
+            "📞 联系管理员：老韩\n"
             "QQ：223518\n"
             "微信：tachlaohan"
         )

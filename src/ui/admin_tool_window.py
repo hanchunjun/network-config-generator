@@ -4,7 +4,7 @@
 管理员制码工具主窗口
 
 独立程序，不与用户端合并。
-仅限管理员【天技老韩】本地使用，禁止外发。
+仅限管理员【老韩】本地使用，禁止外发。
 
 功能：
 - 输入机器码 → 一键生成激活码
@@ -58,7 +58,7 @@ class AdminToolWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("NetOps 管理员制码工具 V0.3.0 — 天技老韩专用")
+        self.setWindowTitle("NetOps 管理员制码工具 V0.3.0 — 老韩专用")
         self.setMinimumSize(900, 650)
         self._setup_ui()
         self._apply_style()

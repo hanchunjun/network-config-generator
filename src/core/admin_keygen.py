@@ -99,18 +99,25 @@ def _ensure_admin_dirs():
 # 激活码生成
 # ═══════════════════════════════════════════════════════════════
 
-def generate_code_for_machine(machine_code: str) -> str:
+def generate_code_for_machine(machine_code: str, validity_days: int = 0) -> str:
     """为指定机器码生成激活码。
+
+    生成的激活码为18位：16位基础激活码 + 2位hex有效期索引。
 
     Args:
         machine_code: 用户提供的32位机器码
+        validity_days: 有效期天数，0=永久
 
     Returns:
-        str: 16位大写激活码
+        str: 18位大写激活码（含有效期编码）
     """
-    code = generate_activation_code(machine_code.strip().upper())
-    netops_logger.get_logger().info(f"生成激活码: 机器码={machine_code[:8]}... → 激活码={code}")
-    return code
+    from src.core.activation_engine import encode_activation_code
+    base_code = generate_activation_code(machine_code.strip().upper())
+    full_code = encode_activation_code(base_code, validity_days)
+    netops_logger.get_logger().info(
+        f"生成激活码: 机器码={machine_code[:8]}... 有效期={validity_days}天 → 激活码={full_code}"
+    )
+    return full_code
 
 
 # ═══════════════════════════════════════════════════════════════

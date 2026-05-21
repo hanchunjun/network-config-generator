@@ -88,7 +88,7 @@ def _check_activation() -> bool:
             msg_box.setWindowTitle("软件授权已失效")
             msg_box.setText(
                 "当前设备对应的软件使用权限已被管理员收回，无法继续正常使用。\n\n"
-                "如需重新开通软件使用权限，请联系管理员【天技老韩】重新审核办理。"
+                "如需重新开通软件使用权限，请联系管理员【老韩】重新审核办理。"
             )
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec_()

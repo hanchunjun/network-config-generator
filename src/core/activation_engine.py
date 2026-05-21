@@ -159,8 +159,68 @@ def generate_activation_code(machine_code: str) -> str:
     return code
 
 
+# 有效期编码表：索引 → validity_days
+_VALIDITY_TABLE = [
+    0,      # 0: 永久
+    1825,   # 1: 5年
+    3650,   # 2: 10年
+    1095,   # 3: 3年
+    730,    # 4: 2年
+    365,    # 5: 1年
+    180,    # 6: 半年
+    90,     # 7: 季度
+    30,     # 8: 月度
+    7,      # 9: 周度
+]
+
+# 反向查找：validity_days → 索引（找最接近的匹配）
+_VALIDITY_TO_INDEX = {v: i for i, v in enumerate(_VALIDITY_TABLE)}
+
+
+def encode_activation_code(code: str, validity_days: int) -> str:
+    """将有效期索引编码到激活码末尾，生成18位激活码。
+
+    格式：16位激活码 + 2位hex有效期索引（大写）
+
+    Args:
+        code: 16位激活码
+        validity_days: 有效期天数
+
+    Returns:
+        str: 18位激活码（含有效期编码）
+    """
+    idx = _VALIDITY_TO_INDEX.get(validity_days, 0)
+    return f"{code}{idx:02X}"
+
+
+def decode_activation_code(full_code: str) -> Tuple[str, int]:
+    """从18位激活码中解析出16位激活码和有效期天数。
+
+    兼容16位旧格式（无有效期编码，返回永久）。
+
+    Args:
+        full_code: 用户输入的激活码（16位或18位）
+
+    Returns:
+        Tuple[str, int]: (16位激活码, 有效期天数，0=永久)
+    """
+    code = full_code.strip().upper()
+    if len(code) == 18:
+        base_code = code[:16]
+        try:
+            idx = int(code[16:18], 16)
+            validity_days = _VALIDITY_TABLE[idx] if 0 <= idx < len(_VALIDITY_TABLE) else 0
+        except (ValueError, IndexError):
+            validity_days = 0
+        return base_code, validity_days
+    # 16位旧格式，视为永久
+    return code, 0
+
+
 def verify_activation_code(activation_code: str, machine_code: str) -> bool:
     """校验激活码是否匹配指定机器码。
+
+    支持16位（旧格式）和18位（含有效期编码）两种格式。
 
     Args:
         activation_code: 用户输入的激活码
@@ -169,8 +229,9 @@ def verify_activation_code(activation_code: str, machine_code: str) -> bool:
     Returns:
         bool: 是否匹配
     """
+    base_code, _validity_days = decode_activation_code(activation_code)
     expected = generate_activation_code(machine_code)
-    return activation_code.strip().upper() == expected
+    return base_code == expected
 
 
 def _derive_license_key(machine_code: str) -> bytes:
