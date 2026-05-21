@@ -240,6 +240,41 @@ class TestCheckActivation:
         assert 360 <= info["days_remaining"] <= 365
         assert info["expire_at"] != ""
 
+    def test_activated_expired(self):
+        """已过期授权应返回未激活（授权已过期）"""
+        mc = get_machine_code()
+        code = generate_activation_code(mc)
+        # 保存一个已经过期的授权（回溯到昨天，有效期1天）
+        save_license(mc, code, validity_days=1, license_path=self._license_path)
+        # 手动修改授权文件中的到期时间为昨天
+        from datetime import datetime, timedelta
+        import json as _json
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        license_data = load_license(license_path=self._license_path)
+        assert license_data is not None
+        license_data["expire_at"] = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        # 重新加密写入
+        key_data = None
+        try:
+            import json as _j
+            km_path = os.path.join(os.path.dirname(self._license_path), "key_info.json")
+            if not os.path.exists(km_path):
+                km_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config", "key_info.json")
+        except Exception:
+            pass
+        # 直接覆写：用原始加密方式重新写入
+        raw_license = _json.dumps(license_data).encode("utf-8")
+        # 通过 save_license 的加密路径重新写入——需要先篡改 expire_at
+        # 最简单的方式：直接 patch load_license 的返回值
+        # 这里改用 patch 方式测试
+        with patch("src.core.activation_engine.load_license") as mock_load:
+            mock_load.return_value = license_data
+            active, status, info = check_activation()
+            assert active is False
+            assert status == "授权已过期"
+            assert info["days_remaining"] == 0
+            assert info["is_permanent"] is False
+
     def test_machine_mismatch(self):
         """机器码不匹配时，授权文件无法解密，应返回未激活"""
         real_mc = get_machine_code()
@@ -400,6 +435,41 @@ class TestAdminKeygen:
         assert mc in load_blacklist()
         remove_from_blacklist(mc)
         assert mc not in load_blacklist()
+
+    def test_save_record_with_validity(self):
+        """台账保存含有效期时，expire_at 字段应正确写入"""
+        from src.core.admin_keygen import save_record, load_records
+        mc = "D" * 32
+        code = "VALIDITY12345678"
+        save_record("有效期用户", mc, code, "测试5年有效期", validity_days=1825)
+        records = load_records()
+        assert len(records) == 1
+        rec = records[0]
+        assert rec["validity_days"] == 1825
+        assert rec["expire_at"] != ""
+        # 验证到期时间格式正确（YYYY-MM-DD HH:MM）
+        from datetime import datetime
+        expire_dt = datetime.strptime(rec["expire_at"], "%Y-%m-%d %H:%M")
+        # 到期时间应在当前时间+1825天附近（误差1天内）
+        from datetime import timedelta
+        expected = datetime.now() + timedelta(days=1825)
+        delta = abs((expire_dt - expected).days)
+        assert delta <= 1
+
+    def test_format_record_time(self):
+        """format_record_time 应正确格式化时间字符串"""
+        from src.core.admin_keygen import format_record_time
+        result = format_record_time("2026-05-21 14:30:00")
+        assert "2026" in result
+        assert "05" in result or "5月" in result
+
+    def test_get_record_expire_status(self):
+        """get_record_expire_status 应返回正确的状态描述"""
+        from src.core.admin_keygen import get_record_expire_status
+        # 永久授权
+        rec_permanent = {"validity_days": 0, "expire_at": ""}
+        status = get_record_expire_status(rec_permanent)
+        assert "永久" in status
 
     def test_blacklist_duplicate_add(self):
         """重复添加不报错"""
