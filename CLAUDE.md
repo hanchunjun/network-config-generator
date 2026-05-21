@@ -550,7 +550,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 - ✅ 新增软件激活三套方案完整体系（方案A纯离线/方案B 180天黑名单/方案C管理员制码工具）
 - ✅ 新增激活核心引擎 `src/core/activation_engine.py`（机器码/激活码/授权存储/黑名单校验）
-- ✅ 新增用户激活弹窗 `src/ui/activation_dialog.py`（无关闭/无跳过/无试用）
+- ✅ 新增用户激活弹窗 `src/ui/activation_dialog.py`（无跳过/无试用入口，试用模式下可「稍后再说」关闭）
 - ✅ 新增管理员制码工具 `src/ui/admin_tool_window.py` + `src/core/admin_keygen.py`
 - ✅ 新增管理员工具独立入口 `admin_tool_main.py` + 打包规格 `admin_tool.spec`
 - ✅ 新增管理员工具打包脚本 `scripts/build_admin_tool.py`
