@@ -1,0 +1,417 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+激活核心引擎 — 软件授权激活体系核心模块
+
+职责：
+1. 机器码生成（CPU序列号 + 硬盘物理序列号 → MD5 → 32位大写）
+2. 激活码生成与校验（机器码 + 内置私钥 → 16位大写）
+3. 授权文件加密存储与读取（AES-GCM）
+4. 启动激活状态校验
+5. 方案B：180天黑名单静默校验
+
+三套方案共用此模块，管理员制码工具复用 generate_activation_code() 算法。
+"""
+
+import hashlib
+import json
+import os
+import platform
+import socket
+import subprocess
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional, Tuple
+
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+from src.core.logger import netops_logger
+from src.utils.resource_path import get_config_dir
+
+# ─── 内置私钥（用户端与管理员制码工具必须完全一致）───
+_ACTIVATION_SECRET_KEY: str = "NetOps::Activation::SecretKey::2026"
+
+# ─── 授权文件路径 ───
+LICENSE_FILE: str = os.path.join(get_config_dir(), "license.dat")
+
+# ─── 方案B：黑名单校验记录文件 ───
+BLACKLIST_CHECK_FILE: str = os.path.join(get_config_dir(), "bl_check.dat")
+
+# ─── 方案B：黑名单URL（静态TXT，每行一个机器码）───
+BLACKLIST_URL: str = "https://raw.githubusercontent.com/hanchunjun/network-config-generator/main/blacklist.txt"
+
+# ─── 校验周期（秒）───
+CHECK_INTERVAL_SECONDS: int = 180 * 24 * 3600  # 180天
+
+
+def _get_cpu_serial() -> str:
+    """获取CPU序列号（Windows优先使用wmic，Linux使用dmidecode）"""
+    system = platform.system().lower()
+    try:
+        if system == "win32":
+            result = subprocess.run(
+                ["wmic", "cpu", "get", "ProcessorId"],
+                capture_output=True, text=True, timeout=10
+            )
+            for line in result.stdout.strip().splitlines():
+                line = line.strip()
+                if line and line.lower() != "processorid":
+                    return line
+        elif system == "linux":
+            result = subprocess.run(
+                ["sudo", "dmidecode", "-t", "processor"],
+                capture_output=True, text=True, timeout=10
+            )
+            for line in result.stdout.splitlines():
+                if "ID:" in line:
+                    return line.split("ID:")[-1].strip()
+    except Exception:
+        pass
+    return ""
+
+
+def _get_disk_serial() -> str:
+    """获取硬盘物理序列号（Windows使用wmic，Linux使用lsblk/hdparm）"""
+    system = platform.system().lower()
+    try:
+        if system == "win32":
+            result = subprocess.run(
+                ["wmic", "diskdrive", "get", "SerialNumber"],
+                capture_output=True, text=True, timeout=10
+            )
+            for line in result.stdout.strip().splitlines():
+                line = line.strip()
+                if line and line.lower() != "serialnumber":
+                    return line
+        elif system == "linux":
+            result = subprocess.run(
+                ["lsblk", "-ndo", "SERIAL", "/dev/sda"],
+                capture_output=True, text=True, timeout=10
+            )
+            serial = result.stdout.strip()
+            if serial:
+                return serial
+    except Exception:
+        pass
+    return ""
+
+
+def _get_fallback_id() -> str:
+    """降级方案：使用主机名 + MAC地址生成唯一标识"""
+    parts = []
+    try:
+        parts.append(socket.gethostname())
+    except Exception:
+        parts.append("unknown-host")
+    try:
+        mac = hex(uuid_getnode())
+        parts.append(mac)
+    except Exception:
+        parts.append("no-mac")
+    return "|".join(parts)
+
+
+def get_machine_code() -> str:
+    """生成设备唯一机器码。
+
+    采集 CPU序列号 + 硬盘物理序列号，MD5加密后输出32位大写。
+    硬件采集失败时降级使用主机名+MAC地址。
+
+    Returns:
+        str: 32位大写MD5机器码
+
+    硬件绑定特性：
+        - 重装系统、修改系统设置、更新驱动 → 不改变机器码
+        - 更换CPU / 硬盘 → 变更机器码，原激活失效
+    """
+    cpu = _get_cpu_serial()
+    disk = _get_disk_serial()
+
+    if not cpu and not disk:
+        # 降级方案
+        fallback = _get_fallback_id()
+        netops_logger.get_logger().warning(
+            f"硬件序列号采集失败，使用降级方案生成机器码"
+        )
+        raw = fallback
+    else:
+        raw = f"{cpu}|{disk}"
+
+    machine_code: str = hashlib.md5(raw.encode("utf-8")).hexdigest().upper()
+    return machine_code
+
+
+def generate_activation_code(machine_code: str) -> str:
+    """根据机器码生成激活码。
+
+    算法：MD5(machine_code + 内置私钥) → 取前16位大写
+
+    Args:
+        machine_code: 32位大写机器码
+
+    Returns:
+        str: 16位大写激活码
+
+    注意：此函数必须与管理员制码工具中的算法完全一致。
+    """
+    combined: str = f"{machine_code}{_ACTIVATION_SECRET_KEY}"
+    code: str = hashlib.md5(combined.encode("utf-8")).hexdigest()[:16].upper()
+    return code
+
+
+def verify_activation_code(activation_code: str, machine_code: str) -> bool:
+    """校验激活码是否匹配指定机器码。
+
+    Args:
+        activation_code: 用户输入的激活码
+        machine_code: 本机机器码
+
+    Returns:
+        bool: 是否匹配
+    """
+    expected = generate_activation_code(machine_code)
+    return activation_code.strip().upper() == expected
+
+
+def _derive_license_key(machine_code: str) -> bytes:
+    """从机器码派生AES-GCM加密密钥。
+
+    Args:
+        machine_code: 本机机器码
+
+    Returns:
+        bytes: 32字节AES密钥
+    """
+    return hashlib.sha256(
+        f"{machine_code}{_ACTIVATION_SECRET_KEY}".encode("utf-8")
+    ).digest()
+
+
+def save_license(machine_code: str, activation_code: str,
+                license_path: Optional[str] = None) -> bool:
+    """加密存储授权信息。
+
+    使用AES-GCM加密，密钥由机器码+私钥派生。
+
+    Args:
+        machine_code: 本机机器码
+        activation_code: 激活码
+        license_path: 授权文件路径，默认使用全局 LICENSE_FILE
+
+    Returns:
+        bool: 保存是否成功
+    """
+    path = license_path or LICENSE_FILE
+    try:
+        license_data = {
+            "machine_code": machine_code,
+            "activation_code": activation_code,
+            "activated_at": datetime.now().isoformat(),
+            "version": "v3",
+        }
+        plaintext = json.dumps(license_data, ensure_ascii=False).encode("utf-8")
+
+        key = _derive_license_key(machine_code)
+        aesgcm = AESGCM(key)
+        nonce = os.urandom(12)
+        ciphertext = aesgcm.encrypt(nonce, plaintext, None)
+
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        tmp_file = f"{path}.tmp"
+        with open(tmp_file, "wb") as f:
+            f.write(nonce + ciphertext)
+        os.replace(tmp_file, path)
+
+        netops_logger.get_logger().info("授权文件保存成功")
+        return True
+    except Exception as e:
+        netops_logger.get_logger().error(f"授权文件保存失败: {e}")
+        return False
+
+
+def load_license(license_path: Optional[str] = None) -> Optional[dict]:
+    """读取并解密授权文件。
+
+    Args:
+        license_path: 授权文件路径，默认使用全局 LICENSE_FILE
+
+    Returns:
+        dict: 授权信息字典，失败返回None
+    """
+    path = license_path or LICENSE_FILE
+    try:
+        if not os.path.exists(path):
+            return None
+
+        with open(path, "rb") as f:
+            raw = f.read()
+
+        if len(raw) < 13:
+            return None
+
+        machine_code = get_machine_code()
+        key = _derive_license_key(machine_code)
+        aesgcm = AESGCM(key)
+        nonce = raw[:12]
+        ciphertext = raw[12:]
+
+        try:
+            plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+            license_data = json.loads(plaintext.decode("utf-8"))
+            return license_data
+        except Exception:
+            netops_logger.get_logger().error("授权文件解密失败，可能已被篡改")
+            return None
+
+    except Exception as e:
+        netops_logger.get_logger().error(f"读取授权文件失败: {e}")
+        return None
+
+
+def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str]:
+    """启动时激活状态校验。
+
+    校验逻辑：
+    1. 读取授权文件
+    2. 解密验证完整性
+    3. 比对机器码一致性
+
+    Args:
+        license_path: 授权文件路径，默认使用全局 LICENSE_FILE
+
+    Returns:
+        Tuple[bool, str]: (是否已激活, 状态描述)
+            - (True, "已激活") — 激活有效
+            - (False, "未激活") — 无授权文件
+            - (False, "授权失效") — 机器码不匹配或文件损坏
+    """
+    license_data = load_license(license_path=license_path)
+    if license_data is None:
+        return False, "未激活"
+
+    current_code = get_machine_code()
+    saved_code = license_data.get("machine_code", "")
+
+    if current_code != saved_code:
+        netops_logger.get_logger().warning(
+            f"机器码不匹配: 当前={current_code}, 授权={saved_code}"
+        )
+        return False, "授权失效"
+
+    return True, "已激活"
+
+
+# ─── 方案B：180天黑名单校验 ───
+
+def get_last_check_time() -> Optional[float]:
+    """获取上次联网校验时间戳。
+
+    Returns:
+        float: Unix时间戳，无记录返回None
+    """
+    try:
+        if not os.path.exists(BLACKLIST_CHECK_FILE):
+            return None
+        with open(BLACKLIST_CHECK_FILE, "r") as f:
+            data = json.load(f)
+        return data.get("last_check")
+    except Exception:
+        return None
+
+
+def set_last_check_time(timestamp: Optional[float] = None) -> bool:
+    """记录本次联网校验时间。
+
+    Args:
+        timestamp: Unix时间戳，默认当前时间
+
+    Returns:
+        bool: 写入是否成功
+    """
+    try:
+        ts = timestamp if timestamp else time.time()
+        Path(BLACKLIST_CHECK_FILE).parent.mkdir(parents=True, exist_ok=True)
+        tmp_file = f"{BLACKLIST_CHECK_FILE}.tmp"
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            json.dump({"last_check": ts}, f)
+        os.replace(tmp_file, BLACKLIST_CHECK_FILE)
+        return True
+    except Exception as e:
+        netops_logger.get_logger().error(f"写入校验时间失败: {e}")
+        return False
+
+
+def is_due_for_check() -> bool:
+    """判断是否到达180天校验周期。
+
+    Returns:
+        bool: 是否需要联网校验
+    """
+    last = get_last_check_time()
+    if last is None:
+        return True  # 从未校验过，立即校验
+    elapsed = time.time() - last
+    return elapsed >= CHECK_INTERVAL_SECONDS
+
+
+def check_blacklist(url: str = BLACKLIST_URL) -> Tuple[bool, str]:
+    """联网校验云端黑名单。
+
+    拉取远程TXT黑名单，逐行比对机器码。
+    联网失败直接跳过，不判失效。
+
+    Args:
+        url: 黑名单TXT文件URL
+
+    Returns:
+        Tuple[bool, str]: (是否在黑名单中, 描述信息)
+            - (False, "校验通过") — 不在黑名单
+            - (False, "联网失败，跳过校验") — 网络异常
+            - (True, "设备已被封禁") — 在黑名单中
+    """
+    try:
+        import urllib.request
+        req = urllib.request.Request(url, headers={"User-Agent": "NetOps/3.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            content = resp.read().decode("utf-8")
+    except Exception as e:
+        netops_logger.get_logger().warning(f"黑名单联网校验失败，跳过: {e}")
+        return False, "联网失败，跳过校验"
+
+    machine_code = get_machine_code()
+    for line in content.splitlines():
+        if line.strip().upper() == machine_code:
+            netops_logger.get_logger().warning(f"本机机器码在黑名单中，授权失效")
+            return True, "设备已被封禁"
+
+    return False, "校验通过"
+
+
+def perform_silent_check(url: str = BLACKLIST_URL) -> Tuple[bool, str]:
+    """执行方案B静默校验（满180天时触发）。
+
+    无界面、无弹窗、不打扰用户。
+    联网失败直接跳过，不判失效。
+
+    Args:
+        url: 黑名单URL
+
+    Returns:
+        Tuple[bool, str]: (授权是否有效, 描述)
+    """
+    if not is_due_for_check():
+        return True, "未到校验周期"
+
+    in_blacklist, msg = check_blacklist(url)
+    set_last_check_time()  # 无论成功失败都刷新时间
+
+    if in_blacklist:
+        return False, "授权已失效"
+
+    return True, msg
+
+
+# ─── 兼容导入 ───
+# uuid.getnode() 用于降级方案
+from uuid import getnode as uuid_getnode  # noqa: E402

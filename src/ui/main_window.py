@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         ensure_dirs()
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V1.0 试用版')
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V3.0')
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()

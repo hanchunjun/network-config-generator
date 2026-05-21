@@ -116,7 +116,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 本项目基于原有PyQt5网络设备配置生成器深度扩建，打造政企级全流程闭环网络自动化运维桌面工具。以原有四厂商配置脚本生成为基础，叠加多项目标准化管理、全网批量自动化运维、单点设备专项排查、AI智能故障诊断、配置合规审计五大核心能力；兼容锐捷、华为、H3C、思科全系列网络设备，采用公共脚本复用+多项目物理隔离架构，**免环境安装、双击直跑、整体拷贝即用**，适配政企电子政务、高校校园网、企业园区网开局建站、日常运维、故障排查、等保合规全场景。
 
-**项目状态：V2.1 AI精审优化版已完成（2026年5月20日）**
+**项目状态：V3.0 激活体系版开发中（2026年5月21日）**
 
 ## 基础技术栈
 
@@ -315,6 +315,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 05-dev-build-rule.md    开发实施步骤 + 打包发布规范
 - 06-safety-rule.md       安全执行铁律 + 成品核心能力总结
 - 07-v2-architecture-plan.md  V2架构升级方案（已实施完成）
+- 08-activation-plan.md      软件激活三套方案完整技术规范（V3.0待开发）
 
 ---
 
@@ -353,6 +354,14 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ⚪ V0.9 时期测试用例（test_security.py 等，共 35 个用例）已随架构升级废弃，由新测试体系替代
 - ⚪ UI 层集成测试和 E2E 测试待后续补充
 
+### V3.0 激活体系（2026-05-21 新增）
+- ✅ **三套激活方案**：方案A纯离线永久激活 / 方案B 180天黑名单可控激活 / 方案C管理员独立制码工具
+- ✅ **机器码绑定**：CPU序列号+硬盘物理序列号→MD5→32位大写唯一机器码
+- ✅ **激活码算法**：机器码+内置私钥→16位大写激活码，一机一码
+- ✅ **启动强制校验**：未激活锁定全部功能，无跳过、无试用
+- ✅ **180天静默校验**：方案B后台联网校验云端黑名单，支持远程封禁/解绑
+- ✅ **管理员制码工具**：独立EXE，唯一出码渠道，台账自动记录
+
 ### V2.0 架构升级（2026-05-19 更新）
 
 - ✅ 运维工具箱 → 重构为「项目运维」任务中心（3任务卡片 + 4Tab + AI嵌入）
@@ -379,6 +388,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ## 关键技术约束
 
+0. **激活校验优先**：main.py 启动时最高优先级执行激活校验，未激活不加载任何业务模块
 1. **QThread必须保存为实例变量**：`self._xxx_thread = thread`，否则GC回收导致崩溃
 2. **AI配置获取用 `get_active_ai_config()`**：不要直接读文件或 `SecureConfigFile`
 3. **所有路径跟随EXE**：用 `get_app_dir()` / `get_config_path()` / `ensure_dirs()`
@@ -390,6 +400,15 @@ D:\网络工具\NetworkConfigGenerator.exe
 ---
 
 ## 关键源码文件速查
+
+### 激活体系（V3.0 新增）
+
+| 文件 | 职责 |
+|------|------|
+| [src/core/activation_engine.py](src/core/activation_engine.py) | 激活核心引擎（机器码/激活码/授权存储/黑名单校验） |
+| [src/core/admin_keygen.py](src/core/admin_keygen.py) | 管理员制码核心逻辑 |
+| [src/ui/activation_dialog.py](src/ui/activation_dialog.py) | 用户端激活弹窗UI |
+| [src/ui/admin_tool_window.py](src/ui/admin_tool_window.py) | 管理员制码工具UI |
 
 ### 路径管理核心
 
@@ -503,6 +522,15 @@ D:\网络工具\NetworkConfigGenerator.exe
 ---
 
 ## 版本更新历史
+
+### V3.0 激活体系版（2026-05-21）
+- 新增软件激活三套方案完整体系（方案A/B/C）
+- 新增激活核心引擎 `src/core/activation_engine.py`
+- 新增用户激活弹窗 `src/ui/activation_dialog.py`
+- 新增管理员制码工具 `src/ui/admin_tool_window.py` + `src/core/admin_keygen.py`
+- 新增管理员工具独立打包脚本 `scripts/build_admin_tool.py`
+- 修改 `main.py` 启动强制校验 + `main_window.py` 未激活拦截
+- 新增规则文件 `.claude/rules/08-activation-plan.md`
 
 ### V2.1 目录架构优化版（2026-05-19）
 

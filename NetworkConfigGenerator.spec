@@ -32,6 +32,8 @@ hiddenimports = [
     'src.core.crypto_utils',
     'src.core.local_audit_engine',
     'src.core.local_diagnostic_engine',
+    'src.core.activation_engine',
+    'src.ui.activation_dialog',
     'src.ui',
     'src.ui.main_window',
     'src.ui.system_settings_page',
