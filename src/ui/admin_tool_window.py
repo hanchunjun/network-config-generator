@@ -162,10 +162,12 @@ class AdminToolWindow(QMainWindow):
         self._validity_combo = QComboBox()
         self._validity_combo.addItems([
             "永久（方案A）",
-            "180天（方案B·半年）",
-            "365天（1年）",
-            "730天（2年）",
+            "1825天（5年）",
+            "3650天（10年）",
             "1095天（3年）",
+            "730天（2年）",
+            "365天（1年）",
+            "180天（方案B·半年）",
             "90天（季度）",
             "30天（月度）",
             "7天（周度）",
@@ -384,13 +386,15 @@ class AdminToolWindow(QMainWindow):
         # 解析有效期
         validity_map = {
             0: 0,     # 永久
-            1: 180,   # 半年
-            2: 365,   # 1年
-            3: 730,   # 2年
-            4: 1095,  # 3年
-            5: 90,    # 季度
-            6: 30,    # 月度
-            7: 7,     # 周度
+            1: 1825,  # 5年
+            2: 3650,  # 10年
+            3: 1095,  # 3年
+            4: 730,   # 2年
+            5: 365,   # 1年
+            6: 180,   # 半年
+            7: 90,    # 季度
+            8: 30,    # 月度
+            9: 7,     # 周度
         }
         validity_days = validity_map.get(self._validity_combo.currentIndex(), 0)
 
@@ -555,6 +559,16 @@ def run_admin_tool():
     """启动管理员制码工具"""
     app = QApplication(sys.argv)
     window = AdminToolWindow()
+    # 默认窗口大小为屏幕可用区域宽高的80%
+    screen = app.primaryScreen().availableGeometry()
+    w = int(screen.width() * 0.8)
+    h = int(screen.height() * 0.8)
+    window.resize(w, h)
+    # 居中显示
+    window.move(
+        (screen.width() - w) // 2,
+        (screen.height() - h) // 2,
+    )
     window.show()
     sys.exit(app.exec_())
 
