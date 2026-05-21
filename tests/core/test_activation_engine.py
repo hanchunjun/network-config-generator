@@ -447,9 +447,9 @@ class TestAdminKeygen:
         rec = records[0]
         assert rec["validity_days"] == 1825
         assert rec["expire_at"] != ""
-        # 验证到期时间格式正确（YYYY-MM-DD HH:MM）
+        # 验证到期时间格式正确（YYYY-MM-DD HH:MM:SS）
         from datetime import datetime
-        expire_dt = datetime.strptime(rec["expire_at"], "%Y-%m-%d %H:%M")
+        expire_dt = datetime.strptime(rec["expire_at"], "%Y-%m-%d %H:%M:%S")
         # 到期时间应在当前时间+1825天附近（误差1天内）
         from datetime import timedelta
         expected = datetime.now() + timedelta(days=1825)

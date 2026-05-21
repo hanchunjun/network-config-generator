@@ -320,8 +320,19 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dic
     is_permanent = validity_days == 0
 
     if not is_permanent and expire_at_str:
-        try:
-            expire_dt = datetime.strptime(expire_at_str[:19], "%Y-%m-%d %H:%M:%S")
+        expire_dt = None
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+            try:
+                expire_dt = datetime.strptime(expire_at_str[:len(fmt)], fmt)
+                break
+            except ValueError:
+                continue
+        if expire_dt is None:
+            try:
+                expire_dt = datetime.strptime(expire_at_str[:19], "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                pass
+        if expire_dt is not None:
             delta = expire_dt - datetime.now()
             days_remaining = max(0, delta.days)
             if days_remaining == 0:
@@ -332,8 +343,6 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dic
                     "days_remaining": 0,
                     "is_permanent": False,
                 }
-        except Exception:
-            pass
 
     info = {
         "activated_at": activated_at,
