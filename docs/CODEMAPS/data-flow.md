@@ -16,11 +16,15 @@ EXE所在目录/
 │   ├── projects_config.json       # 项目列表索引
 │   └── ai_recent_files.json       # AI最近文件记录
 │
-├── activation/       ← 🔐 激活体系区（V0.3.0新增）
+├── activation/       ← 🔐 用户端激活体系
 │   ├── license.dat                # 激活授权文件（AES-GCM加密）
-│   ├── bl_check.dat               # 黑名单校验时间记录
-│   ├── admin_records.json         # 管理员制码台账
-│   └── blacklist_local.txt        # 本地黑名单
+│   └── bl_check.dat               # 黑名单校验时间记录
+│
+├── admin_data/       ← 🛡 管理员数据（独立隔离）
+│   ├── records.dat                # 授权台账（AES-GCM加密）
+│   ├── blacklist.txt              # 本地黑名单
+│   └── backup/                    # 台账备份目录
+│       └── records_YYYYMMDD_HHMMSS.dat
 │
 ├── single/           ← 🔍 单点运维区（独立隔离）
 │   ├── single_devices.json.enc    # 单点设备清单（加密）

@@ -43,7 +43,7 @@ project_root/
 
 核心规则：项目间数据完全物理隔离，禁止跨项目读取、写入、操作，所有运维操作仅绑定当前选中项目。
 
-## EXE运行时目录结构（V0.3.0 四区分离）
+## EXE运行时目录结构（V0.3.0 五区分离）
 
 ```
 程序根目录/
@@ -56,11 +56,15 @@ project_root/
 │   ├── projects_config.json       ← 项目列表索引
 │   └── ai_recent_files.json       ← AI最近文件记录
 │
-├── activation/                    ← 🔐 激活体系（V0.3.0新增）
+├── activation/                    ← 🔐 用户端激活体系
 │   ├── license.dat                ← 激活授权文件（AES-GCM加密）
-│   ├── bl_check.dat               ← 黑名单校验时间记录
-│   ├── admin_records.json         ← 管理员制码台账
-│   └── blacklist_local.txt        ← 本地黑名单
+│   └── bl_check.dat               ← 黑名单校验时间记录
+│
+├── admin_data/                    ← 🛡 管理员数据（独立隔离）
+│   ├── records.dat                ← 授权台账（AES-GCM加密）
+│   ├── blacklist.txt              ← 本地黑名单
+│   └── backup/                    ← 台账备份目录
+│       └── records_YYYYMMDD_HHMMSS.dat
 │
 ├── logs/                          ← 📝 运行日志
 │
@@ -88,7 +92,7 @@ project_root/
             └── diagnosis/
 ```
 
-> **四区分离设计**：系统配置(`config/`) + 激活体系(`activation/`) + 单点数据(`single/`) + 项目数据(`projects/`)，四层物理隔离。`single/` 与项目内子目录结构同构，复用同一套脚本逻辑。
+> **五区分离设计**：系统配置(`config/`) + 用户端激活(`activation/`) + 管理员数据(`admin_data/`) + 单点数据(`single/`) + 项目数据(`projects/`)，五层物理隔离。管理员数据与用户端激活完全独立，台账加密存储，支持备份恢复。
 
 ## 路径管理API
 

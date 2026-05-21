@@ -58,24 +58,31 @@ src/core/
 
 ## admin_keygen.py — 管理员制码核心（V0.3.0新增）
 
-**职责：** 管理员制码工具的后端逻辑：激活码生成、台账记录、黑名单管理。
+**职责：** 管理员制码工具的后端逻辑：激活码生成、台账加密存储、备份恢复、黑名单管理。
+
+### 数据存储
+| 文件 | 路径 | 说明 |
+|------|------|------|
+| 授权台账 | `admin_data/records.dat` | AES-GCM加密，仅管理员工具可解密 |
+| 本地黑名单 | `admin_data/blacklist.txt` | 每行一个机器码 |
+| 台账备份 | `admin_data/backup/records_YYYYMMDD_HHMMSS.dat` | 带时间戳的加密副本 |
 
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
 | `generate_code_for_machine(machine_code)` | 为指定机器码生成激活码 |
-| `save_record(machine_code, activation_code, note)` | 保存授权台账记录 |
-| `load_records()` | 加载所有台账记录 |
-| `add_to_blacklist(machine_code, reason)` | 添加机器码到黑名单 |
+| `save_record(name, mc, code, note)` | 保存台账记录（加密追加） |
+| `load_records()` | 加载所有台账记录（自动解密） |
+| `delete_record(index)` | 删除指定记录 |
+| `backup_records()` | 创建台账备份（带时间戳） |
+| `list_backups()` | 列出所有备份文件 |
+| `restore_backup(filename)` | 从备份恢复（自动创建安全备份） |
+| `export_records_to_json(path)` | 导出台账为明文JSON |
+| `import_records_from_json(path, merge)` | 从JSON导入台账（合并/覆盖） |
+| `add_to_blacklist(machine_code)` | 添加机器码到黑名单 |
 | `remove_from_blacklist(machine_code)` | 从黑名单移除 |
 | `load_blacklist()` | 加载本地黑名单 |
 | `export_blacklist_for_upload()` | 导出黑名单（用于上传云端） |
-
-### 数据文件
-| 文件 | 用途 |
-|------|------|
-| `config/admin_records.json` | 授权台账记录 |
-| `config/blacklist_local.txt` | 本地黑名单 |
 
 ---
 

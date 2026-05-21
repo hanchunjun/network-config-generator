@@ -7,7 +7,8 @@
 目录结构（ensure_dirs 创建）：
     EXE所在目录/
     ├── config/         系统配置（加密密钥、AI配置、项目索引）
-    ├── activation/     激活体系（授权文件、台账、黑名单）
+    ├── activation/     激活体系（用户端授权文件、黑名单校验记录）
+    ├── admin_data/     管理员数据（台账加密存储、黑名单、备份）
     ├── logs/           运行日志
     ├── single/         单点运维数据（备份/报告/异常）
     └── projects/       项目数据（每个项目独立子目录）
@@ -71,14 +72,33 @@ def get_config_dir() -> str:
 
 
 def get_activation_dir() -> str:
-    """获取激活体系目录路径。
+    """获取激活体系目录路径（用户端）。
 
-    存放激活授权文件、管理员台账、黑名单等。
+    存放用户端激活授权文件、黑名单校验记录等。
 
     Returns:
         str: activation/ 目录的绝对路径
     """
     return os.path.join(get_app_dir(), "activation")
+
+
+def get_admin_data_dir() -> str:
+    """获取管理员数据目录路径。
+
+    仅管理员制码工具使用，与用户端 activation/ 完全隔离。
+    存放加密台账、本地黑名单、台账备份等。
+
+    Returns:
+        str: admin_data/ 目录的绝对路径
+
+    目录结构：
+        admin_data/
+        ├── records.dat       ← 授权台账（AES-GCM加密）
+        ├── blacklist.txt     ← 本地黑名单
+        └── backup/           ← 台账备份目录
+            └── records_YYYYMMDD_HHMMSS.dat
+    """
+    return os.path.join(get_app_dir(), "admin_data")
 
 
 def get_single_dir() -> str:
@@ -146,8 +166,9 @@ def _migrate_old_data(base: str) -> None:
         # V0.3.0：激活文件从 config/ 迁移到 activation/
         (os.path.join("config", "license.dat"), os.path.join("activation", "license.dat"), False),
         (os.path.join("config", "bl_check.dat"), os.path.join("activation", "bl_check.dat"), False),
-        (os.path.join("config", "admin_records.json"), os.path.join("activation", "admin_records.json"), False),
-        (os.path.join("config", "blacklist_local.txt"), os.path.join("activation", "blacklist_local.txt"), False),
+        # V0.3.1：管理员数据从 activation/ 迁移到 admin_data/
+        (os.path.join("activation", "admin_records.json"), os.path.join("admin_data", "records.dat"), False),
+        (os.path.join("activation", "blacklist_local.txt"), os.path.join("admin_data", "blacklist.txt"), False),
     ]
 
     for old_rel, new_rel, is_dir in file_relocations:
@@ -176,12 +197,17 @@ def ensure_dirs():
     """创建所有必要目录结构，并执行旧数据迁移。
 
     由 main.py 在 QApplication 创建之前调用。
-    创建顺序：config/ → single/子目录 → projects/ → logs/
+    创建顺序：config/ → activation/ → admin_data/ → single/子目录 → projects/ → logs/
     最后执行 _migrate_old_data() 迁移旧版散落文件。
     """
     base = get_app_dir()
     for subdir in ["config", "activation"]:
         os.makedirs(os.path.join(base, subdir), exist_ok=True)
+
+    # 管理员数据目录（仅管理员工具使用时创建）
+    admin_data_dir = os.path.join(base, "admin_data")
+    os.makedirs(admin_data_dir, exist_ok=True)
+    os.makedirs(os.path.join(admin_data_dir, "backup"), exist_ok=True)
 
     single_root = os.path.join(base, "single")
     for subdir in ["", "config_backup", os.path.join("output", "single_exception"),

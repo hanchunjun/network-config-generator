@@ -100,7 +100,8 @@ thread.start()
 ## 数据存储
 
 - **系统配置：** config/ 目录（含 projects_config.json、key_info.json、ai_config.json.enc、ai_recent_files.json）
-- **激活体系：** activation/ 目录（含 license.dat、bl_check.dat、admin_records.json、blacklist_local.txt）
+- **用户端激活：** activation/ 目录（含 license.dat、bl_check.dat）
+- **管理员数据：** admin_data/ 目录（含 records.dat 加密台账、blacklist.txt、backup/ 备份目录）
 - **设备清单：** projects/目录内各项目的 config/device_list.txt
 - **日志文件：** logs/netops_*.log + logs/crash.log
 - **单点输出：** single/config_backup/、single/output/single_exception/、single/report/

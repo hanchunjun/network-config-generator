@@ -198,7 +198,8 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 |------|------|------|
 | `get_app_dir()` | EXE所在目录根路径 | `D:\工具\` |
 | `get_config_dir()` | 系统配置子目录 | `D:\工具\config\` |
-| `get_activation_dir()` | 激活体系子目录 | `D:\工具\activation\` |
+| `get_activation_dir()` | 用户端激活体系子目录 | `D:\工具\activation\` |
+| `get_admin_data_dir()` | 管理员数据子目录 | `D:\工具\admin_data\` |
 | `get_single_dir()` | 单点运维数据子目录 | `D:\工具\single\` |
 | `get_config_path(filename)` | 相对于EXE根目录的路径 | `D:\工具\config\ai_config.json.enc` |
 | `resource_path(relative)` | 打包内嵌资源（仅开发时） | `_MEIPASS/scripts/` |
@@ -234,11 +235,15 @@ PROJECTS_DIR = r"C:\Network-Config\projects"
 │   ├── projects_config.json               ← 项目列表索引
 │   └── ai_recent_files.json               ← AI最近文件记录
 │
-├── 📂 activation/                         ← 🔐 激活体系（V0.3.0新增）
+├── 📂 activation/                         ← 🔐 用户端激活体系
 │   ├── license.dat                        ← 激活授权文件（AES-GCM加密）
-│   ├── bl_check.dat                       ← 黑名单校验时间记录
-│   ├── admin_records.json                 ← 管理员制码台账
-│   └── blacklist_local.txt                ← 本地黑名单
+│   └── bl_check.dat                       ← 黑名单校验时间记录
+│
+├── 📂 admin_data/                         ← 🛡 管理员数据（独立隔离）
+│   ├── records.dat                        ← 授权台账（AES-GCM加密）
+│   ├── blacklist.txt                      ← 本地黑名单
+│   └── backup/                            ← 台账备份目录
+│       └── records_YYYYMMDD_HHMMSS.dat    ← 带时间戳的备份
 │
 ├── 📂 logs/                               ← 📝 运行日志
 │   ├── netops_YYYYMMDD.log                ← 按日期分割
@@ -412,10 +417,10 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 | 文件 | 职责 |
 |------|------|
-| [src/core/activation_engine.py](src/core/activation_engine.py) | 激活核心引擎（机器码/激活码/授权存储/黑名单校验） |
-| [src/core/admin_keygen.py](src/core/admin_keygen.py) | 管理员制码核心逻辑 |
+| [src/core/activation_engine.py](src/core/activation_engine.py) | 用户端激活引擎（机器码/激活码/授权存储/黑名单校验） |
+| [src/core/admin_keygen.py](src/core/admin_keygen.py) | 管理员制码核心（加密台账/备份恢复/黑名单管理） |
 | [src/ui/activation_dialog.py](src/ui/activation_dialog.py) | 用户端激活弹窗UI |
-| [src/ui/admin_tool_window.py](src/ui/admin_tool_window.py) | 管理员制码工具UI |
+| [src/ui/admin_tool_window.py](src/ui/admin_tool_window.py) | 管理员制码工具UI（台账/备份/导出/导入） |
 
 ### 路径管理核心
 

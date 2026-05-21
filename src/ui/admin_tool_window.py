@@ -8,12 +8,19 @@
 
 功能：
 - 输入机器码 → 一键生成激活码
-- 台账记录（姓名/机器码/激活码/备注/时间）
+- 台账记录（姓名/机器码/激活码/备注/时间）—— AES-GCM 加密存储
+- 台账备份/恢复/导出/导入
 - 方案B：黑名单管理
+
+数据目录（与用户端完全隔离）：
+    admin_data/
+    ├── records.dat       ← 授权台账（加密）
+    ├── blacklist.txt     ← 本地黑名单
+    └── backup/           ← 台账备份
 """
 
-import sys
 import os
+import sys
 from typing import Optional
 
 from PyQt5.QtCore import Qt, QSize
@@ -22,7 +29,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QLineEdit, QTextEdit, QTableWidget,
     QTableWidgetItem, QHeaderView, QMessageBox, QGroupBox,
-    QSplitter, QAbstractItemView
+    QSplitter, QAbstractItemView, QFileDialog, QComboBox, QInputDialog
 )
 
 from src.core.admin_keygen import (
@@ -34,8 +41,14 @@ from src.core.admin_keygen import (
     remove_from_blacklist,
     load_blacklist,
     export_blacklist_for_upload,
+    backup_records,
+    list_backups,
+    restore_backup,
+    export_records_to_json,
+    import_records_from_json,
 )
 from src.core.activation_engine import get_machine_code
+from src.utils.resource_path import get_admin_data_dir
 
 
 class AdminToolWindow(QMainWindow):
@@ -44,18 +57,19 @@ class AdminToolWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("NetOps 管理员制码工具 V0.3.0 — 天技老韩专用")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(900, 650)
         self._setup_ui()
         self._apply_style()
         self._refresh_records()
         self._refresh_blacklist()
+        self._refresh_backup_list()
 
     def _setup_ui(self) -> None:
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
         main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(16)
+        main_layout.setSpacing(12)
 
         # ── 标题 ──
         title = QLabel("🔐 NetOps 管理员制码工具")
@@ -64,29 +78,38 @@ class AdminToolWindow(QMainWindow):
         title.setStyleSheet("color: #1565C0;")
         main_layout.addWidget(title)
 
-        subtitle = QLabel("仅限管理员本地使用，禁止外发")
+        subtitle = QLabel("台账加密存储 · 独立数据目录 · 备份恢复 · 仅限管理员本地使用")
         subtitle.setFont(QFont("Microsoft YaHei", 9))
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet("color: #9E9E9E;")
         main_layout.addWidget(subtitle)
 
-        # ── 分割器：上（制码）+ 下（台账+黑名单）──
+        # ── 数据目录提示 ──
+        dir_label = QLabel(f"📁 数据目录：{get_admin_data_dir()}")
+        dir_label.setFont(QFont("Consolas", 8))
+        dir_label.setStyleSheet("color: #BDBDBD; padding: 2px 8px;")
+        dir_label.setWordWrap(True)
+        main_layout.addWidget(dir_label)
+
+        # ── 分割器：上（制码+黑名单）+ 下（台账+备份）──
         splitter = QSplitter(Qt.Vertical)
         main_layout.addWidget(splitter, stretch=1)
 
-        # ── 上半部分：制码区 ──
+        # ═══════════════════════════════════════════
+        # 上半部分：制码 + 黑名单
+        # ═══════════════════════════════════════════
         top_widget = QWidget()
         top_layout = QVBoxLayout(top_widget)
-        top_layout.setSpacing(12)
+        top_layout.setSpacing(10)
 
-        # 机器码输入
+        # ── 制码区 ──
         machine_group = QGroupBox("激活码生成")
         machine_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
         mg_layout = QVBoxLayout(machine_group)
-        mg_layout.setSpacing(10)
+        mg_layout.setSpacing(8)
 
         input_layout = QHBoxLayout()
-        input_layout.setSpacing(10)
+        input_layout.setSpacing(8)
         input_layout.addWidget(QLabel("机器码："))
         self._machine_input = QLineEdit()
         self._machine_input.setPlaceholderText("粘贴用户发来的32位机器码")
@@ -102,7 +125,6 @@ class AdminToolWindow(QMainWindow):
         gen_btn.clicked.connect(self._on_generate)
         mg_layout.addWidget(gen_btn)
 
-        # 激活码结果
         result_layout = QHBoxLayout()
         result_layout.addWidget(QLabel("激活码："))
         self._code_result = QLineEdit()
@@ -114,7 +136,6 @@ class AdminToolWindow(QMainWindow):
             "QLineEdit { color: #1565C0; background-color: #E3F2FD; }"
         )
         result_layout.addWidget(self._code_result, stretch=1)
-
         copy_code_btn = QPushButton("📋 复制")
         copy_code_btn.setFixedSize(80, 40)
         copy_code_btn.setCursor(Qt.PointingHandCursor)
@@ -122,7 +143,6 @@ class AdminToolWindow(QMainWindow):
         result_layout.addWidget(copy_code_btn)
         mg_layout.addLayout(result_layout)
 
-        # 用户信息
         info_layout = QHBoxLayout()
         info_layout.addWidget(QLabel("用户姓名："))
         self._name_input = QLineEdit()
@@ -142,11 +162,11 @@ class AdminToolWindow(QMainWindow):
 
         top_layout.addWidget(machine_group)
 
-        # 黑名单快捷操作
+        # ── 黑名单 ──
         bl_group = QGroupBox("方案B：黑名单管理")
         bl_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
         bl_layout = QHBoxLayout(bl_group)
-        bl_layout.setSpacing(10)
+        bl_layout.setSpacing(8)
 
         self._bl_input = QLineEdit()
         self._bl_input.setPlaceholderText("输入要封禁/解封的机器码")
@@ -163,17 +183,23 @@ class AdminToolWindow(QMainWindow):
         bl_rm_btn.clicked.connect(self._on_remove_blacklist)
         bl_layout.addWidget(bl_rm_btn)
 
-        top_layout.addWidget(bl_group)
+        export_bl_btn = QPushButton("📤 导出黑名单")
+        export_bl_btn.setCursor(Qt.PointingHandCursor)
+        export_bl_btn.clicked.connect(self._on_export_blacklist)
+        bl_layout.addWidget(export_bl_btn)
 
+        top_layout.addWidget(bl_group)
         splitter.addWidget(top_widget)
 
-        # ── 下半部分：台账 + 黑名单 ──
+        # ═══════════════════════════════════════════
+        # 下半部分：台账 + 备份管理
+        # ═══════════════════════════════════════════
         bottom_widget = QWidget()
         bottom_layout = QHBoxLayout(bottom_widget)
-        bottom_layout.setSpacing(16)
+        bottom_layout.setSpacing(12)
 
-        # 台账表格
-        record_group = QGroupBox("授权台账")
+        # ── 台账表格 ──
+        record_group = QGroupBox("授权台账（加密存储）")
         record_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
         rg_layout = QVBoxLayout(record_group)
 
@@ -187,32 +213,72 @@ class AdminToolWindow(QMainWindow):
         self._records_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         rg_layout.addWidget(self._records_table)
 
-        del_btn = QPushButton("🗑 删除选中记录")
+        record_btn_layout = QHBoxLayout()
+        del_btn = QPushButton("🗑 删除选中")
         del_btn.setCursor(Qt.PointingHandCursor)
         del_btn.clicked.connect(self._on_delete_record)
-        rg_layout.addWidget(del_btn)
+        record_btn_layout.addWidget(del_btn)
+        record_btn_layout.addStretch()
+        rg_layout.addLayout(record_btn_layout)
 
         bottom_layout.addWidget(record_group, stretch=2)
 
-        # 黑名单列表
-        bl_list_group = QGroupBox("黑名单列表")
-        bl_list_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
-        bl_list_layout = QVBoxLayout(bl_list_group)
+        # ── 备份管理 ──
+        backup_group = QGroupBox("台账备份与恢复")
+        backup_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        bkp_layout = QVBoxLayout(backup_group)
 
+        # 备份列表
+        self._backup_combo = QComboBox()
+        self._backup_combo.setMinimumHeight(30)
+        bkp_layout.addWidget(QLabel("备份历史："))
+        bkp_layout.addWidget(self._backup_combo)
+
+        # 备份操作按钮
+        bkp_btn_layout = QHBoxLayout()
+
+        backup_btn = QPushButton("📦 立即备份")
+        backup_btn.setCursor(Qt.PointingHandCursor)
+        backup_btn.clicked.connect(self._on_backup)
+        bkp_btn_layout.addWidget(backup_btn)
+
+        restore_btn = QPushButton("↩ 恢复选中")
+        restore_btn.setCursor(Qt.PointingHandCursor)
+        restore_btn.clicked.connect(self._on_restore)
+        bkp_btn_layout.addWidget(restore_btn)
+
+        bkp_layout.addLayout(bkp_btn_layout)
+
+        bkp_layout.addWidget(QLabel("── 导出 / 导入 ──"))
+
+        # 导出/导入按钮
+        io_btn_layout = QHBoxLayout()
+
+        export_json_btn = QPushButton("📄 导出JSON")
+        export_json_btn.setCursor(Qt.PointingHandCursor)
+        export_json_btn.setToolTip("导出台账为明文JSON文件（用于存档）")
+        export_json_btn.clicked.connect(self._on_export_json)
+        io_btn_layout.addWidget(export_json_btn)
+
+        import_json_btn = QPushButton("📥 导入JSON")
+        import_json_btn.setCursor(Qt.PointingHandCursor)
+        import_json_btn.setToolTip("从JSON文件导入台账（支持合并/覆盖）")
+        import_json_btn.clicked.connect(self._on_import_json)
+        io_btn_layout.addWidget(import_json_btn)
+
+        bkp_layout.addLayout(io_btn_layout)
+
+        # 黑名单列表展示
+        bkp_layout.addWidget(QLabel("── 黑名单 ──"))
         self._bl_list = QTextEdit()
         self._bl_list.setReadOnly(True)
         self._bl_list.setFont(QFont("Consolas", 9))
-        bl_list_layout.addWidget(self._bl_list)
+        self._bl_list.setMaximumHeight(100)
+        bkp_layout.addWidget(self._bl_list)
 
-        export_btn = QPushButton("📤 导出黑名单（用于上传GitHub）")
-        export_btn.setCursor(Qt.PointingHandCursor)
-        export_btn.clicked.connect(self._on_export_blacklist)
-        bl_list_layout.addWidget(export_btn)
-
-        bottom_layout.addWidget(bl_list_group, stretch=1)
-
+        bottom_layout.addWidget(backup_group, stretch=1)
         splitter.addWidget(bottom_widget)
-        splitter.setSizes([300, 300])
+        splitter.setSizes([280, 370])
 
     def _apply_style(self) -> None:
         self.setStyleSheet("""
@@ -247,9 +313,16 @@ class AdminToolWindow(QMainWindow):
                 border: 1px solid #E0E0E0;
                 gridline-color: #EEEEEE;
             }
+            QComboBox {
+                border: 1px solid #BDBDBD;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
         """)
 
-    # ── 事件处理 ──
+    # ═══════════════════════════════════════════
+    # 事件处理
+    # ═══════════════════════════════════════════
 
     def _on_generate(self) -> None:
         machine_code = self._machine_input.text().strip().upper()
@@ -259,7 +332,6 @@ class AdminToolWindow(QMainWindow):
         if len(machine_code) != 32:
             QMessageBox.warning(self, "提示", "机器码格式不正确，应为32位")
             return
-
         code = generate_code_for_machine(machine_code)
         self._code_result.setText(code)
 
@@ -273,13 +345,11 @@ class AdminToolWindow(QMainWindow):
         code = self._code_result.text()
         name = self._name_input.text().strip()
         note = self._note_input.text().strip()
-
         if not machine_code or not code:
             QMessageBox.warning(self, "提示", "请先生成激活码")
             return
-
         if save_record(name or "未命名", machine_code, code, note):
-            QMessageBox.information(self, "成功", "台账记录已保存")
+            QMessageBox.information(self, "成功", "台账记录已保存（加密存储）")
             self._refresh_records()
             self._name_input.clear()
             self._note_input.clear()
@@ -331,14 +401,80 @@ class AdminToolWindow(QMainWindow):
             "请粘贴到 GitHub 仓库根目录的 blacklist.txt 文件中提交。"
         )
 
-    # ── 刷新 ──
+    # ── 备份/恢复/导出/导入 ──
+
+    def _on_backup(self) -> None:
+        ok, result = backup_records()
+        if ok:
+            QMessageBox.information(self, "备份成功", f"台账已备份至：\n{result}")
+            self._refresh_backup_list()
+        else:
+            QMessageBox.warning(self, "备份失败", result)
+
+    def _on_restore(self) -> None:
+        backup_file = self._backup_combo.currentText()
+        if not backup_file:
+            QMessageBox.warning(self, "提示", "请先选择要恢复的备份文件")
+            return
+        if QMessageBox.question(
+            self, "确认恢复",
+            f"确定从备份恢复？\n\n备份文件：{backup_file}\n\n"
+            "恢复前会自动创建当前台账的安全备份。"
+        ) != QMessageBox.Yes:
+            return
+        ok, msg = restore_backup(backup_file)
+        if ok:
+            QMessageBox.information(self, "恢复成功", msg)
+            self._refresh_records()
+            self._refresh_backup_list()
+        else:
+            QMessageBox.critical(self, "恢复失败", msg)
+
+    def _on_export_json(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(
+            self, "导出台账为JSON", "admin_records_export.json", "JSON文件 (*.json)"
+        )
+        if not path:
+            return
+        ok, msg = export_records_to_json(path)
+        if ok:
+            QMessageBox.information(self, "导出成功", msg)
+        else:
+            QMessageBox.warning(self, "导出失败", msg)
+
+    def _on_import_json(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self, "从JSON导入台账", "", "JSON文件 (*.json)"
+        )
+        if not path:
+            return
+        # 选择合并还是覆盖
+        choice = QInputDialog.getItem(
+            self, "导入方式",
+            "选择导入方式：\n合并 = 追加新记录\n覆盖 = 替换全部台账",
+            ["合并（推荐）", "覆盖"], 0, False
+        )
+        if not choice:
+            return
+        merge = choice.startswith("合并")
+        ok, msg = import_records_from_json(path, merge=merge)
+        if ok:
+            QMessageBox.information(self, "导入成功", msg)
+            self._refresh_records()
+        else:
+            QMessageBox.warning(self, "导入失败", msg)
+
+    # ═══════════════════════════════════════════
+    # 刷新
+    # ═══════════════════════════════════════════
 
     def _refresh_records(self) -> None:
         records = load_records()
         self._records_table.setRowCount(len(records))
         for i, rec in enumerate(records):
             self._records_table.setItem(i, 0, QTableWidgetItem(rec.get("name", "")))
-            self._records_table.setItem(i, 1, QTableWidgetItem(rec.get("machine_code", "")[:12] + "..."))
+            mc = rec.get("machine_code", "")
+            self._records_table.setItem(i, 1, QTableWidgetItem(mc[:12] + "..." if len(mc) > 12 else mc))
             self._records_table.setItem(i, 2, QTableWidgetItem(rec.get("activation_code", "")))
             self._records_table.setItem(i, 3, QTableWidgetItem(rec.get("note", "")))
             self._records_table.setItem(i, 4, QTableWidgetItem(rec.get("created_at", "")[:19]))
@@ -346,6 +482,11 @@ class AdminToolWindow(QMainWindow):
     def _refresh_blacklist(self) -> None:
         codes = load_blacklist()
         self._bl_list.setPlainText("\n".join(codes) if codes else "（黑名单为空）")
+
+    def _refresh_backup_list(self) -> None:
+        backups = list_backups()
+        self._backup_combo.clear()
+        self._backup_combo.addItems(backups)
 
 
 def run_admin_tool():
