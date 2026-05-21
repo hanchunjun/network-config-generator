@@ -2,6 +2,29 @@
 
 所有重要版本变更记录于此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/) 格式。
 
+## [2.2.0] - 2026-05-22
+
+### Added
+- 🌐 **子网掩码计算器** `src/ui/subnet_calculator_page.py`：IP/掩码实时计算 + 二进制位对照 + 子网划分详情表
+- 📜 **批量命令生成器** `src/ui/batch_cmd_generator_page.py`：命令模板 + %a~%e多参数占位 + 循环/步进/重复模式 + 预置模板
+- 导航栏扩展至8个模块：Ctrl+1~Ctrl+8，新增子网计算、命令生成（试用模式下也开放使用）
+
+### Changed
+- 项目管理页UI布局压缩：合并项目切换/信息框，压缩上部组件高度，最大化设备清单区域
+- 主窗口默认几何调整：1200×780
+- 激活弹窗「稍后再说」按钮视觉醒目化（蓝色底色）
+- 试用模式提示文案优化：明确告知仅「锐捷接入交换机」可免激活使用
+- 激活弹窗窗口尺寸三重锁定，防止移动时高度变化
+
+### Fixed
+- 🐛 EXE 启动崩溃：`chardet` 从 7.4.3 降级至 4.0.0（纯Python，去除 mypyc .pyd），修复 ACCESS VIOLATION
+- 🐛 `subnet_calculator_page.py` 遗漏 `QAbstractItemView` 导入导致运行时 NameError
+
+### Packaging
+- `NetworkConfigGenerator.spec` 扩展排除列表，移除 tensorflow/torch/pandas 等非必要依赖
+
+---
+
 ## [2.1.0] - 2026-05-20
 
 ### Added

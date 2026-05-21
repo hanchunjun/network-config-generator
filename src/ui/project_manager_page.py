@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                                QLineEdit, QPushButton, QComboBox, QGroupBox,
                                QTextEdit, QMessageBox, QFileDialog, QTableWidget,
                                QTableWidgetItem, QHeaderView, QAbstractItemView,
-                               QMenu, QAction, QCheckBox, QProgressBar)
+                               QMenu, QAction, QCheckBox, QProgressBar, QFrame)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 
@@ -108,142 +108,155 @@ class ProjectManagerPage(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(10)
+        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(6)
 
-        title_label = QLabel("项目管理")
-        title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #1D2129; text-decoration: none;")
-        layout.addWidget(title_label)
+        workspace_group = QGroupBox("项目工作区")
+        workspace_group.setStyleSheet(self._group_style())
+        workspace_layout = QVBoxLayout()
+        workspace_layout.setContentsMargins(14, 6, 14, 10)
+        workspace_layout.setSpacing(6)
 
-        create_group = QGroupBox("新建项目")
-        create_group.setStyleSheet(self._group_style())
-        create_layout = QVBoxLayout()
-        create_layout.setSpacing(8)
+        top_row = QHBoxLayout()
+        top_row.setSpacing(20)
+
+        create_section = QVBoxLayout()
+        create_section.setSpacing(4)
+        create_header = QLabel("新建项目")
+        create_header.setStyleSheet("font-size: 13px; font-weight: bold; color: #1D2129;")
+        create_section.addWidget(create_header)
 
         input_layout = QHBoxLayout()
-        input_layout.setSpacing(8)
+        input_layout.setSpacing(6)
         name_label = QLabel("项目名称")
-        name_label.setFixedWidth(80)
-        name_label.setStyleSheet("font-size: 14px; color: #4E5969; font-weight: normal;")
+        name_label.setFixedWidth(60)
+        name_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
         input_layout.addWidget(name_label)
         self.project_name_input = QLineEdit()
-        self.project_name_input.setFixedWidth(300)
+        self.project_name_input.setFixedWidth(240)
+        self.project_name_input.setFixedHeight(28)
         self.project_name_input.setPlaceholderText("请输入项目名称，如：栖霞区电子政务外网项目")
         self.project_name_input.setStyleSheet(self._input_style())
         input_layout.addWidget(self.project_name_input)
 
         self.create_btn = QPushButton("创建项目")
-        self.create_btn.setFixedSize(120, 40)
+        self.create_btn.setFixedSize(88, 28)
         self.create_btn.setStyleSheet(self._primary_btn_style())
         self.create_btn.clicked.connect(self.create_project)
         input_layout.addWidget(self.create_btn)
         input_layout.addStretch()
-        create_layout.addLayout(input_layout)
+        create_section.addLayout(input_layout)
 
         path_layout = QHBoxLayout()
-        path_layout.setSpacing(8)
+        path_layout.setSpacing(6)
         path_label = QLabel("存储路径")
-        path_label.setFixedWidth(80)
-        path_label.setStyleSheet("font-size: 14px; color: #4E5969; font-weight: normal;")
+        path_label.setFixedWidth(60)
+        path_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
         path_layout.addWidget(path_label)
         self.path_label = QLabel(PROJECTS_DIR)
-        self.path_label.setStyleSheet("font-size: 13px; color: #86909C;")
+        self.path_label.setStyleSheet("font-size: 11px; color: #86909C;")
         path_layout.addWidget(self.path_label)
         path_layout.addStretch()
-        create_layout.addLayout(path_layout)
+        create_section.addLayout(path_layout)
 
-        create_group.setLayout(create_layout)
-        layout.addWidget(create_group)
+        top_row.addLayout(create_section, stretch=2)
 
-        switch_group = QGroupBox("项目切换")
-        switch_group.setStyleSheet(self._group_style())
-        switch_layout = QHBoxLayout()
-        switch_layout.setSpacing(8)
+        overview_section = QVBoxLayout()
+        overview_section.setSpacing(4)
+        overview_header_row = QHBoxLayout()
+        overview_header_row.setSpacing(12)
+        overview_header = QLabel("项目总览")
+        overview_header.setStyleSheet("font-size: 13px; font-weight: bold; color: #1D2129;")
+        overview_header_row.addWidget(overview_header)
+        self.overview_stats_label = QLabel("")
+        self.overview_stats_label.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
+        overview_header_row.addWidget(self.overview_stats_label)
+        overview_header_row.addStretch()
+        overview_section.addLayout(overview_header_row)
+
+        self.overview_cards_layout = QHBoxLayout()
+        self.overview_cards_layout.setSpacing(6)
+        overview_section.addLayout(self.overview_cards_layout)
+        overview_section.addStretch()
+
+        top_row.addLayout(overview_section, stretch=3)
+        workspace_layout.addLayout(top_row)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        separator.setStyleSheet("QFrame { color: #E5E6EB; max-height: 1px; }")
+        workspace_layout.addWidget(separator)
+
+        console_layout = QHBoxLayout()
+        console_layout.setSpacing(8)
 
         switch_label = QLabel("当前项目")
-        switch_label.setFixedWidth(80)
-        switch_label.setStyleSheet("font-size: 14px; color: #4E5969; font-weight: normal;")
-        switch_layout.addWidget(switch_label)
+        switch_label.setFixedWidth(60)
+        switch_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+        console_layout.addWidget(switch_label)
         self.project_combo = QComboBox()
-        self.project_combo.setFixedWidth(350)
+        self.project_combo.setFixedWidth(280)
+        self.project_combo.setFixedHeight(28)
         self.project_combo.setStyleSheet("""
             QComboBox {
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                padding: 8px 12px;
-                font-size: 14px;
+                padding: 2px 10px;
+                font-size: 12px;
                 background-color: #F5F7FA;
             }
             QComboBox:hover { border: 1px solid #165DFF; }
             QComboBox::drop-down { border: none; }
         """)
         self.project_combo.currentIndexChanged.connect(self.on_project_changed)
-        switch_layout.addWidget(self.project_combo)
+        console_layout.addWidget(self.project_combo)
 
-        self.switch_btn = QPushButton("切换项目")
-        self.switch_btn.setFixedSize(100, 40)
+        self.switch_btn = QPushButton("切换")
+        self.switch_btn.setFixedSize(56, 28)
         self.switch_btn.setStyleSheet(self._primary_btn_style())
         self.switch_btn.clicked.connect(self.switch_project)
-        switch_layout.addWidget(self.switch_btn)
+        console_layout.addWidget(self.switch_btn)
 
-        self.refresh_btn = QPushButton("刷新列表")
-        self.refresh_btn.setFixedSize(100, 40)
+        self.refresh_btn = QPushButton("刷新")
+        self.refresh_btn.setFixedSize(56, 28)
         self.refresh_btn.setStyleSheet(self._secondary_btn_style())
         self.refresh_btn.clicked.connect(self.refresh_project_list)
-        switch_layout.addWidget(self.refresh_btn)
+        console_layout.addWidget(self.refresh_btn)
 
-        self.edit_project_btn = QPushButton("编辑项目")
-        self.edit_project_btn.setFixedSize(100, 40)
+        self.edit_project_btn = QPushButton("编辑")
+        self.edit_project_btn.setFixedSize(56, 28)
         self.edit_project_btn.setStyleSheet(self._secondary_btn_style())
         self.edit_project_btn.clicked.connect(self.edit_project)
-        switch_layout.addWidget(self.edit_project_btn)
+        console_layout.addWidget(self.edit_project_btn)
 
-        self.delete_project_btn = QPushButton("删除项目")
-        self.delete_project_btn.setFixedSize(100, 40)
+        self.delete_project_btn = QPushButton("删除")
+        self.delete_project_btn.setFixedSize(56, 28)
         self.delete_project_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FFF2F0; border: 1px solid #F53F3F;
-                border-radius: 4px; font-size: 13px; color: #F53F3F;
+                border-radius: 4px; font-size: 12px; color: #F53F3F;
             }
             QPushButton:hover { background-color: #FFECE8; }
         """)
         self.delete_project_btn.clicked.connect(self.delete_project)
-        switch_layout.addWidget(self.delete_project_btn)
-
-        switch_layout.addStretch()
-        switch_group.setLayout(switch_layout)
-        layout.addWidget(switch_group)
-
-        info_group = QGroupBox("项目信息")
-        info_group.setStyleSheet(self._group_style())
-        info_layout = QVBoxLayout()
-        info_layout.setSpacing(6)
+        console_layout.addWidget(self.delete_project_btn)
 
         self.info_path = QLabel("项目路径：未选择")
-        self.info_path.setStyleSheet("font-size: 13px; color: #4E5969; font-weight: normal;")
-        info_layout.addWidget(self.info_path)
+        self.info_path.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
+        console_layout.addWidget(self.info_path)
         self.info_devices = QLabel("设备数量：0")
-        self.info_devices.setStyleSheet("font-size: 13px; color: #4E5969; font-weight: normal;")
-        info_layout.addWidget(self.info_devices)
+        self.info_devices.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
+        console_layout.addWidget(self.info_devices)
         self.info_logs = QLabel("运维日志：0")
-        self.info_logs.setStyleSheet("font-size: 13px; color: #4E5969; font-weight: normal;")
-        info_layout.addWidget(self.info_logs)
+        self.info_logs.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
+        console_layout.addWidget(self.info_logs)
 
-        info_group.setLayout(info_layout)
-        layout.addWidget(info_group)
+        console_layout.addStretch()
+        workspace_layout.addLayout(console_layout)
 
-        overview_group = QGroupBox("项目总览")
-        overview_group.setStyleSheet(self._group_style())
-        self.overview_layout = QVBoxLayout()
-        self.overview_layout.setSpacing(8)
-        self.overview_cards_layout = QHBoxLayout()
-        self.overview_cards_layout.setSpacing(12)
-        self.overview_layout.addLayout(self.overview_cards_layout)
-        self.overview_stats_label = QLabel("")
-        self.overview_stats_label.setStyleSheet("font-size: 13px; color: #86909C; font-weight: normal; padding: 4px 0;")
-        self.overview_layout.addWidget(self.overview_stats_label)
-        overview_group.setLayout(self.overview_layout)
-        layout.addWidget(overview_group)
+        workspace_group.setLayout(workspace_layout)
+        layout.addWidget(workspace_group)
 
         device_group = QGroupBox("设备清单管理")
         device_group.setStyleSheet(self._group_style())
@@ -395,7 +408,7 @@ class ProjectManagerPage(QWidget):
         device_layout.addWidget(self.device_table)
 
         device_group.setLayout(device_layout)
-        layout.addWidget(device_group)
+        layout.addWidget(device_group, stretch=1)
 
         self.setLayout(layout)
 

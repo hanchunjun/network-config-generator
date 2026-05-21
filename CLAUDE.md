@@ -116,7 +116,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 本项目基于原有PyQt5网络设备配置生成器深度扩建，打造政企级全流程闭环网络自动化运维桌面工具。以原有四厂商配置脚本生成为基础，叠加多项目标准化管理、全网批量自动化运维、单点设备专项排查、AI智能故障诊断、配置合规审计五大核心能力；兼容锐捷、华为、H3C、思科全系列网络设备，采用公共脚本复用+多项目物理隔离架构，**免环境安装、双击直跑、整体拷贝即用**，适配政企电子政务、高校校园网、企业园区网开局建站、日常运维、故障排查、等保合规全场景。
 
-**项目状态：V0.3.0 试用模式版已完成（2026年5月21日）· 持续迭代中**
+**项目状态：V0.3.1 工具增强版已完成（2026年5月22日）· 持续迭代中**
 
 ## 基础技术栈
 
@@ -127,12 +127,14 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 - 打包部署：PyInstaller 单EXE封装（约47.1MB）
 - AI能力：三层架构（嵌入式按钮 → Agent快捷指令 → 自由对话）+ 双层分析（本地预检 + AI精审）
 
-## 顶部固定主菜单（V0.2）
+## 顶部固定主菜单（V0.3.1）
 
 ```
-📁 新建项目   →   🔧 项目运维   →   🔍 单点运维   →   🤖 专家工作站   →   🖥 设备配置   →   ⚙ 模型设置
-   建               管                修                研                配              设
+📁 新建项目  →  🔧 项目运维  →  🔍 单点运维  →  🤖 专家工作站  →  🖥 设备配置  →  📜 命令生成  →  ⚙ 模型设置
+    建              管                修                研                配              写              设
 ```
+
+快捷键：`Ctrl+1` ~ `Ctrl+7` 切换对应页面
 
 | # | 菜单 | 定位 | 核心能力 |
 |---|------|------|---------|
@@ -141,7 +143,8 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 | 3 | 🔍 单点运维 | 单设备全链条 | 5Tab：巡检日志/配置备份/巡检报告/🩺诊断报告/🔍合规审计 + 三件套 |
 | 4 | 🤖 专家工作站 | 深度AI分析 | 3Tab：自由对话/合规审计/故障诊断 + Agent快捷指令 + 多文件输入 |
 | 5 | 🖥 设备配置 | 配置生成器 | 四厂商四设备类型可视化配置脚本生成 |
-| 6 | ⚙ 模型设置 | AI配置管理 | 多模型管理/加密存储/连通性测试/切换自动生效 |
+| 6 | 📜 命令生成 | 批量脚本工具 | 命令模板 + 多参数(%a~%e)占位 + 批量生成 + 预置模板 |
+| 7 | ⚙ 模型设置 | AI配置管理 | 多模型管理/加密存储/连通性测试/切换自动生效 |
 
 ---
 
@@ -436,7 +439,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 | [src/core/local_audit_engine.py](src/core/local_audit_engine.py) | 本地合规规则引擎（双层审计预检层） |
 | [src/core/local_diagnostic_engine.py](src/core/local_diagnostic_engine.py) | 本地运行时诊断引擎（异常提取 + 精准上下文） |
 
-### UI页面（V0.2架构）
+### UI页面（V0.3.1架构）
 
 | 文件 | 导航名称 | 职责 |
 |------|---------|------|
@@ -445,6 +448,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 | [src/ui/ops_toolbox_page.py](src/ui/ops_toolbox_page.py) | 🔧 项目运维 | 3任务卡片 + 4Tab文件管理 + AI合规/诊断 |
 | [src/ui/single_device_page.py](src/ui/single_device_page.py) | 🔍 单点运维 | 5Tab全链条 + 测试连接 + 文件三件套 |
 | [src/ui/ai_analysis_page.py](src/ui/ai_analysis_page.py) | 🤖 专家工作站 | 3Tab + Agent快捷指令 + 可编辑Prompt + 多文件 |
+| [src/ui/batch_cmd_generator_page.py](src/ui/batch_cmd_generator_page.py) | 📜 命令生成 | 命令模板 + %a~%e参数 + 批量生成 ★V0.3.1新增 |
 | [src/ui/system_settings_page.py](src/ui/system_settings_page.py) | ⚙ 模型设置 | AI模型多配置管理 + 加密存储 + 自动匹配 |
 
 ### 业务脚本
@@ -545,6 +549,19 @@ D:\网络工具\NetworkConfigGenerator.exe
 ---
 
 ## 版本更新历史
+
+### V0.3.1 工具增强版（2026-05-22）
+
+- ✅ 新增 📜 **批量命令生成器** `src/ui/batch_cmd_generator_page.py`（命令模板 + %a~%e多参数占位 + 循环/步进/重复 + 预置模板）
+- ✅ 导航栏扩展至7个模块：`Ctrl+1`~`Ctrl+7`（命令生成在试用模式下也开放）
+- ✅ 主窗口快捷键更新，`main_window.py` MODULES 列表扩展
+- ✅ 项目管理页UI布局优化：合并项目切换/信息框，压缩高度，最大化设备清单区域
+- ✅ 激活弹窗窗口尺寸三重锁定（`setFixedSize` + `Minimum/MaximumSize` + `MSWindowsFixedSizeDialogHint`），防止移动时高度变化
+- ✅ 「稍后再说」按钮视觉醒目化（蓝色底色突出显示）
+- ✅ 试用模式提示文案更新：明确告知仅「锐捷接入交换机」可免激活使用
+- ✅ 主窗口默认几何调整为 **1200×780**，改善窗口比例
+- 🐛 修复 EXE 崩溃：`chardet` 7.4.3（含 mypyc .pyd 文件）降级至 4.0.0（纯 Python），修复启动时 ACCESS VIOLATION
+- 📦 `NetworkConfigGenerator.spec` 扩展排除列表，移除 tensorflow/torch/pandas 等非必要依赖
 
 ### V0.3.0 激活体系版（2026-05-21）
 

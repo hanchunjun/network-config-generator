@@ -41,6 +41,7 @@ MODULES: List[Tuple[str, str, str]] = [
     ("ops", "项目运维", "🔧"),
     ("single", "单点运维", "🔍"),
     ("ai", "专家工作站", "🤖"),
+    ("batchcmd", "命令生成", "📜"),
     ("system", "模型设置", "⚙"),
 ]
 
@@ -131,8 +132,8 @@ class MainWindow(QMainWindow):
         Args:
             screen: 屏幕几何信息
         """
-        w = int(screen.width() * 0.80)
-        h = int(screen.height() * 0.65)
+        w = int(screen.width() * 0.76)
+        h = int(w * 9 / 15)
         x = screen.x() + (screen.width() - w) // 2
         y = screen.y() + (screen.height() - h) // 2
         self.setGeometry(x, y, w, h)
@@ -177,6 +178,8 @@ class MainWindow(QMainWindow):
         self.ops_page = OpsToolboxPage(self)
         self.single_page = SingleDevicePage(self)
         self.ai_page = AIAnalysisPage(self)
+        from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
+        self.batchcmd_page = BatchCmdGeneratorPage(self)
         self.config_container = QWidget()
 
         # 添加到堆栈
@@ -185,6 +188,7 @@ class MainWindow(QMainWindow):
         self.module_stack.addWidget(self.ops_page)
         self.module_stack.addWidget(self.single_page)
         self.module_stack.addWidget(self.ai_page)
+        self.module_stack.addWidget(self.batchcmd_page)
         self.module_stack.addWidget(self.config_container)
 
     def _create_status_bar(self):
@@ -199,7 +203,7 @@ class MainWindow(QMainWindow):
             }
         """)
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("就绪 | Ctrl+1~6 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 AI分析 · Ctrl+6 模型设置")
+        self.status_bar.showMessage("就绪 | Ctrl+1~7 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 专家工作站 · Ctrl+6 命令生成 · Ctrl+7 模型设置")
 
     def keyPressEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:
@@ -210,19 +214,20 @@ class MainWindow(QMainWindow):
                 Qt.Key_3: "ops",
                 Qt.Key_4: "single",
                 Qt.Key_5: "ai",
-                Qt.Key_6: "system",
+                Qt.Key_6: "batchcmd",
+                Qt.Key_7: "system",
             }
             if key in shortcuts:
-                # 试用模式拦截
-                if self._trial_mode and shortcuts[key] != "config":
+                if self._trial_mode and shortcuts[key] not in ("config", "batchcmd"):
                     self._show_trial_prompt()
                     return
                 self.switch_module(shortcuts[key])
                 module_names = {
                     "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
-                    "single": "单点巡检", "ai": "AI分析", "config": "设备配置"
+                    "single": "单点巡检", "ai": "专家工作站", "config": "设备配置",
+                    "batchcmd": "命令生成",
                 }
-                self.status_bar.showMessage(f"已切换到：{module_names[shortcuts[key]]} | Ctrl+1~6 切换模块", 3000)
+                self.status_bar.showMessage(f"已切换到：{module_names[shortcuts[key]]} | Ctrl+1~7 切换模块", 3000)
                 return
         super().keyPressEvent(event)
 
@@ -393,8 +398,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(nav_bar)
 
     def switch_module(self, module_id):
-        # 试用模式拦截：仅允许「设备配置」模块
-        if self._trial_mode and module_id != "config":
+        if self._trial_mode and module_id not in ("config", "batchcmd"):
             self._show_trial_prompt()
             return
 
@@ -404,6 +408,7 @@ class MainWindow(QMainWindow):
             "ops": self.ops_page,
             "single": self.single_page,
             "ai": self.ai_page,
+            "batchcmd": self.batchcmd_page,
             "config": self.config_container,
         }
         if module_id in page_map:
@@ -414,9 +419,10 @@ class MainWindow(QMainWindow):
                 self.project_page.refresh_project_list()
             module_names = {
                 "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
-                "single": "单点巡检", "ai": "AI分析", "config": "设备配置"
+                "single": "单点巡检", "ai": "AI分析", "config": "设备配置",
+                "batchcmd": "命令生成",
             }
-            self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~6 切换模块")
+            self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~7 切换模块")
 
     def _update_nav_buttons(self, active_id):
         for mid, btn in self.nav_buttons.items():
@@ -742,86 +748,18 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "激活详情", msg)
 
     def _show_trial_prompt(self) -> None:
-        """显示试用模式激活提示弹窗。
+        from src.ui.activation_dialog import show_activation_dialog
 
-        提示用户当前为试用模式，仅可使用锐捷接入交换机配置，
-        如需完整功能请联系管理员激活。
-        """
-        dialog = QDialog(self)
-        dialog.setWindowTitle("试用模式・功能受限")
-        dialog.setFixedSize(480, 300)
-        dialog.setWindowModality(Qt.ApplicationModal)
-        dialog.setWindowFlags(
-            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
-        )
-
-        layout = QVBoxLayout(dialog)
-        layout.setContentsMargins(25, 20, 25, 20)
-        layout.setSpacing(12)
-
-        # 标题
-        title = QLabel("⚠️  试用模式")
-        title.setFont(QFont("Microsoft YaHei", 15, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("color: #E53935;")
-        layout.addWidget(title)
-
-        # 分隔线
-        line = QFrame()
-        line.setFrameShape(QFrame.HLine)
-        line.setStyleSheet("background-color: #E0E0E0;")
-        line.setFixedHeight(1)
-        layout.addWidget(line)
-
-        # 提示正文
-        msg = QLabel(
-            "当前为试用模式，仅可使用「锐捷接入交换机配置」功能。\n\n"
-            "软件全功能使用需授权激活。如需开通全部功能"
-            "（多厂商配置、项目管理、运维巡检、AI分析等），请联系管理员激活。"
-        )
-        msg.setFont(QFont("Microsoft YaHei", 10))
-        msg.setWordWrap(True)
-        msg.setAlignment(Qt.AlignCenter)
-        msg.setStyleSheet("color: #333333;")
-        layout.addWidget(msg)
-
-        # 联系信息
-        contact = QLabel(
-            "📞 联系管理员：老韩\n"
-            "QQ：223518\n"
-            "微信：tachlaohan"
-        )
-        contact.setFont(QFont("Microsoft YaHei", 10))
-        contact.setAlignment(Qt.AlignCenter)
-        contact.setStyleSheet(
-            "color: #1565C0; "
-            "background-color: #F0F7FF; "
-            "border: 1px solid #B3D4FC; "
-            "border-radius: 6px; "
-            "padding: 10px 16px; "
-            "margin-top: 4px;"
-        )
-        layout.addWidget(contact)
-
-        # 确定按钮
-        ok_btn = QPushButton("我知道了")
-        ok_btn.setFont(QFont("Microsoft YaHei", 10))
-        ok_btn.setFixedSize(120, 36)
-        ok_btn.setCursor(Qt.PointingHandCursor)
-        ok_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
-        """)
-        ok_btn.clicked.connect(dialog.close)
-        layout.addWidget(ok_btn, alignment=Qt.AlignCenter)
-
-        dialog.exec_()
+        result = show_activation_dialog(self, trial_mode=True)
+        if result:
+            is_active, act_status, act_info = check_activation()
+            self._trial_mode = not is_active
+            self._activation_info = act_info
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self._update_activation_btn_style()
+            netops_logger.get_logger().info("用户激活成功，退出试用模式")
+            activated_at = act_info.get("activated_at", "")[:16]
+            self._show_info(f"激活成功！\n激活时间：{activated_at}")
 
     def show_about_dialog(self):
         dialog = QDialog(self)

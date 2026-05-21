@@ -51,7 +51,8 @@ class ActivationDialog(QDialog):
         """构建弹窗UI"""
         # 窗口属性：无关闭按钮、固定大小
         self.setWindowFlags(
-            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint
+            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint |
+            Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowTitle("软件未激活・请完成正版激活")
         self.setFixedSize(560, 420)
@@ -80,7 +81,8 @@ class ActivationDialog(QDialog):
 
         # ── 正文说明 ──
         desc_label = QLabel(
-            "当前软件暂未完成授权激活，暂时无法正常使用全部功能。"
+            "当前软件暂未完成授权激活。未激活状态下仅可试用【锐捷接入交换机】\n"
+            "配置生成功能，其他厂商及设备类型需完成激活后方可使用。"
         )
         desc_label.setFont(QFont("Microsoft YaHei", 10))
         desc_label.setWordWrap(True)
@@ -194,14 +196,16 @@ class ActivationDialog(QDialog):
             later_btn.clicked.connect(self._on_later)
             later_btn.setStyleSheet(
                 "QPushButton {"
-                "  background-color: transparent;"
-                "  color: #9E9E9E;"
-                "  border: 1px solid #E0E0E0;"
+                "  background-color: #FFF7E6;"
+                "  color: #D46B08;"
+                "  border: 1px solid #FFD591;"
                 "  border-radius: 4px;"
+                "  font-weight: bold;"
                 "}"
                 "QPushButton:hover {"
-                "  color: #616161;"
-                "  border-color: #BDBDBD;"
+                "  background-color: #FFE7BA;"
+                "  color: #AD4E00;"
+                "  border-color: #FFBB96;"
                 "}"
             )
             layout.addWidget(later_btn)

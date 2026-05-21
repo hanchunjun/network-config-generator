@@ -748,28 +748,40 @@ class FileResultTab(QWidget):
         layout.addWidget(splitter)
         self.setLayout(layout)
 
-    def _get_scan_dir(self) -> str:
+    def _get_scan_dirs(self):
         project_dir = self.parent_page._get_project_dir()
         if not project_dir:
-            return ""
-        dir_map = {
-            "backup": os.path.join(project_dir, "config_backup"),
-            "report": os.path.join(project_dir, "report"),
-            "diagnosis": os.path.join(project_dir, "report", "diagnosis"),
-            "compliance": os.path.join(project_dir, "report", "compliance"),
+            return []
+        base_map = {
+            "backup": [os.path.join(project_dir, "config_backup")],
+            "report": [
+                os.path.join(project_dir, "report"),
+                os.path.join(project_dir, "output", "trouble_check_result"),
+                os.path.join(project_dir, "output", "single_exception"),
+            ],
+            "diagnosis": [os.path.join(project_dir, "report", "diagnosis")],
+            "compliance": [os.path.join(project_dir, "report", "compliance")],
         }
-        target = dir_map.get(self.scan_dir_key, "")
-        if target and not os.path.exists(target):
-            os.makedirs(target, exist_ok=True)
-        return target
+        dirs = base_map.get(self.scan_dir_key, [])
+        for d in dirs:
+            if not os.path.exists(d):
+                os.makedirs(d, exist_ok=True)
+        return dirs
 
     def refresh_list(self):
-        scan_dir = self._get_scan_dir()
+        scan_dirs = self._get_scan_dirs()
         self.file_list.clear()
-        if not scan_dir or not os.path.exists(scan_dir):
-            return
-        files = sorted(glob_mod.glob(os.path.join(scan_dir, "*.*")), key=os.path.getmtime, reverse=True)
-        for f in files:
+        all_files = []
+        seen = set()
+        for scan_dir in scan_dirs:
+            if not scan_dir or not os.path.exists(scan_dir):
+                continue
+            for f in glob_mod.glob(os.path.join(scan_dir, "**/*"), recursive=True):
+                if os.path.isfile(f) and f not in seen:
+                    seen.add(f)
+                    all_files.append(f)
+        all_files.sort(key=os.path.getmtime, reverse=True)
+        for f in all_files:
             item = QListWidgetItem(os.path.basename(f))
             item.setData(Qt.UserRole, f)
             self.file_list.addItem(item)

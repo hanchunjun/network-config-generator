@@ -22,7 +22,7 @@ import subprocess
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
@@ -327,7 +327,7 @@ def load_license(license_path: Optional[str] = None) -> Optional[dict]:
 
         try:
             plaintext = aesgcm.decrypt(nonce, ciphertext, None)
-            license_data = json.loads(plaintext.decode("utf-8"))
+            license_data: dict[str, Any] = json.loads(plaintext.decode("utf-8"))
             return license_data
         except Exception:
             netops_logger.get_logger().error("授权文件解密失败，可能已被篡改")
@@ -428,7 +428,7 @@ def get_last_check_time() -> Optional[float]:
         if not os.path.exists(BLACKLIST_CHECK_FILE):
             return None
         with open(BLACKLIST_CHECK_FILE, "r") as f:
-            data = json.load(f)
+            data: dict[str, Any] = json.load(f)
         return data.get("last_check")
     except Exception:
         return None

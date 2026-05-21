@@ -10,6 +10,10 @@ skips:
   - B107
   # B311: random in templates is for sample data, not cryptography
   - B311
+  # B324: MD5 used for machine code fingerprint, not cryptographic hashing
+  - B324
+  # B310: urllib.urlopen used for blacklist server check with validated URL
+  - B310
 
 # Exclude non-source directories
 exclude_dirs:

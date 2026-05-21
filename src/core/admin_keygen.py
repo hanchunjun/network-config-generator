@@ -25,7 +25,7 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
@@ -228,7 +228,8 @@ def load_records() -> List[dict]:
         with open(LICENSE_RECORDS_FILE, "rb") as f:
             encrypted = f.read()
         plaintext = _decrypt_data(encrypted)
-        return json.loads(plaintext)
+        records: List[dict[str, Any]] = json.loads(plaintext)
+        return records
     except Exception as e:
         netops_logger.get_logger().error(f"台账读取失败: {e}")
         return []

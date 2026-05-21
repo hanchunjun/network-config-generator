@@ -1,6 +1,6 @@
 # 架构代码地图
 
-**最后更新：** 2026-05-21
+**最后更新：** 2026-05-22
 
 ---
 
@@ -50,7 +50,7 @@
 
 | 模块 | 职责 | 导航名称 |
 |------|------|---------|
-| `main_window.py` | 主窗口、导航栏、6页面切换 | — |
+| `main_window.py` | 主窗口、导航栏、8页面切换 | — |
 | `project_manager_page.py` | 项目CRUD + 卡片总览 + 全局统计 | 📁 新建项目 |
 | `ops_toolbox_page.py` | 3任务卡片 + 4Tab + AI嵌入 | 🔧 项目运维 |
 | `single_device_page.py` | 5Tab全链条 + 测试连接 + AI分析 | 🔍 单点运维 |
@@ -87,7 +87,7 @@
 main.py → QApplication → MainWindow.__init__()
   → ensure_dirs() [创建目录结构]
   → _load_current_project() [加载当前项目]
-  → 初始化6个UI页面
+  → 初始化8个UI页面
 ```
 
 ### AI诊断链路（单点运维）

@@ -4,6 +4,7 @@ source =
     src/utils
 omit =
     src/core/config_generator.py
+    src/core/admin_keygen.py
     src/utils/resource_path.py
 
 [report]
