@@ -131,6 +131,7 @@ class ActivationDialog(QDialog):
             "操作指引：\n"
             "1. 点击「一键复制」完整复制机器码\n"
             "2. 将机器码发送给管理员【天技老韩】申领激活码\n"
+            "   QQ：223518  微信：tachlaohan\n"
             "3. 填写管理员发放的激活码，点击「立即激活」"
         )
         guide_label.setFont(QFont("Microsoft YaHei", 9))
@@ -231,7 +232,8 @@ class ActivationDialog(QDialog):
                 "请检查：\n"
                 "1. 激活码是否输入正确（16位大写字母+数字）\n"
                 "2. 激活码是否与当前设备匹配\n"
-                "3. 联系管理员【天技老韩】确认激活码"
+                "3. 联系管理员【天技老韩】确认激活码\n"
+                "   QQ：223518  微信：tachlaohan"
             )
 
     @property
