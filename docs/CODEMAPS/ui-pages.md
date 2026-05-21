@@ -1,6 +1,6 @@
 # UI页面代码地图
 
-**最后更新：** 2026-05-20
+**最后更新：** 2026-05-21
 
 ---
 
@@ -236,3 +236,46 @@ config_pages/
 | `device_template_dialog.py` | 设备模板管理 |
 | `history_dialog.py` | 历史记录查看 |
 | `security_dialogs.py` | 安全确认（导出/删除/查看密码） |
+| `activation_dialog.py` | 用户激活弹窗 ★V0.3.0新增 |
+
+---
+
+## 激活弹窗（activation_dialog.py）— V0.3.0新增
+
+**文件：** `src/ui/activation_dialog.py`
+**对应规则：** `.claude/rules/08-activation-plan.md §4`
+
+### 设计约束
+- 模态对话框，无关闭按钮、无跳过按钮、无试用入口
+- 机器码只读展示 + 一键复制
+- 激活码输入框 + 立即激活按钮
+- 严格按定稿文案实现
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `show_activation_dialog()` | 显示激活弹窗，返回是否激活成功 |
+
+---
+
+## 管理员制码工具（admin_tool_window.py）— V0.3.0新增
+
+**文件：** `src/ui/admin_tool_window.py`
+**独立入口：** `admin_tool_main.py`
+**对应规则：** `.claude/rules/08-activation-plan.md §方案C`
+
+### 设计约束
+- 独立EXE，不与用户端合并
+- 仅限管理员本地使用，严禁外发
+- 窗口标题：`NetOps 管理员制码工具 V0.3.0 — 天技老韩专用`
+
+### 功能清单
+| 功能 | 说明 |
+|------|------|
+| 机器码粘贴输入 | 接收用户发来的32位机器码 |
+| 一键生成激活码 | 调用 `admin_keygen.generate_code_for_machine()` |
+| 一键复制激活码 | 复制到剪贴板 |
+| 用户信息备注 | 姓名/用途/备注 |
+| 台账自动保存 | 写入 `config/admin_records.json` |
+| 黑名单快捷添加 | 一键将机器码加入黑名单 |
+| 黑名单导出 | 导出为可上传云端的TXT格式 |

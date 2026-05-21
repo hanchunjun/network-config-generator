@@ -1,7 +1,7 @@
 # NetOps 代码地图索引
 
-**最后更新：** 2026-05-20
-**项目版本：** V0.2.1 AI精审优化版
+**最后更新：** 2026-05-21
+**项目版本：** V0.3.0 激活体系版
 **技术栈：** Python 3.11 + PyQt5 + AES-GCM
 
 ---
@@ -32,8 +32,8 @@
                          ▼
 ┌─────────────────────────────────────────────────────────┐
 │                    src/core/ (业务逻辑层)                  │
-│  local_audit_engine │ local_diagnostic_engine │ key_mgr  │
-│  secure_config │ crypto_utils │ device_manager │ logger   │
+│  local_audit_engine │ local_diagnostic_engine │ activation_engine │
+│  admin_keygen │ key_mgr │ secure_config │ crypto_utils │ device_manager │ logger │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
@@ -87,8 +87,10 @@
 
 ## 关键约定
 
+0. **激活校验优先**：main.py 启动时最高优先级执行激活校验，未激活不加载任何业务模块
 1. **三层单向依赖**：`utils/` → `core/` → `ui/`，禁止反向依赖
 2. **路径管理**：所有文件路径必须通过 `src/utils/resource_path.py` 获取，禁止硬编码
 3. **QThread约束**：所有QThread子类必须保存为实例变量（`self._xxx_thread = thread`）
 4. **项目隔离**：多项目数据物理隔离，禁止跨项目操作
 5. **安全红线**：自动化仅允许只读指令，绝不修改设备配置
+6. **双EXE隔离**：用户端与管理员工具独立打包，管理员工具严禁外发

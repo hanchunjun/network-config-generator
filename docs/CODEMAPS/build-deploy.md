@@ -1,6 +1,6 @@
 # 构建与部署代码地图
 
-**最后更新：** 2026-05-20
+**最后更新：** 2026-05-21
 
 ---
 
@@ -69,29 +69,45 @@ py -3.11 -m radon cc src/ -a -nc
 ```bash
 # 删除旧EXE（如果被占用需先关闭运行的实例）
 del dist\NetworkConfigGenerator.exe
+del dist\AdminKeyGenTool.exe
 
-# 打包
+# 打包用户端EXE
 pyinstaller NetworkConfigGenerator.spec --noconfirm
+
+# 打包管理员制码工具EXE
+pyinstaller admin_tool.spec --noconfirm
 ```
 
 ---
 
-## 打包配置（NetworkConfigGenerator.spec）
+## 打包配置
+
+### 用户端（NetworkConfigGenerator.spec）
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
 | 入口文件 | `main.py` | 程序入口 |
 | 输出文件 | `dist/NetworkConfigGenerator.exe` | 单文件EXE |
-| 大小 | ~47.1MB | PyInstaller单文件封装 |
+| 大小 | 47.1MB | PyInstaller单文件封装 |
 | 控制台 | `console=False` | 无命令行窗口 |
-| UPX | `upx=True` | 压缩 |
 | 数据文件 | `scripts/`, `agents/` | 打包内嵌 |
-| 隐藏导入 | 78个 | 包含所有依赖模块 |
 
-### 关键隐藏导入
+### 管理员工具（admin_tool.spec）
+
+| 配置项 | 值 | 说明 |
+|--------|-----|------|
+| 入口文件 | `admin_tool_main.py` | 管理员工具入口 |
+| 输出文件 | `dist/AdminKeyGenTool.exe` | 单文件EXE |
+| 大小 | 41.2MB | PyInstaller单文件封装 |
+| 控制台 | `console=False` | 无命令行窗口 |
+
+### 关键隐藏导入（V0.3.0新增）
 ```
-src.core.local_audit_engine     # V0.2.1新增
-src.core.local_diagnostic_engine # V0.2.1新增
+src.core.activation_engine      # V0.3.0新增：激活核心引擎
+src.core.admin_keygen           # V0.3.0新增：管理员制码核心
+src.ui.activation_dialog        # V0.3.0新增：用户激活弹窗
+src.core.local_audit_engine     # 本地合规规则引擎
+src.core.local_diagnostic_engine # 本地运行时诊断引擎
 cryptography.hazmat.primitives.ciphers.aead
 cryptography.hazmat.primitives.kdf.pbkdf2
 certifi
@@ -99,14 +115,15 @@ certifi
 
 ---
 
-## 输出产物
+## 输出产物（两个独立EXE）
 
-| 文件 | 位置 | 大小 |
-|------|------|------|
-| `NetworkConfigGenerator.exe` | `dist/` | ~47.1MB |
-| 构建日志 | `build/NetworkConfigGenerator/` | — |
-| 警告日志 | `build/NetworkConfigGenerator/warn-*.txt` | — |
-| 交叉引用 | `build/NetworkConfigGenerator/xref-*.html` | — |
+| 文件 | 位置 | 大小 | 用途 |
+|------|------|------|------|
+| `NetworkConfigGenerator.exe` | `dist/` | 47.1MB | 用户端主程序 |
+| `AdminKeyGenTool.exe` | `dist/` | 41.2MB | 管理员制码工具 |
+| 构建日志 | `build/` | — | 分产品目录存储 |
+| 警告日志 | `build/*/warn-*.txt` | — | — |
+| 交叉引用 | `build/*/xref-*.html` | — | — |
 
 ---
 
@@ -148,6 +165,7 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
+| V0.3.0 激活体系版 | 2026-05-21 | 三套激活方案 + 双EXE + 启动强制校验 + 180天黑名单 |
 | V0.2.1 AI精审优化版 | 2026-05-20 | 双层AI分析 + 精准上下文提取 + Agent文件精简 + Token压缩 |
 | V0.2.0 架构升级版 | 2026-05-19 | 三页面重构 + AI三层架构 + 命名体系统一 |
 | V0.1.0 便携化版 | 2026-05-18 | 路径便携化 + AI多配置管理 |

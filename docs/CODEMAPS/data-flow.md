@@ -1,6 +1,6 @@
 # 数据流代码地图
 
-**最后更新：** 2026-05-20
+**最后更新：** 2026-05-21
 
 ---
 
@@ -14,7 +14,10 @@ EXE所在目录/
 │   ├── machine_id.json            # 机器ID
 │   ├── ai_config.json.enc         # AI配置（加密）
 │   ├── projects_config.json       # 项目列表索引
-│   └── ai_recent_files.json       # AI最近文件记录
+│   ├── ai_recent_files.json       # AI最近文件记录
+│   ├── license.dat                # 激活授权文件（AES-GCM加密）★V0.3.0
+│   ├── admin_records.json         # 管理员制码台账 ★V0.3.0
+│   └── blacklist_local.txt        # 本地黑名单 ★V0.3.0
 │
 ├── single/           ← 🔍 单点运维区（独立隔离）
 │   ├── single_devices.json.enc    # 单点设备清单（加密）
@@ -117,8 +120,38 @@ EXE所在目录/
 | AI模型配置 | `config/ai_config.json.enc` | AES-GCM，密钥绑定机器ID |
 | 单点设备清单 | `single/single_devices.json.enc` | AES-GCM |
 | 设备密码 | `projects/项目名/config/device_list.txt` | 明文（⚠️ 安全提示：导出文件包含明文密码） |
-| 密钥文件 | `config/key_info.json` | 动态派生（V2版本） |
+| 密钥文件 | `config/key_info.json` | 动态派生（V0.2版本） |
 | 机器ID | `config/machine_id.json` | 明文 |
+| 激活授权 | `config/license.dat` | AES-GCM（V0.3.0新增） |
+
+---
+
+## 激活数据流（V0.3.0新增）
+
+### 用户端激活流程
+```
+启动 → _check_activation()
+  → check_activation() 读取 config/license.dat
+  → 已激活 → perform_silent_check()（方案B黑名单校验）
+      → 联网失败 → 跳过（不判失效）
+      → 黑名单命中 → 弹出失效窗口 → 退出
+      → 正常 → 启动主程序
+  → 未激活 → 弹出激活弹窗
+      → 用户复制机器码 → 发送给管理员
+      → 填入激活码 → verify_activation_code()
+      → 校验通过 → save_license() → 启动主程序
+      → 校验失败 → 提示错误，留在弹窗
+```
+
+### 管理员制码流程
+```
+管理员工具 → 粘贴用户机器码
+  → generate_code_for_machine() → 生成16位激活码
+  → save_record() → 写入 config/admin_records.json
+  → 下发激活码给用户
+  → 如需封禁 → add_to_blacklist() → config/blacklist_local.txt
+  → export_blacklist_for_upload() → 导出上传云端
+```
 
 ---
 

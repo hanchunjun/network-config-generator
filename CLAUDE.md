@@ -116,7 +116,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 本项目基于原有PyQt5网络设备配置生成器深度扩建，打造政企级全流程闭环网络自动化运维桌面工具。以原有四厂商配置脚本生成为基础，叠加多项目标准化管理、全网批量自动化运维、单点设备专项排查、AI智能故障诊断、配置合规审计五大核心能力；兼容锐捷、华为、H3C、思科全系列网络设备，采用公共脚本复用+多项目物理隔离架构，**免环境安装、双击直跑、整体拷贝即用**，适配政企电子政务、高校校园网、企业园区网开局建站、日常运维、故障排查、等保合规全场景。
 
-**项目状态：V0.3.0 激活体系版开发中（2026年5月21日）**
+**项目状态：V0.3.0 激活体系版已完成（2026年5月21日）**
 
 ## 基础技术栈
 
@@ -315,7 +315,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 05-dev-build-rule.md    开发实施步骤 + 打包发布规范
 - 06-safety-rule.md       安全执行铁律 + 成品核心能力总结
 - 07-v2-architecture-plan.md  V0.2架构升级方案（已实施完成）
-- 08-activation-plan.md      软件激活三套方案完整技术规范（V0.3.0待开发）
+- 08-activation-plan.md      软件激活三套方案完整技术规范（V0.3.0已完成）
 
 ---
 
@@ -451,18 +451,21 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ## 项目交付物
 
-### 可执行文件
+### 可执行文件（两个独立EXE）
 
-- **位置：** `dist/NetworkConfigGenerator.exe`
-- **大小：** 约47.1MB
-- **状态：** V0.2.0 架构升级版，可直接使用
+| EXE | 位置 | 大小 | 用途 |
+|-----|------|------|------|
+| 用户端主程序 | `dist/NetworkConfigGenerator.exe` | 47.1MB | 用户日常使用，含激活校验 |
+| 管理员制码工具 | `dist/AdminKeyGenTool.exe` | 41.2MB | 管理员专用，生成激活码/管理黑名单 |
+
+> **重要：** 两个EXE独立打包、独立运行。管理员制码工具严禁外发给用户。
 
 ### 源代码结构
 
-- **核心模块：** src/core/ (5文件), src/ui/ (7文件), src/utils/ (3文件)
-- **业务脚本：** scripts/ (3文件)
+- **核心模块：** src/core/ (7文件：含activation_engine.py、admin_keygen.py), src/ui/ (8文件：含activation_dialog.py、admin_tool_window.py), src/utils/ (3文件)
+- **业务脚本：** scripts/ (4文件：含build_admin_tool.py)
 - **AI Agent：** agents/ (2个系统提示词)
-- **测试用例：** tests/ (232个单元测试，核心模块覆盖率≥80%)
+- **测试用例：** tests/ (305个单元测试，核心模块覆盖率≥83%)
 
 ### 文档
 
@@ -478,10 +481,11 @@ D:\网络工具\NetworkConfigGenerator.exe
 ### 首次使用
 
 1. 双击 `NetworkConfigGenerator.exe` 启动（首次会自动创建所有目录）
-2. 进入「📁 新建项目」→ 创建项目 → 添加设备清单
-3. 进入「⚙ 模型设置」→ 配置AI模型 → 测试连通性 → 保存
-4. 进入「🔍 单点运维」→ 添加设备 → 测试连接 → 执行巡检/备份
-5. 进入「🔧 项目运维」→ 选择项目 → 执行批量任务 → 查看结果Tab
+2. **激活软件**：弹出激活窗口 → 复制机器码 → 发送给管理员【天技老韩】→ 填入激活码 → 点击激活
+3. 进入「📁 新建项目」→ 创建项目 → 添加设备清单
+4. 进入「⚙ 模型设置」→ 配置AI模型 → 测试连通性 → 保存
+5. 进入「🔍 单点运维」→ 添加设备 → 测试连接 → 执行巡检/备份
+6. 进入「🔧 项目运维」→ 选择项目 → 执行批量任务 → 查看结果Tab
 
 ### AI使用路径
 
@@ -513,7 +517,9 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ### 故障排查
 
-- **启动崩溃**：检查 `logs/` 目录下最新日志
+- **启动崩溃**：检查 `logs/` 目录下最新日志 + `logs/crash.log`
+- **激活弹窗无法关闭**：正常设计，必须完成激活才能进入主程序
+- **提示"授权已失效"**：设备被列入黑名单，联系管理员【天技老韩】重新审核
 - **AI按钮报"未配置模型"**：进入模型设置确认已保存配置并设为激活
 - **配置丢失**：检查 config/ai_config.json.enc 是否存在
 - **项目找不到**：检查 config/projects_config.json 和 projects/ 目录
@@ -524,13 +530,19 @@ D:\网络工具\NetworkConfigGenerator.exe
 ## 版本更新历史
 
 ### V0.3.0 激活体系版（2026-05-21）
-- 新增软件激活三套方案完整体系（方案A/B/C）
-- 新增激活核心引擎 `src/core/activation_engine.py`
-- 新增用户激活弹窗 `src/ui/activation_dialog.py`
-- 新增管理员制码工具 `src/ui/admin_tool_window.py` + `src/core/admin_keygen.py`
-- 新增管理员工具独立打包脚本 `scripts/build_admin_tool.py`
-- 修改 `main.py` 启动强制校验 + `main_window.py` 未激活拦截
-- 新增规则文件 `.claude/rules/08-activation-plan.md`
+
+- ✅ 新增软件激活三套方案完整体系（方案A纯离线/方案B 180天黑名单/方案C管理员制码工具）
+- ✅ 新增激活核心引擎 `src/core/activation_engine.py`（机器码/激活码/授权存储/黑名单校验）
+- ✅ 新增用户激活弹窗 `src/ui/activation_dialog.py`（无关闭/无跳过/无试用）
+- ✅ 新增管理员制码工具 `src/ui/admin_tool_window.py` + `src/core/admin_keygen.py`
+- ✅ 新增管理员工具独立入口 `admin_tool_main.py` + 打包规格 `admin_tool.spec`
+- ✅ 新增管理员工具打包脚本 `scripts/build_admin_tool.py`
+- ✅ 修改 `main.py` 启动强制校验 + `main_window.py` 版本号
+- ✅ 新增规则文件 `.claude/rules/08-activation-plan.md`
+- ✅ 新增测试文件 `tests/core/test_activation_engine.py`（36个测试用例）
+- ✅ 全量305个测试用例通过，核心模块覆盖率83.43%
+- ✅ 用户端EXE打包：`dist/NetworkConfigGenerator.exe`（47.1MB）
+- ✅ 管理员工具EXE打包：`dist/AdminKeyGenTool.exe`（41.2MB）
 
 ### V0.2.1 目录架构优化版（2026-05-19）
 

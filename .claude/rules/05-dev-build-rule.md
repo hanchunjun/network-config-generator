@@ -1,6 +1,16 @@
-# 开发实施步骤 & 打包规范（V0.2.0）
+# 开发实施步骤 & 打包规范（V0.3.0）
 
 ## 开发实施步骤
+
+### V0.3.0 激活体系（2026年5月21日）
+
+1. **激活核心引擎**：`src/core/activation_engine.py` — 机器码生成、激活码生成/校验、AES-GCM加密授权存储、180天黑名单静默校验
+2. **管理员制码核心**：`src/core/admin_keygen.py` — 激活码生成、台账记录、黑名单管理
+3. **用户激活弹窗**：`src/ui/activation_dialog.py` — 无关闭/无跳过/无试用，严格按定稿文案
+4. **管理员制码工具UI**：`src/ui/admin_tool_window.py` — 独立窗口，台账+黑名单快捷管理
+5. **管理员工具入口**：`admin_tool_main.py` + `admin_tool.spec` — 独立EXE打包
+6. **启动强制校验**：修改 `main.py`，激活校验最高优先级，未激活不加载业务模块
+7. **测试覆盖**：`tests/core/test_activation_engine.py` — 36个用例，全部通过
 
 ### V0.2.0 架构升级（2026年5月19日）
 
@@ -31,6 +41,7 @@
 4. **安全确认对话框**：导出、删除、查看密码确认
 5. **原子文件操作**：防止数据损坏
 6. **日志系统**：详细的操作审计记录
+7. **激活体系安全**：设备绑定+启动强制校验+加密授权存储+权限隔离
 
 ### 性能优化
 
@@ -59,22 +70,25 @@ thread.start()
 ## 打包工具
 
 - **工具：** PyInstaller 6.0.0
-- **规格文件：** NetworkConfigGenerator.spec
+- **用户端规格文件：** `NetworkConfigGenerator.spec`
+- **管理员工具规格文件：** `admin_tool.spec`
 - **优化参数：** 包含所有依赖，单文件输出
 
 ## 打包包含
 
 - **原有源码：** 全量源文件
 - **新增模块：** 日志系统、验证器、密钥管理、文件操作、本地审计引擎
-- **公共脚本：** backup_all_config.py, network_inspect.py, run_trouble_cmd.py
+- **激活体系（V0.3.0新增）：** activation_engine、admin_keygen、activation_dialog、admin_tool_window
+- **公共脚本：** backup_all_config.py, network_inspect.py, run_trouble_cmd.py, build_admin_tool.py
 - **AI Agent：** agents/network-config-reviewer.md, agents/network-troubleshooter.md
 - **第三方依赖：** PyQt5, cryptography, Netmiko, Paramiko, requests 等
 
-## 输出产物
+## 输出产物（两个独立EXE）
 
-- **位置：** `dist/NetworkConfigGenerator.exe`
-- **格式：** 单文件绿色EXE
-- **大小：** 约48.7MB
+| EXE | 位置 | 大小 | 用途 |
+|-----|------|------|------|
+| 用户端主程序 | `dist/NetworkConfigGenerator.exe` | 47.1MB | 用户日常使用，含激活校验 |
+| 管理员制码工具 | `dist/AdminKeyGenTool.exe` | 41.2MB | 管理员专用，生成激活码/管理黑名单 |
 
 ## 运行环境
 
@@ -85,9 +99,9 @@ thread.start()
 
 ## 数据存储
 
-- **系统配置：** config/ 目录（含 projects_config.json、key_info.json、ai_config.json.enc、ai_recent_files.json）
+- **系统配置：** config/ 目录（含 projects_config.json、key_info.json、ai_config.json.enc、ai_recent_files.json、license.dat、admin_records.json、blacklist_local.txt）
 - **设备清单：** projects/目录内各项目的 config/device_list.txt
-- **日志文件：** logs/netops_*.log
+- **日志文件：** logs/netops_*.log + logs/crash.log
 - **单点输出：** single/config_backup/、single/output/single_exception/、single/report/
 - **项目输出：** projects/项目名/output/、projects/项目名/report/、projects/项目名/config_backup/
 
@@ -107,17 +121,23 @@ python -m py_compile src/ui/project_manager_page.py
 python -m py_compile src/ui/main_window.py
 python -m py_compile src/ui/single_device_page.py
 python -m py_compile src/ui/system_settings_page.py
+python -m py_compile src/core/activation_engine.py
+python -m py_compile src/core/admin_keygen.py
 
 # 全量导入链验证
 python -c "from src.ui.main_window import MainWindow; print('OK')"
+python -c "from src.core.activation_engine import check_activation; print('OK')"
 
-# 打包生成EXE
+# 打包用户端EXE
 pyinstaller NetworkConfigGenerator.spec --noconfirm
+
+# 打包管理员制码工具EXE
+pyinstaller admin_tool.spec --noconfirm
 ```
 
 ## 版本信息
 
-- **版本：** NetOps V0.2.0（架构升级版）
-- **日期：** 2026年5月19日
-- **升级：** 三页面重构 + AI三层架构 + 命名体系统一 + 文件管理标准化
+- **版本：** NetOps V0.3.0（激活体系版）
+- **日期：** 2026年5月21日
+- **升级：** 激活三套方案 + 双EXE交付 + 启动强制校验 + 180天黑名单
 - **状态：** 已完成，可商用交付

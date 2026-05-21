@@ -1,6 +1,6 @@
 # 核心引擎代码地图
 
-**最后更新：** 2026-05-20
+**最后更新：** 2026-05-21
 
 ---
 
@@ -14,9 +14,68 @@ src/core/
 ├── secure_config.py             # 加密配置文件读写
 ├── config_generator.py          # 配置脚本生成器
 ├── device_manager.py            # 设备管理
-├── local_audit_engine.py        # 本地合规规则引擎 ⭐V0.2.1新增
-└── local_diagnostic_engine.py   # 本地运行时诊断引擎 ⭐V0.2.1新增
+├── local_audit_engine.py        # 本地合规规则引擎
+├── local_diagnostic_engine.py   # 本地运行时诊断引擎
+├── activation_engine.py         # 激活核心引擎 ⭐V0.3.0新增
+└── admin_keygen.py              # 管理员制码核心 ⭐V0.3.0新增
 ```
+
+---
+
+## activation_engine.py — 激活核心引擎（V0.3.0新增）
+
+**职责：** 设备绑定激活的完整生命周期管理：机器码生成、激活码生成/校验、AES-GCM加密授权存储、180天黑名单静默校验。
+
+### 核心算法
+| 算法 | 说明 |
+|------|------|
+| 机器码 | CPU序列号 + 硬盘物理序列号 → MD5 → 32位大写 |
+| 激活码 | 机器码 + 内置私钥 → MD5 → 前16位大写 |
+| 授权存储 | AES-GCM加密 → `config/license.dat` |
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `get_machine_code()` | 采集硬件信息生成唯一机器码 |
+| `generate_activation_code(machine_code)` | 根据机器码生成激活码（管理员端使用） |
+| `verify_activation_code(code)` | 校验激活码是否匹配本机 |
+| `save_license(machine_code)` | AES-GCM加密存储授权文件 |
+| `load_license()` | 解密读取授权文件 |
+| `check_activation()` | 检查本地激活状态 |
+| `check_blacklist(machine_code)` | 联网校验云端黑名单 |
+| `perform_silent_check()` | 方案B静默校验（联网失败跳过） |
+| `is_due_for_check()` | 判断是否到期需要联网校验 |
+
+### 关键常量
+| 常量 | 值 |
+|------|------|
+| 私钥 | `NetOps::Activation::SecretKey::2026` |
+| 授权文件 | `config/license.dat` |
+| 黑名单URL | `https://raw.githubusercontent.com/hanchunjun/network-config-generator/main/blacklist.txt` |
+| 校验周期 | 180天 |
+
+---
+
+## admin_keygen.py — 管理员制码核心（V0.3.0新增）
+
+**职责：** 管理员制码工具的后端逻辑：激活码生成、台账记录、黑名单管理。
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `generate_code_for_machine(machine_code)` | 为指定机器码生成激活码 |
+| `save_record(machine_code, activation_code, note)` | 保存授权台账记录 |
+| `load_records()` | 加载所有台账记录 |
+| `add_to_blacklist(machine_code, reason)` | 添加机器码到黑名单 |
+| `remove_from_blacklist(machine_code)` | 从黑名单移除 |
+| `load_blacklist()` | 加载本地黑名单 |
+| `export_blacklist_for_upload()` | 导出黑名单（用于上传云端） |
+
+### 数据文件
+| 文件 | 用途 |
+|------|------|
+| `config/admin_records.json` | 授权台账记录 |
+| `config/blacklist_local.txt` | 本地黑名单 |
 
 ---
 
