@@ -23,7 +23,7 @@ python main.py
 # 安装依赖
 pip install PyQt5 cryptography netmiko paramiko requests certifi
 
-# 运行测试（V2.1已废弃，待重建）
+# 运行测试（V0.2.1已废弃，待重建）
 python -m pytest tests/ -v
 ```
 
@@ -90,8 +90,8 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 ### 关键隐藏导入
 ```
-src.core.local_audit_engine     # V2.1新增
-src.core.local_diagnostic_engine # V2.1新增
+src.core.local_audit_engine     # V0.2.1新增
+src.core.local_diagnostic_engine # V0.2.1新增
 cryptography.hazmat.primitives.ciphers.aead
 cryptography.hazmat.primitives.kdf.pbkdf2
 certifi
@@ -148,7 +148,7 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
-| V2.1 AI精审优化版 | 2026-05-20 | 双层AI分析 + 精准上下文提取 + Agent文件精简 + Token压缩 |
-| V2.0 架构升级版 | 2026-05-19 | 三页面重构 + AI三层架构 + 命名体系统一 |
-| V1.0 便携化版 | 2026-05-18 | 路径便携化 + AI多配置管理 |
-| V0.9 初始版 | 2026-05-17 | 基础六菜单框架 |
+| V0.2.1 AI精审优化版 | 2026-05-20 | 双层AI分析 + 精准上下文提取 + Agent文件精简 + Token压缩 |
+| V0.2.0 架构升级版 | 2026-05-19 | 三页面重构 + AI三层架构 + 命名体系统一 |
+| V0.1.0 便携化版 | 2026-05-18 | 路径便携化 + AI多配置管理 |
+| V0.0.9 初始版 | 2026-05-17 | 基础六菜单框架 |

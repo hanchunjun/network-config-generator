@@ -108,7 +108,7 @@ def _migrate_old_file(old_path: str, new_path: str, is_dir: bool = False) -> boo
 
 
 def _migrate_old_data(base: str) -> None:
-    """将V2.1之前的散落文件迁移到三区分离结构。
+    """将V0.2.1之前的散落文件迁移到三区分离结构。
 
     迁移列表：
         - ai_config.json.enc → config/

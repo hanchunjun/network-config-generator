@@ -116,18 +116,18 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 本项目基于原有PyQt5网络设备配置生成器深度扩建，打造政企级全流程闭环网络自动化运维桌面工具。以原有四厂商配置脚本生成为基础，叠加多项目标准化管理、全网批量自动化运维、单点设备专项排查、AI智能故障诊断、配置合规审计五大核心能力；兼容锐捷、华为、H3C、思科全系列网络设备，采用公共脚本复用+多项目物理隔离架构，**免环境安装、双击直跑、整体拷贝即用**，适配政企电子政务、高校校园网、企业园区网开局建站、日常运维、故障排查、等保合规全场景。
 
-**项目状态：V3.0 激活体系版开发中（2026年5月21日）**
+**项目状态：V0.3.0 激活体系版开发中（2026年5月21日）**
 
 ## 基础技术栈
 
 - 开发语言：Python 3.11
 - 界面框架：PyQt5
 - 设计模式：面向对象 + 工厂模式 + 单例模式
-- 加密算法：AES-GCM (V2版本)
+- 加密算法：AES-GCM (V0.2版本)
 - 打包部署：PyInstaller 单EXE封装（约47.1MB）
 - AI能力：三层架构（嵌入式按钮 → Agent快捷指令 → 自由对话）+ 双层分析（本地预检 + AI精审）
 
-## 顶部固定主菜单（V2）
+## 顶部固定主菜单（V0.2）
 
 ```
 📁 新建项目   →   🔧 项目运维   →   🔍 单点运维   →   🤖 专家工作站   →   🖥 设备配置   →   ⚙ 模型设置
@@ -227,7 +227,7 @@ PROJECTS_DIR = r"C:\Network-Config\projects"
 ├── 📄 NetworkConfigGenerator.exe          ← 主程序（唯一顶层文件）
 │
 ├── 📂 config/                             ← 🔧 系统配置
-│   ├── key_info.json                      ← 加密密钥（AES-GCM V2）
+│   ├── key_info.json                      ← 加密密钥（AES-GCM V0.2）
 │   ├── machine_id.json                    ← 机器绑定ID
 │   ├── ai_config.json.enc                 ← AI模型配置（加密存储）
 │   ├── projects_config.json               ← 项目列表索引
@@ -314,8 +314,8 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 04-user-workflow.md      全流程用户操作步骤
 - 05-dev-build-rule.md    开发实施步骤 + 打包发布规范
 - 06-safety-rule.md       安全执行铁律 + 成品核心能力总结
-- 07-v2-architecture-plan.md  V2架构升级方案（已实施完成）
-- 08-activation-plan.md      软件激活三套方案完整技术规范（V3.0待开发）
+- 07-v2-architecture-plan.md  V0.2架构升级方案（已实施完成）
+- 08-activation-plan.md      软件激活三套方案完整技术规范（V0.3.0待开发）
 
 ---
 
@@ -323,7 +323,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ### 安全加固（9项改进）
 
-- ✅ 密钥管理系统升级（V2版本，支持自动迁移）
+- ✅ 密钥管理系统升级（V0.2版本，支持自动迁移）
 - ✅ 加密工具增强（AES-GCM算法，多版本兼容）
 - ✅ 输入验证器（IP、设备、项目验证）
 - ✅ 安全确认对话框（导出、删除、查看密码）
@@ -348,13 +348,13 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ### 测试框架
 
-- ✅ **V2.1 测试体系已重建**：232 个单元测试用例，覆盖 `src/core/` 和 `src/utils/` 全部核心模块
+- ✅ **V0.2.1 测试体系已重建**：232 个单元测试用例，覆盖 `src/core/` 和 `src/utils/` 全部核心模块
 - ✅ 核心模块覆盖率 **80.71%**（阈值 ≥80%，`.coveragerc` 排除 UI 模板和 PyInstaller 运行时检测）
 - ✅ 自动化流水线：`scripts/pre_commit_check.py` 17 项质量门禁（语法/导入/类型/测试+覆盖率/安全/复杂度）
-- ⚪ V0.9 时期测试用例（test_security.py 等，共 35 个用例）已随架构升级废弃，由新测试体系替代
+- ⚪ V0.0.9 时期测试用例（test_security.py 等，共 35 个用例）已随架构升级废弃，由新测试体系替代
 - ⚪ UI 层集成测试和 E2E 测试待后续补充
 
-### V3.0 激活体系（2026-05-21 新增）
+### V0.3.0 激活体系（2026-05-21 新增）
 - ✅ **三套激活方案**：方案A纯离线永久激活 / 方案B 180天黑名单可控激活 / 方案C管理员独立制码工具
 - ✅ **机器码绑定**：CPU序列号+硬盘物理序列号→MD5→32位大写唯一机器码
 - ✅ **激活码算法**：机器码+内置私钥→16位大写激活码，一机一码
@@ -362,7 +362,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ✅ **180天静默校验**：方案B后台联网校验云端黑名单，支持远程封禁/解绑
 - ✅ **管理员制码工具**：独立EXE，唯一出码渠道，台账自动记录
 
-### V2.0 架构升级（2026-05-19 更新）
+### V0.2.0 架构升级（2026-05-19 更新）
 
 - ✅ 运维工具箱 → 重构为「项目运维」任务中心（3任务卡片 + 4Tab + AI嵌入）
 - ✅ AI分析页 → 重定义为「专家工作站」（3Tab + Agent快捷指令 + 自由对话）
@@ -401,7 +401,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ## 关键源码文件速查
 
-### 激活体系（V3.0 新增）
+### 激活体系（V0.3.0 新增）
 
 | 文件 | 职责 |
 |------|------|
@@ -415,13 +415,13 @@ D:\网络工具\NetworkConfigGenerator.exe
 | 文件 | 职责 |
 |------|------|
 | [src/utils/resource_path.py](src/utils/resource_path.py) | get_app_dir() / get_single_dir() / get_config_path() / ensure_dirs() + 旧数据迁移 |
-| [src/core/key_manager.py](src/core/key_manager.py) | AES-GCM 密钥管理（V2版本） |
+| [src/core/key_manager.py](src/core/key_manager.py) | AES-GCM 密钥管理（V0.2版本） |
 | [src/core/secure_config.py](src/core/secure_config.py) | 加密配置文件读写（单例） |
 | [src/core/logger.py](src/core/logger.py) | 日志系统（EXE同级logs/） |
 | [src/core/local_audit_engine.py](src/core/local_audit_engine.py) | 本地合规规则引擎（双层审计预检层） |
 | [src/core/local_diagnostic_engine.py](src/core/local_diagnostic_engine.py) | 本地运行时诊断引擎（异常提取 + 精准上下文） |
 
-### UI页面（V2架构）
+### UI页面（V0.2架构）
 
 | 文件 | 导航名称 | 职责 |
 |------|---------|------|
@@ -455,7 +455,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 - **位置：** `dist/NetworkConfigGenerator.exe`
 - **大小：** 约47.1MB
-- **状态：** V2.0 架构升级版，可直接使用
+- **状态：** V0.2.0 架构升级版，可直接使用
 
 ### 源代码结构
 
@@ -504,7 +504,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 文件保存：原子操作，防止损坏
 - EXE大小：47.1MB（PyInstaller打包）
 
-### AI请求优化（V2.1）
+### AI请求优化（V0.2.1）
 
 - **双层分析**：本地规则引擎预检 + AI精审，减少AI无效推理
 - **精准上下文提取**：`extract_relevant_context()` 根据异常位置提取周边上下文，替代全文截断
@@ -523,7 +523,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 
 ## 版本更新历史
 
-### V3.0 激活体系版（2026-05-21）
+### V0.3.0 激活体系版（2026-05-21）
 - 新增软件激活三套方案完整体系（方案A/B/C）
 - 新增激活核心引擎 `src/core/activation_engine.py`
 - 新增用户激活弹窗 `src/ui/activation_dialog.py`
@@ -532,7 +532,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 修改 `main.py` 启动强制校验 + `main_window.py` 未激活拦截
 - 新增规则文件 `.claude/rules/08-activation-plan.md`
 
-### V2.1 目录架构优化版（2026-05-19）
+### V0.2.1 目录架构优化版（2026-05-19）
 
 - ✅ 三区分离架构：系统配置(`config/`) + 单点数据(`single/`) + 项目数据(`projects/`)，顶层仅保留EXE
 - ✅ 单点运维数据全量归入 `single/` 子目录，与项目内部结构复用同一套脚本逻辑
@@ -543,7 +543,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ✅ 旧数据自动迁移：首次启动自动将散落文件迁移至新结构
 - ✅ 新增 `get_single_dir()` / `get_config_dir()` API
 
-### V2.0 架构升级版（2026-05-19）
+### V0.2.0 架构升级版（2026-05-19）
 
 - 运维工具箱重构为「项目运维」任务中心（3任务卡片 + 4Tab + AI嵌入 + 文件三件套）
 - AI分析页重定义为「专家工作站」（3Tab + Agent快捷指令 + 可编辑Prompt + 多文件）
@@ -554,7 +554,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 双层审计架构（本地预检 + AI精审）
 - 合规审计报告全中文化
 
-### V2.1 AI精审优化版（2026-05-20）
+### V0.2.1 AI精审优化版（2026-05-20）
 
 - ✅ **双层AI分析架构**：本地规则引擎预检 → 精简摘要 + 精准上下文 → AI精审
 - ✅ **精准上下文提取**：`extract_relevant_context()` 精确子串匹配 + 行数上限保护
@@ -563,7 +563,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ✅ **关键词匹配修复**：从模糊拆词匹配改为精确行匹配，避免大文件全文发送
 - ✅ **spec文件补全**：新增 `local_diagnostic_engine` hiddenimport
 
-### V1.0 便携化版（2026-05-18）
+### V0.1.0 便携化版（2026-05-18）
 
 - 全面路径便携化改造，所有数据跟随EXE
 - AI模型多配置管理（新增/删除/重命名/切换/加密）
@@ -572,7 +572,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - 日志系统跟随EXE
 - 修复 key_manager.py Path 导入缺失问题
 
-### V0.9 初始版（2026-05-17）
+### V0.0.9 初始版（2026-05-17）
 
 - 基础六菜单框架搭建
 - 四厂商配置脚本集成

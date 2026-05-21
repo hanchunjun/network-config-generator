@@ -1,4 +1,4 @@
-# NetOps V2.1 运行时依赖（Python 3.11）
+# NetOps V0.2.1 运行时依赖（Python 3.11）
 # 安装：pip install -r requirements.txt
 
 # 核心框架

@@ -14,8 +14,8 @@ src/core/
 ├── secure_config.py             # 加密配置文件读写
 ├── config_generator.py          # 配置脚本生成器
 ├── device_manager.py            # 设备管理
-├── local_audit_engine.py        # 本地合规规则引擎 ⭐V2.1新增
-└── local_diagnostic_engine.py   # 本地运行时诊断引擎 ⭐V2.1新增
+├── local_audit_engine.py        # 本地合规规则引擎 ⭐V0.2.1新增
+└── local_diagnostic_engine.py   # 本地运行时诊断引擎 ⭐V0.2.1新增
 ```
 
 ---
@@ -90,7 +90,7 @@ AuditResult: findings[], audit_time_ms
 
 ---
 
-## key_manager.py — 密钥管理系统（V2）
+## key_manager.py — 密钥管理系统（V0.2）
 
 **职责：** AES-GCM密钥的生成、存储、派生和迁移。
 
@@ -99,12 +99,12 @@ AuditResult: findings[], audit_time_ms
 |------|------|
 | `get_key()` | 获取当前密钥（自动创建/迁移） |
 | `derive_key_from_machine_id()` | 从机器ID派生密钥 |
-| `migrate_v1_to_v2()` | V1→V2格式自动迁移 |
+| `migrate_v1_to_v2()` | V0.1.0→V0.2格式自动迁移 |
 
 ### 密钥文件
 | 文件 | 用途 |
 |------|------|
-| `config/key_info.json` | 加密密钥（AES-GCM V2） |
+| `config/key_info.json` | 加密密钥（AES-GCM V0.2） |
 | `config/machine_id.json` | 机器绑定ID |
 
 ---

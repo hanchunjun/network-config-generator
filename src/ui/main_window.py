@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         ensure_dirs()
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V3.0')
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()
@@ -594,7 +594,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 15, 20, 15)
         layout.setSpacing(10)
 
-        title_label = QLabel('NetOps 企业网络自动化运维平台 V1.0 试用版')
+        title_label = QLabel('NetOps 企业网络自动化运维平台 V0.1.0 试用版')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
         layout.addWidget(title_label)
