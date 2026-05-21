@@ -77,7 +77,7 @@ def _check_activation() -> bool:
     from src.core.activation_engine import check_activation, perform_silent_check
     from src.core.logger import netops_logger
 
-    is_active, status = check_activation()
+    is_active, status, _info = check_activation()
 
     if is_active:
         # 方案B：激活成功后静默校验黑名单（联网失败跳过，不判失效）
