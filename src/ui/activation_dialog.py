@@ -24,6 +24,7 @@ from src.core.activation_engine import (
     verify_activation_code,
     save_license,
     check_activation,
+    decode_activation_code,
 )
 from src.core.logger import netops_logger
 
@@ -146,11 +147,11 @@ class ActivationDialog(QDialog):
         layout.addWidget(act_label)
 
         self._activation_input = QLineEdit()
-        self._activation_input.setPlaceholderText("请输入16位激活码")
+        self._activation_input.setPlaceholderText("请输入16位或18位激活码")
         self._activation_input.setFont(QFont("Consolas", 12, QFont.Bold))
         self._activation_input.setAlignment(Qt.AlignCenter)
         self._activation_input.setMinimumHeight(40)
-        self._activation_input.setMaxLength(16)
+        self._activation_input.setMaxLength(18)
         self._activation_input.setStyleSheet(
             "QLineEdit {"
             "  border: 2px solid #BDBDBD;"
@@ -212,12 +213,14 @@ class ActivationDialog(QDialog):
             QMessageBox.warning(self, "提示", "请输入激活码")
             return
 
-        if len(code) != 16:
-            QMessageBox.warning(self, "提示", "激活码格式不正确，请输入16位激活码")
+        if len(code) not in (16, 18):
+            QMessageBox.warning(self, "提示", "激活码格式不正确，请输入16位或18位激活码")
             return
 
         if verify_activation_code(code, self._machine_code):
-            if save_license(self._machine_code, code):
+            # 从激活码中解析有效期（支持16位旧格式和18位新格式）
+            _base_code, validity_days = decode_activation_code(code)
+            if save_license(self._machine_code, code, validity_days=validity_days):
                 self._activated = True
                 netops_logger.get_logger().info("软件激活成功")
                 QMessageBox.information(self, "激活成功", "软件已成功激活，感谢使用！")
@@ -230,7 +233,7 @@ class ActivationDialog(QDialog):
                 self, "激活失败",
                 "激活码无效，请确认后重试。\n\n"
                 "请检查：\n"
-                "1. 激活码是否输入正确（16位大写字母+数字）\n"
+                "1. 激活码是否输入正确（16位或18位大写字母+数字）\n"
                 "2. 激活码是否与当前设备匹配\n"
                 "3. 联系管理员【天技老韩】确认激活码\n"
                 "   QQ：223518  微信：tachlaohan"
