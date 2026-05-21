@@ -3,7 +3,7 @@
 """
 批量命令生成器
 支持模板+参数(%a~%f)→批量生成配置命令
-支持预置模板（四厂商VLAN/接口VLAN/DHCP）+ 用户自定义模板管理
+支持预置模板（四厂商VLAN/接口VLAN）+ 用户自定义模板管理
 """
 
 import re
@@ -29,9 +29,10 @@ from src.utils.file_operators import JSONFileManager
 # 预置模板数据
 # ─────────────────────────────────────────────
 def _build_preset_templates() -> List[dict]:
-    """构建12个预置模板数据列表"""
+    """构建8个预置模板数据列表（四厂商 × VLAN + 接口VLAN）"""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     presets: List[dict] = [
+        # ── 锐捷 ──
         {
             "id": "preset_ruijie_vlan",
             "name": "锐捷-VLAN批量创建",
@@ -40,31 +41,21 @@ def _build_preset_templates() -> List[dict]:
             "type": "vlan",
             "content": "vlan %a\n name VLAN_%a\nexit\n",
             "params": ["a"],
-            "description": "锐捷交换机批量创建VLAN并命名",
+            "description": "锐捷交换机批量创建VLAN并命名（%a=VLAN号）",
             "created_at": now,
         },
         {
             "id": "preset_ruijie_interface_vlan",
-            "name": "锐捷-接口VLAN划分",
+            "name": "锐捷-接口划分VLAN",
             "category": "preset",
             "vendor": "锐捷",
             "type": "interface_vlan",
-            "content": "interface %a\n switchport mode access\n switchport access vlan %b\nexit\n",
+            "content": "interface GigabitEthernet 0/%a\n switchport mode access\n switchport access vlan %b\nexit\n",
             "params": ["a", "b"],
-            "description": "锐捷交换机接口划入指定VLAN",
+            "description": "锐捷交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
-        {
-            "id": "preset_ruijie_dhcp",
-            "name": "锐捷-DHCP地址池",
-            "category": "preset",
-            "vendor": "锐捷",
-            "type": "dhcp",
-            "content": "ip dhcp pool VLAN_%a\n network %b %c\n default-router %d\n dns-server %e\nexit\n",
-            "params": ["a", "b", "c", "d", "e"],
-            "description": "锐捷交换机DHCP地址池配置",
-            "created_at": now,
-        },
+        # ── 华为 ──
         {
             "id": "preset_huawei_vlan",
             "name": "华为-VLAN批量创建",
@@ -73,31 +64,21 @@ def _build_preset_templates() -> List[dict]:
             "type": "vlan",
             "content": "vlan batch %a to %b\n",
             "params": ["a", "b"],
-            "description": "华为交换机批量创建VLAN",
+            "description": "华为交换机批量创建VLAN（%a=起始VLAN %b=结束VLAN）",
             "created_at": now,
         },
         {
             "id": "preset_huawei_interface_vlan",
-            "name": "华为-接口VLAN划分",
+            "name": "华为-接口划分VLAN",
             "category": "preset",
             "vendor": "华为",
             "type": "interface_vlan",
-            "content": "interface %a\n port link-type access\n port default vlan %b\nquit\n",
+            "content": "interface GigabitEthernet 0/%a\n port link-type access\n port default vlan %b\nquit\n",
             "params": ["a", "b"],
-            "description": "华为交换机接口划入指定VLAN",
+            "description": "华为交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
-        {
-            "id": "preset_huawei_dhcp",
-            "name": "华为-DHCP地址池",
-            "category": "preset",
-            "vendor": "华为",
-            "type": "dhcp",
-            "content": "ip pool VLAN_%a\n gateway-list %b\n network %c mask %d\n dns-list %e\nexpired day %f\nquit\ndhcp enable\n",
-            "params": ["a", "b", "c", "d", "e", "f"],
-            "description": "华为交换机DHCP全局地址池配置",
-            "created_at": now,
-        },
+        # ── H3C ──
         {
             "id": "preset_h3c_vlan",
             "name": "H3C-VLAN批量创建",
@@ -106,31 +87,21 @@ def _build_preset_templates() -> List[dict]:
             "type": "vlan",
             "content": "vlan %a\n name VLAN_%a\nquit\n",
             "params": ["a"],
-            "description": "H3C交换机创建VLAN并命名",
+            "description": "H3C交换机创建VLAN并命名（%a=VLAN号）",
             "created_at": now,
         },
         {
             "id": "preset_h3c_interface_vlan",
-            "name": "H3C-接口VLAN划分",
+            "name": "H3C-接口划分VLAN",
             "category": "preset",
             "vendor": "H3C",
             "type": "interface_vlan",
-            "content": "interface %a\n port access vlan %b\nquit\n",
+            "content": "interface GigabitEthernet 0/%a\n port access vlan %b\nquit\n",
             "params": ["a", "b"],
-            "description": "H3C交换机接口划入指定VLAN",
+            "description": "H3C交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
-        {
-            "id": "preset_h3c_dhcp",
-            "name": "H3C-DHCP地址池",
-            "category": "preset",
-            "vendor": "H3C",
-            "type": "dhcp",
-            "content": "dhcp server ip-pool VLAN_%a\n gateway-list %b\n network %c mask %d\n dns-list %e\nexpired day %f\nquit\ndhcp enable\n",
-            "params": ["a", "b", "c", "d", "e", "f"],
-            "description": "H3C交换机DHCP地址池配置",
-            "created_at": now,
-        },
+        # ── 思科 ──
         {
             "id": "preset_cisco_vlan",
             "name": "思科-VLAN批量创建",
@@ -139,29 +110,18 @@ def _build_preset_templates() -> List[dict]:
             "type": "vlan",
             "content": "vlan %a\n name VLAN_%a\nexit\n",
             "params": ["a"],
-            "description": "Cisco交换机创建VLAN并命名",
+            "description": "Cisco交换机创建VLAN并命名（%a=VLAN号）",
             "created_at": now,
         },
         {
             "id": "preset_cisco_interface_vlan",
-            "name": "思科-接口VLAN划分",
+            "name": "思科-接口划分VLAN",
             "category": "preset",
             "vendor": "思科",
             "type": "interface_vlan",
-            "content": "interface %a\n switchport mode access\n switchport access vlan %b\nexit\n",
+            "content": "interface GigabitEthernet 0/%a\n switchport mode access\n switchport access vlan %b\nexit\n",
             "params": ["a", "b"],
-            "description": "Cisco交换机接口划入指定VLAN",
-            "created_at": now,
-        },
-        {
-            "id": "preset_cisco_dhcp",
-            "name": "思科-DHCP地址池",
-            "category": "preset",
-            "vendor": "思科",
-            "type": "dhcp",
-            "content": "ip dhcp pool VLAN_%a\n network %b %c\n default-router %d\n dns-server %e\nexit\n",
-            "params": ["a", "b", "c", "d", "e"],
-            "description": "Cisco交换机DHCP地址池配置",
+            "description": "Cisco交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
     ]
@@ -561,10 +521,12 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_edit.setPlaceholderText(
             "在此输入命令模板，或从上方下拉框选择预置模板...\n\n"
             "参数格式: %a=第1个参数, %b=第2个参数, ... %f=第6个参数\n\n"
-            "示例（锐捷VLAN）:\n"
-            "vlan %a\n"
-            " name VLAN_%a\n"
-            "exit\n"
+            "示例（锐捷接口划分VLAN）:\n"
+            "interface GigabitEthernet 0/%a\n"
+            " switchport mode access\n"
+            " switchport access vlan %b\n"
+            "exit\n\n"
+            "%a=接口编号(如1~24), %b=VLAN号(如100~200)"
         )
         self.template_edit.setMinimumHeight(110)
         self.template_edit.setFont(QFont("Consolas", 11))
