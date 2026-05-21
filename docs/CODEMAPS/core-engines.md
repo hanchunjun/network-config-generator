@@ -24,7 +24,7 @@ src/core/
 
 ## activation_engine.py — 激活核心引擎（V0.3.0新增）
 
-**职责：** 设备绑定激活的完整生命周期管理：机器码生成、激活码生成/校验、AES-GCM加密授权存储、180天黑名单静默校验。
+**职责：** 设备绑定激活的完整生命周期管理：机器码生成、激活码生成/校验、AES-GCM加密授权存储（含有效期）、180天黑名单静默校验、剩余天数计算。
 
 ### 核心算法
 | 算法 | 说明 |
@@ -39,9 +39,9 @@ src/core/
 | `get_machine_code()` | 采集硬件信息生成唯一机器码 |
 | `generate_activation_code(machine_code)` | 根据机器码生成激活码（管理员端使用） |
 | `verify_activation_code(code)` | 校验激活码是否匹配本机 |
-| `save_license(machine_code)` | AES-GCM加密存储授权文件 |
+| `save_license(machine_code, code, validity_days=0)` | AES-GCM加密存储授权文件，支持有效期（0=永久） |
 | `load_license()` | 解密读取授权文件 |
-| `check_activation()` | 检查本地激活状态 |
+| `check_activation()` | 检查本地激活状态，返回3元组(bool, str, dict)，dict含days_remaining/is_permanent/expire_at等 |
 | `check_blacklist(machine_code)` | 联网校验云端黑名单 |
 | `perform_silent_check()` | 方案B静默校验（联网失败跳过） |
 | `is_due_for_check()` | 判断是否到期需要联网校验 |
@@ -67,6 +67,20 @@ src/core/
 | 本地黑名单 | `admin_data/blacklist.txt` | 每行一个机器码 |
 | 台账备份 | `admin_data/backup/records_YYYYMMDD_HHMMSS.dat` | 带时间戳的加密副本 |
 
+### 有效期选项（10档）
+| 索引 | 选项 | 天数 |
+|------|------|------|
+| 0 | 永久 | 0 |
+| 1 | 5年 | 1825 |
+| 2 | 10年 | 3650 |
+| 3 | 3年 | 1095 |
+| 4 | 2年 | 730 |
+| 5 | 1年 | 365 |
+| 6 | 半年（方案B） | 180 |
+| 7 | 季度 | 90 |
+| 8 | 月度 | 30 |
+| 9 | 周度 | 7 |
+
 ### 台账记录字段
 | 字段 | 说明 |
 |------|------|
@@ -76,13 +90,13 @@ src/core/
 | `note` | 备注信息 |
 | `created_at` | 授权时间（格式：YYYY-MM-DD HH:MM:SS） |
 | `validity_days` | 有效期天数，0=永久 |
-| `expire_at` | 到期时间（格式：YYYY-MM-DD HH:MM），永久为空 |
+| `expire_at` | 到期时间（格式：YYYY-MM-DD HH:MM:SS），永久为空 |
 
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
 | `generate_code_for_machine(machine_code)` | 为指定机器码生成激活码 |
-| `save_record(name, mc, code, note, validity_days)` | 保存台账记录（加密追加，含有效期） |
+| `save_record(name, mc, code, note, validity_days)` | 保存台账记录（加密追加，含有效期，validity_days=0永久） |
 | `load_records()` | 加载所有台账记录（自动解密） |
 | `format_record_time(iso_str)` | 格式化时间字符串为友好显示 |
 | `get_record_expire_status(rec)` | 获取记录有效期状态描述 |
