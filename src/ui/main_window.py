@@ -365,6 +365,14 @@ class MainWindow(QMainWindow):
         self.project_status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-right: 12px;")
         nav_layout.addWidget(self.project_status_label)
 
+        # 激活状态按钮（未激活红色提示，已激活绿色勾选）
+        self._activation_btn = QPushButton()
+        self._activation_btn.setFixedSize(90, 32)
+        self._activation_btn.setCursor(Qt.PointingHandCursor)
+        self._activation_btn.clicked.connect(self._on_activation_btn_clicked)
+        self._update_activation_btn_style()
+        nav_layout.addWidget(self._activation_btn)
+
         about_btn = QPushButton("关于")
         about_btn.setFixedSize(60, 32)
         about_btn.setStyleSheet("""
@@ -619,6 +627,56 @@ class MainWindow(QMainWindow):
             self.config_stack.addWidget(config_page)
             self.config_stack.setCurrentWidget(config_page)
 
+    def _update_activation_btn_style(self) -> None:
+        """更新导航栏激活状态按钮的样式和文字。"""
+        if self._trial_mode:
+            self._activation_btn.setText("🔓 未激活")
+            self._activation_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #FFF2F0;
+                    border: 1px solid #FF7875;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    color: #F5222D;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #FFE7E7;
+                    border-color: #FF4D4F;
+                }
+            """)
+        else:
+            self._activation_btn.setText("✅ 已激活")
+            self._activation_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #F6FFED;
+                    border: 1px solid #73D13D;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    color: #52C41A;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #D9F7BE;
+                    border-color: #52C41A;
+                }
+            """)
+
+    def _on_activation_btn_clicked(self) -> None:
+        """点击导航栏激活按钮。
+
+        未激活 → 弹出激活弹窗
+        已激活 → 弹出已激活提示
+        """
+        if self._trial_mode:
+            self._open_activation_dialog()
+        else:
+            QMessageBox.information(
+                self, "软件已激活",
+                "✅ 软件已激活，全部功能正常使用。\n\n"
+                "感谢您的支持！"
+            )
+
     def _show_trial_prompt(self) -> None:
         """显示试用模式激活提示弹窗。
 
@@ -788,5 +846,6 @@ class MainWindow(QMainWindow):
             # 激活成功，刷新状态
             self._trial_mode = False
             self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
             QMessageBox.information(self, "激活成功", "软件已成功激活，全部功能已开放！")
