@@ -67,45 +67,40 @@ def _check_activation() -> bool:
 
     流程：
     1. 检查本地激活状态
-    2. 未激活 → 弹出激活弹窗
-    3. 激活成功后 → 方案B静默黑名单校验
-    4. 黑名单命中 → 提示失效并退出
+    2. 已激活 → 方案B静默黑名单校验
+    3. 黑名单命中 → 提示失效并退出
+    4. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置）
 
     Returns:
-        bool: 是否通过激活校验
+        bool: 是否允许继续启动（激活或试用模式均返回True）
     """
     from src.core.activation_engine import check_activation, perform_silent_check
     from src.core.logger import netops_logger
 
     is_active, status = check_activation()
 
-    if not is_active:
-        # 未激活 → 弹出激活弹窗
-        from src.ui.activation_dialog import show_activation_dialog
-        activated = show_activation_dialog()
-
-        if not activated:
-            netops_logger.get_logger().warning("用户未完成激活，程序退出")
+    if is_active:
+        # 方案B：激活成功后静默校验黑名单（联网失败跳过，不判失效）
+        valid, msg = perform_silent_check()
+        if not valid:
+            from PyQt5.QtWidgets import QMessageBox
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("软件授权已失效")
+            msg_box.setText(
+                "当前设备对应的软件使用权限已被管理员收回，无法继续正常使用。\n\n"
+                "如需重新开通软件使用权限，请联系管理员【天技老韩】重新审核办理。"
+            )
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
+            netops_logger.get_logger().warning("黑名单校验未通过，程序退出")
             return False
 
-    # 方案B：激活成功后静默校验黑名单（联网失败跳过，不判失效）
-    valid, msg = perform_silent_check()
-    if not valid:
-        from PyQt5.QtWidgets import QMessageBox
-        from PyQt5.QtCore import Qt
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("软件授权已失效")
-        msg_box.setText(
-            "当前设备对应的软件使用权限已被管理员收回，无法继续正常使用。\n\n"
-            "如需重新开通软件使用权限，请联系管理员【天技老韩】重新审核办理。"
-        )
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
-        netops_logger.get_logger().warning("黑名单校验未通过，程序退出")
-        return False
+        netops_logger.get_logger().info("激活校验通过，启动主程序")
+        return True
 
-    netops_logger.get_logger().info("激活校验通过，启动主程序")
-    return True
+    # 未激活 → 进入试用模式
+    netops_logger.get_logger().info("未激活，进入试用模式（仅开放锐捷接入交换机配置）")
+    return True  # 试用模式也允许启动
 
 
 _setup_crash_logger()

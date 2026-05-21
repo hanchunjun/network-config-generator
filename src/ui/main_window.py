@@ -29,6 +29,7 @@ from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchCo
 
 from src.utils.resource_path import get_config_path, ensure_dirs
 from src.core.logger import netops_logger
+from src.core.activation_engine import check_activation
 from src.utils.validators import ProjectValidator
 from src.utils.file_operators import JSONFileManager
 
@@ -76,7 +77,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         ensure_dirs()
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+        self._trial_mode: bool = not check_activation()[0]
+        if self._trial_mode:
+            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置")
+
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0' + (' [试用模式]' if self._trial_mode else ''))
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()
@@ -87,6 +92,11 @@ class MainWindow(QMainWindow):
         self.selected_vendor: Optional[str] = None
         self.selected_device: Optional[str] = None
         self.config_pages: Dict[str, QWidget] = {}
+
+        # 试用模式检测：未激活时为True，仅开放锐捷接入交换机配置
+        self._trial_mode: bool = not check_activation()[0]
+        if self._trial_mode:
+            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置")
 
         # 设置全局样式
         self.setup_global_style()
@@ -200,6 +210,10 @@ class MainWindow(QMainWindow):
                 Qt.Key_6: "system",
             }
             if key in shortcuts:
+                # 试用模式拦截
+                if self._trial_mode and shortcuts[key] != "config":
+                    self._show_trial_prompt()
+                    return
                 self.switch_module(shortcuts[key])
                 module_names = {
                     "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
@@ -368,6 +382,11 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(nav_bar)
 
     def switch_module(self, module_id):
+        # 试用模式拦截：仅允许「设备配置」模块
+        if self._trial_mode and module_id != "config":
+            self._show_trial_prompt()
+            return
+
         page_map = {
             "system": self.system_page,
             "project": self.project_page,
@@ -480,6 +499,11 @@ class MainWindow(QMainWindow):
         parent_layout.addWidget(top_bar)
 
     def on_vendor_clicked(self, vendor):
+        # 试用模式：仅允许选择锐捷
+        if self._trial_mode and vendor != "ruijie":
+            self._show_trial_prompt()
+            return
+
         for vid, button in self.vendor_buttons.items():
             if vid == vendor:
                 button.setStyleSheet("""
@@ -505,6 +529,11 @@ class MainWindow(QMainWindow):
         self.try_show_config_page()
 
     def on_device_clicked(self, device_type):
+        # 试用模式：仅允许选择接入交换机
+        if self._trial_mode and device_type != "access_switch":
+            self._show_trial_prompt()
+            return
+
         for did, button in self.device_buttons.items():
             if did == device_type:
                 button.setStyleSheet("""
@@ -534,6 +563,12 @@ class MainWindow(QMainWindow):
             self.show_config_page(self.selected_vendor, self.selected_device)
 
     def show_config_page(self, vendor, device_type):
+        # 试用模式：仅允许锐捷接入交换机
+        if self._trial_mode:
+            if vendor != "ruijie" or device_type != "access_switch":
+                self._show_trial_prompt()
+                return
+
         page_key = f"{vendor}_{device_type}"
         config_page = None
 
@@ -584,17 +619,100 @@ class MainWindow(QMainWindow):
             self.config_stack.addWidget(config_page)
             self.config_stack.setCurrentWidget(config_page)
 
+    def _show_trial_prompt(self) -> None:
+        """显示试用模式激活提示弹窗。
+
+        提示用户当前为试用模式，仅可使用锐捷接入交换机配置，
+        如需完整功能请联系管理员激活。
+        """
+        dialog = QDialog(self)
+        dialog.setWindowTitle("试用模式・功能受限")
+        dialog.setFixedSize(480, 300)
+        dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.setWindowFlags(
+            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+        )
+
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(25, 20, 25, 20)
+        layout.setSpacing(12)
+
+        # 标题
+        title = QLabel("⚠️  试用模式")
+        title.setFont(QFont("Microsoft YaHei", 15, QFont.Bold))
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("color: #E53935;")
+        layout.addWidget(title)
+
+        # 分隔线
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setStyleSheet("background-color: #E0E0E0;")
+        line.setFixedHeight(1)
+        layout.addWidget(line)
+
+        # 提示正文
+        msg = QLabel(
+            "当前为试用模式，仅可使用「锐捷接入交换机配置」功能。\n\n"
+            "如需使用全部功能（多厂商配置、项目管理、运维巡检、AI分析等），"
+            "请联系管理员激活软件。"
+        )
+        msg.setFont(QFont("Microsoft YaHei", 10))
+        msg.setWordWrap(True)
+        msg.setAlignment(Qt.AlignCenter)
+        msg.setStyleSheet("color: #333333;")
+        layout.addWidget(msg)
+
+        # 联系信息
+        contact = QLabel(
+            "📞 联系管理员：天技老韩\n"
+            "QQ：223518\n"
+            "微信：tachlaohan"
+        )
+        contact.setFont(QFont("Microsoft YaHei", 10))
+        contact.setAlignment(Qt.AlignCenter)
+        contact.setStyleSheet(
+            "color: #1565C0; "
+            "background-color: #F0F7FF; "
+            "border: 1px solid #B3D4FC; "
+            "border-radius: 6px; "
+            "padding: 10px 16px; "
+            "margin-top: 4px;"
+        )
+        layout.addWidget(contact)
+
+        # 确定按钮
+        ok_btn = QPushButton("我知道了")
+        ok_btn.setFont(QFont("Microsoft YaHei", 10))
+        ok_btn.setFixedSize(120, 36)
+        ok_btn.setCursor(Qt.PointingHandCursor)
+        ok_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #165DFF;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            QPushButton:hover { background-color: #0E42D2; }
+        """)
+        ok_btn.clicked.connect(dialog.close)
+        layout.addWidget(ok_btn, alignment=Qt.AlignCenter)
+
+        dialog.exec_()
+
     def show_about_dialog(self):
         dialog = QDialog(self)
         dialog.setWindowTitle('关于')
-        dialog.setFixedSize(500, 300)
+        dialog.setFixedSize(500, 340)
         dialog.setWindowModality(Qt.ApplicationModal)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 15, 20, 15)
         layout.setSpacing(10)
 
-        title_label = QLabel('NetOps 企业网络自动化运维平台 V0.1.0 试用版')
+        version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
+        title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
         layout.addWidget(title_label)
@@ -621,6 +739,27 @@ class MainWindow(QMainWindow):
         disclaimer.setWordWrap(True)
         layout.addWidget(disclaimer)
 
+        # 按钮区域
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(12)
+
+        # 试用模式下显示「软件激活」按钮
+        if self._trial_mode:
+            activate_btn = QPushButton('🔓 软件激活')
+            activate_btn.setFixedSize(120, 40)
+            activate_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #43A047;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+                QPushButton:hover { background-color: #2E7D32; }
+            """)
+            activate_btn.clicked.connect(lambda: (dialog.close(), self._open_activation_dialog()))
+            button_layout.addWidget(activate_btn)
+
         close_button = QPushButton('关闭')
         close_button.setFixedSize(100, 40)
         close_button.setStyleSheet("""
@@ -634,11 +773,20 @@ class MainWindow(QMainWindow):
             QPushButton:hover { background-color: #0E42D2; }
         """)
         close_button.clicked.connect(dialog.close)
-
-        button_layout = QVBoxLayout()
         button_layout.addWidget(close_button)
-        button_layout.setAlignment(Qt.AlignCenter)
+
         layout.addLayout(button_layout)
 
         dialog.setLayout(layout)
         dialog.exec_()
+
+    def _open_activation_dialog(self) -> None:
+        """打开软件激活弹窗（试用模式下用户主动触发）。"""
+        from src.ui.activation_dialog import show_activation_dialog
+        result = show_activation_dialog(self)
+        if result:
+            # 激活成功，刷新状态
+            self._trial_mode = False
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            netops_logger.get_logger().info("用户激活成功，退出试用模式")
+            QMessageBox.information(self, "激活成功", "软件已成功激活，全部功能已开放！")
