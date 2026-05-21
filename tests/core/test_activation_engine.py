@@ -208,9 +208,11 @@ class TestCheckActivation:
 
     def test_not_activated(self):
         """无授权文件应返回未激活"""
-        active, status = check_activation()
+        active, status, info = check_activation()
         assert active is False
         assert status == "未激活"
+        # 未激活时 info 为空字典
+        assert isinstance(info, dict)
 
     def test_activated(self):
         """有效授权应返回已激活"""
@@ -218,9 +220,25 @@ class TestCheckActivation:
         code = generate_activation_code(mc)
         save_license(mc, code, license_path=self._license_path)
 
-        active, status = check_activation()
+        active, status, info = check_activation()
         assert active is True
         assert status == "已激活"
+        assert info["is_permanent"] is True
+        assert info["days_remaining"] == -1
+
+    def test_activated_with_validity(self):
+        """有期限授权应返回已激活且剩余天数正确"""
+        mc = get_machine_code()
+        code = generate_activation_code(mc)
+        save_license(mc, code, validity_days=365, license_path=self._license_path)
+
+        active, status, info = check_activation()
+        assert active is True
+        assert status == "已激活"
+        assert info["is_permanent"] is False
+        assert info["validity_days"] == 365
+        assert 360 <= info["days_remaining"] <= 365
+        assert info["expire_at"] != ""
 
     def test_machine_mismatch(self):
         """机器码不匹配时，授权文件无法解密，应返回未激活"""
@@ -233,7 +251,7 @@ class TestCheckActivation:
         save_license(fake_mc, code, license_path=self._license_path)
 
         # 真实机器码无法解密假机器码的授权文件 → 返回未激活
-        active, status = check_activation(license_path=self._license_path)
+        active, status, info = check_activation(license_path=self._license_path)
         assert active is False
         assert status == "未激活"
 

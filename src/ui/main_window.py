@@ -77,7 +77,10 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         ensure_dirs()
-        self._trial_mode: bool = not check_activation()[0]
+        # 激活状态检测
+        is_active, act_status, act_info = check_activation()
+        self._trial_mode: bool = not is_active
+        self._activation_info: dict = act_info
         if self._trial_mode:
             netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置")
 
@@ -627,6 +630,29 @@ class MainWindow(QMainWindow):
             self.config_stack.addWidget(config_page)
             self.config_stack.setCurrentWidget(config_page)
 
+    def _get_activation_display_text(self) -> str:
+        """获取激活按钮显示文字。
+
+        Returns:
+            str: 按钮文字，如"✅ 已激活"、"✅ 剩365天"、"🔓 未激活"
+        """
+        if self._trial_mode:
+            return "🔓 未激活"
+
+        info = getattr(self, '_activation_info', {})
+        if not info:
+            return "✅ 已激活"
+
+        is_permanent = info.get("is_permanent", True)
+        days_remaining = info.get("days_remaining", -1)
+
+        if is_permanent:
+            return "✅ 永久激活"
+        elif days_remaining > 0:
+            return f"✅ 剩{days_remaining}天"
+        else:
+            return "✅ 已激活"
+
     def _update_activation_btn_style(self) -> None:
         """更新导航栏激活状态按钮的样式和文字。"""
         if self._trial_mode:
@@ -646,36 +672,74 @@ class MainWindow(QMainWindow):
                 }
             """)
         else:
-            self._activation_btn.setText("✅ 已激活")
-            self._activation_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #F6FFED;
-                    border: 1px solid #73D13D;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    color: #52C41A;
-                    font-weight: bold;
-                }
-                QPushButton:hover {
-                    background-color: #D9F7BE;
-                    border-color: #52C41A;
-                }
-            """)
+            # 根据剩余天数选择颜色：永久/充足=绿色，少于30天=橙色警告
+            info = getattr(self, '_activation_info', {})
+            days_remaining = info.get("days_remaining", -1)
+            is_permanent = info.get("is_permanent", True)
+
+            if not is_permanent and days_remaining <= 30 and days_remaining > 0:
+                # 即将过期：橙色警告
+                self._activation_btn.setStyleSheet("""
+                    QPushButton {
+                        background-color: #FFF7E6;
+                        border: 1px solid #FFA940;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #FA8C16;
+                        font-weight: bold;
+                    }
+                    QPushButton:hover {
+                        background-color: #FFE7BA;
+                        border-color: #FA8C16;
+                    }
+                """)
+            else:
+                # 永久或充足：绿色
+                self._activation_btn.setStyleSheet("""
+                    QPushButton {
+                        background-color: #F6FFED;
+                        border: 1px solid #73D13D;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #52C41A;
+                        font-weight: bold;
+                    }
+                    QPushButton:hover {
+                        background-color: #D9F7BE;
+                        border-color: #52C41A;
+                    }
+                """)
+
+        self._activation_btn.setText(self._get_activation_display_text())
 
     def _on_activation_btn_clicked(self) -> None:
         """点击导航栏激活按钮。
 
         未激活 → 弹出激活弹窗
-        已激活 → 弹出已激活提示
+        已激活 → 弹出激活详情（有效期、剩余天数等）
         """
         if self._trial_mode:
             self._open_activation_dialog()
         else:
-            QMessageBox.information(
-                self, "软件已激活",
-                "✅ 软件已激活，全部功能正常使用。\n\n"
-                "感谢您的支持！"
-            )
+            info = getattr(self, '_activation_info', {})
+            is_permanent = info.get("is_permanent", True)
+            activated_at = info.get("activated_at", "未知")
+            expire_at = info.get("expire_at", "")
+            days_remaining = info.get("days_remaining", -1)
+
+            msg = "✅ 软件已激活，全部功能正常使用。\n\n"
+            msg += f"激活时间：{activated_at[:16] if activated_at else '未知'}\n"
+
+            if is_permanent:
+                msg += "授权类型：永久授权\n"
+            else:
+                msg += f"到期时间：{expire_at[:16] if expire_at else '未知'}\n"
+                if days_remaining > 0:
+                    msg += f"剩余天数：{days_remaining} 天\n"
+                    if days_remaining <= 30:
+                        msg += "\n⚠️ 授权即将到期，请及时联系管理员续费！"
+
+            QMessageBox.information(self, "激活详情", msg)
 
     def _show_trial_prompt(self) -> None:
         """显示试用模式激活提示弹窗。
@@ -844,8 +908,21 @@ class MainWindow(QMainWindow):
         result = show_activation_dialog(self)
         if result:
             # 激活成功，刷新状态
-            self._trial_mode = False
+            is_active, act_status, act_info = check_activation()
+            self._trial_mode = not is_active
+            self._activation_info = act_info
             self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
-            QMessageBox.information(self, "激活成功", "软件已成功激活，全部功能已开放！")
+
+            # 显示激活成功详情
+            activated_at = act_info.get("activated_at", "")[:16]
+            is_permanent = act_info.get("is_permanent", True)
+            expire_at = act_info.get("expire_at", "")[:16]
+            msg = "软件已成功激活，全部功能已开放！\n\n"
+            msg += f"激活时间：{activated_at}\n"
+            if is_permanent:
+                msg += "授权类型：永久授权"
+            else:
+                msg += f"到期时间：{expire_at}"
+            QMessageBox.information(self, "激活成功", msg)

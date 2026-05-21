@@ -188,7 +188,8 @@ def _derive_license_key(machine_code: str) -> bytes:
 
 
 def save_license(machine_code: str, activation_code: str,
-                license_path: Optional[str] = None) -> bool:
+                license_path: Optional[str] = None,
+                validity_days: int = 0) -> bool:
     """加密存储授权信息。
 
     使用AES-GCM加密，密钥由机器码+私钥派生。
@@ -197,17 +198,25 @@ def save_license(machine_code: str, activation_code: str,
         machine_code: 本机机器码
         activation_code: 激活码
         license_path: 授权文件路径，默认使用全局 LICENSE_FILE
+        validity_days: 有效期天数，0=永久，180=半年，365=1年，以此类推
 
     Returns:
         bool: 保存是否成功
     """
     path = license_path or LICENSE_FILE
     try:
+        now = datetime.now()
+        expire_at = ""
+        if validity_days > 0:
+            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d %H:%M:%S")
+
         license_data = {
             "machine_code": machine_code,
             "activation_code": activation_code,
-            "activated_at": datetime.now().isoformat(),
-            "version": "v3",
+            "activated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "validity_days": validity_days,
+            "expire_at": expire_at,
+            "version": "v3.1",
         }
         plaintext = json.dumps(license_data, ensure_ascii=False).encode("utf-8")
 
@@ -268,26 +277,30 @@ def load_license(license_path: Optional[str] = None) -> Optional[dict]:
         return None
 
 
-def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str]:
+def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dict]:
     """启动时激活状态校验。
 
     校验逻辑：
     1. 读取授权文件
     2. 解密验证完整性
     3. 比对机器码一致性
+    4. 计算剩余有效期
 
     Args:
         license_path: 授权文件路径，默认使用全局 LICENSE_FILE
 
     Returns:
-        Tuple[bool, str]: (是否已激活, 状态描述)
-            - (True, "已激活") — 激活有效
-            - (False, "未激活") — 无授权文件
-            - (False, "授权失效") — 机器码不匹配或文件损坏
+        Tuple[bool, str, dict]: (是否已激活, 状态描述, 详细信息)
+            详细信息字典包含：
+            - activated_at: 激活时间
+            - validity_days: 有效期天数（0=永久）
+            - expire_at: 到期时间（永久为空字符串）
+            - days_remaining: 剩余天数（永久为-1，已过期为0）
+            - is_permanent: 是否永久
     """
     license_data = load_license(license_path=license_path)
     if license_data is None:
-        return False, "未激活"
+        return False, "未激活", {}
 
     current_code = get_machine_code()
     saved_code = license_data.get("machine_code", "")
@@ -296,9 +309,40 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str]:
         netops_logger.get_logger().warning(
             f"机器码不匹配: 当前={current_code}, 授权={saved_code}"
         )
-        return False, "授权失效"
+        return False, "授权失效", {}
 
-    return True, "已激活"
+    # 计算剩余天数
+    validity_days = license_data.get("validity_days", 0)
+    expire_at_str = license_data.get("expire_at", "")
+    activated_at = license_data.get("activated_at", "")
+
+    days_remaining = -1  # 永久为-1
+    is_permanent = validity_days == 0
+
+    if not is_permanent and expire_at_str:
+        try:
+            expire_dt = datetime.strptime(expire_at_str[:19], "%Y-%m-%d %H:%M:%S")
+            delta = expire_dt - datetime.now()
+            days_remaining = max(0, delta.days)
+            if days_remaining == 0:
+                return False, "授权已过期", {
+                    "activated_at": activated_at,
+                    "validity_days": validity_days,
+                    "expire_at": expire_at_str,
+                    "days_remaining": 0,
+                    "is_permanent": False,
+                }
+        except Exception:
+            pass
+
+    info = {
+        "activated_at": activated_at,
+        "validity_days": validity_days,
+        "expire_at": expire_at_str,
+        "days_remaining": days_remaining,
+        "is_permanent": is_permanent,
+    }
+    return True, "已激活", info
 
 
 # ─── 方案B：180天黑名单校验 ───

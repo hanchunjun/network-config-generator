@@ -163,7 +163,9 @@ class AdminToolWindow(QMainWindow):
         self._validity_combo.addItems([
             "永久（方案A）",
             "180天（方案B·半年）",
-            "365天（一年）",
+            "365天（1年）",
+            "730天（2年）",
+            "1095天（3年）",
             "90天（季度）",
             "30天（月度）",
             "7天（周度）",
@@ -381,12 +383,14 @@ class AdminToolWindow(QMainWindow):
 
         # 解析有效期
         validity_map = {
-            0: 0,    # 永久
-            1: 180,  # 半年
-            2: 365,  # 一年
-            3: 90,   # 季度
-            4: 30,   # 月度
-            5: 7,    # 周度
+            0: 0,     # 永久
+            1: 180,   # 半年
+            2: 365,   # 1年
+            3: 730,   # 2年
+            4: 1095,  # 3年
+            5: 90,    # 季度
+            6: 30,    # 月度
+            7: 7,     # 周度
         }
         validity_days = validity_map.get(self._validity_combo.currentIndex(), 0)
 
