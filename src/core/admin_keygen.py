@@ -139,7 +139,7 @@ def save_record(name: str, machine_code: str, activation_code: str,
         expire_at = ""
         if validity_days > 0:
             from datetime import timedelta
-            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d %H:%M:%S")
+            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d")
 
         record = {
             "name": name,

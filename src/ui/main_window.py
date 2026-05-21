@@ -733,7 +733,7 @@ class MainWindow(QMainWindow):
             if is_permanent:
                 msg += "授权类型：永久授权\n"
             else:
-                msg += f"到期时间：{expire_at[:16] if expire_at else '未知'}\n"
+                msg += f"到期时间：{expire_at if expire_at else '未知'}\n"
                 if days_remaining > 0:
                     msg += f"剩余天数：{days_remaining} 天\n"
                     if days_remaining <= 30:

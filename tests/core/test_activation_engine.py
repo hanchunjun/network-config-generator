@@ -252,7 +252,7 @@ class TestCheckActivation:
         from cryptography.hazmat.primitives.ciphers.aead import AESGCM
         license_data = load_license(license_path=self._license_path)
         assert license_data is not None
-        license_data["expire_at"] = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        license_data["expire_at"] = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         # 重新加密写入
         key_data = None
         try:
@@ -447,9 +447,9 @@ class TestAdminKeygen:
         rec = records[0]
         assert rec["validity_days"] == 1825
         assert rec["expire_at"] != ""
-        # 验证到期时间格式正确（YYYY-MM-DD HH:MM:SS）
+        # 验证到期时间格式正确（YYYY-MM-DD）
         from datetime import datetime
-        expire_dt = datetime.strptime(rec["expire_at"], "%Y-%m-%d %H:%M:%S")
+        expire_dt = datetime.strptime(rec["expire_at"], "%Y-%m-%d")
         # 到期时间应在当前时间+1825天附近（误差1天内）
         from datetime import timedelta
         expected = datetime.now() + timedelta(days=1825)

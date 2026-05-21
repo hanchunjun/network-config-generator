@@ -208,7 +208,7 @@ def save_license(machine_code: str, activation_code: str,
         now = datetime.now()
         expire_at = ""
         if validity_days > 0:
-            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d %H:%M:%S")
+            expire_at = (now + timedelta(days=validity_days)).strftime("%Y-%m-%d")
 
         license_data = {
             "machine_code": machine_code,
@@ -321,15 +321,16 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dic
 
     if not is_permanent and expire_at_str:
         expire_dt = None
-        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
             try:
-                expire_dt = datetime.strptime(expire_at_str[:len(fmt)], fmt)
+                expire_dt = datetime.strptime(expire_at_str.strip(), fmt)
                 break
             except ValueError:
                 continue
         if expire_dt is None:
+            # 最后尝试截取前10字符按日期解析
             try:
-                expire_dt = datetime.strptime(expire_at_str[:19], "%Y-%m-%d %H:%M:%S")
+                expire_dt = datetime.strptime(expire_at_str.strip()[:10], "%Y-%m-%d")
             except Exception:
                 pass
         if expire_dt is not None:
