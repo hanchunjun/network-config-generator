@@ -27,16 +27,15 @@ from typing import Optional, Tuple
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from src.core.logger import netops_logger
-from src.utils.resource_path import get_config_dir
+from src.utils.resource_path import get_activation_dir
 
 # ─── 内置私钥（用户端与管理员制码工具必须完全一致）───
 _ACTIVATION_SECRET_KEY: str = "NetOps::Activation::SecretKey::2026"
 
-# ─── 授权文件路径 ───
-LICENSE_FILE: str = os.path.join(get_config_dir(), "license.dat")
-
-# ─── 方案B：黑名单校验记录文件 ───
-BLACKLIST_CHECK_FILE: str = os.path.join(get_config_dir(), "bl_check.dat")
+# ─── 激活文件路径（activation/ 独立目录）───
+_ACTIVATION_DIR: str = get_activation_dir()
+LICENSE_FILE: str = os.path.join(_ACTIVATION_DIR, "license.dat")
+BLACKLIST_CHECK_FILE: str = os.path.join(_ACTIVATION_DIR, "bl_check.dat")
 
 # ─── 方案B：黑名单URL（静态TXT，每行一个机器码）───
 BLACKLIST_URL: str = "https://raw.githubusercontent.com/hanchunjun/network-config-generator/main/blacklist.txt"

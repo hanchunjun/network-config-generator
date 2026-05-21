@@ -14,10 +14,13 @@ EXE所在目录/
 │   ├── machine_id.json            # 机器ID
 │   ├── ai_config.json.enc         # AI配置（加密）
 │   ├── projects_config.json       # 项目列表索引
-│   ├── ai_recent_files.json       # AI最近文件记录
-│   ├── license.dat                # 激活授权文件（AES-GCM加密）★V0.3.0
-│   ├── admin_records.json         # 管理员制码台账 ★V0.3.0
-│   └── blacklist_local.txt        # 本地黑名单 ★V0.3.0
+│   └── ai_recent_files.json       # AI最近文件记录
+│
+├── activation/       ← 🔐 激活体系区（V0.3.0新增）
+│   ├── license.dat                # 激活授权文件（AES-GCM加密）
+│   ├── bl_check.dat               # 黑名单校验时间记录
+│   ├── admin_records.json         # 管理员制码台账
+│   └── blacklist_local.txt        # 本地黑名单
 │
 ├── single/           ← 🔍 单点运维区（独立隔离）
 │   ├── single_devices.json.enc    # 单点设备清单（加密）
@@ -122,7 +125,7 @@ EXE所在目录/
 | 设备密码 | `projects/项目名/config/device_list.txt` | 明文（⚠️ 安全提示：导出文件包含明文密码） |
 | 密钥文件 | `config/key_info.json` | 动态派生（V0.2版本） |
 | 机器ID | `config/machine_id.json` | 明文 |
-| 激活授权 | `config/license.dat` | AES-GCM（V0.3.0新增） |
+| 激活授权 | `activation/license.dat` | AES-GCM（V0.3.0新增） |
 
 ---
 

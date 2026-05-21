@@ -43,18 +43,24 @@ project_root/
 
 核心规则：项目间数据完全物理隔离，禁止跨项目读取、写入、操作，所有运维操作仅绑定当前选中项目。
 
-## EXE运行时目录结构（V0.2.1 三区分离）
+## EXE运行时目录结构（V0.3.0 四区分离）
 
 ```
 程序根目录/
 ├── NetworkConfigGenerator.exe     ← 主程序（唯一顶层文件）
 │
 ├── config/                        ← 🔧 系统配置
-│   ├── key_info.json              ← 加密密钥（AES-GCM V2）
+│   ├── key_info.json              ← 加密密钥（AES-GCM V0.2）
 │   ├── machine_id.json            ← 机器绑定ID
 │   ├── ai_config.json.enc         ← AI模型配置（加密）
 │   ├── projects_config.json       ← 项目列表索引
 │   └── ai_recent_files.json       ← AI最近文件记录
+│
+├── activation/                    ← 🔐 激活体系（V0.3.0新增）
+│   ├── license.dat                ← 激活授权文件（AES-GCM加密）
+│   ├── bl_check.dat               ← 黑名单校验时间记录
+│   ├── admin_records.json         ← 管理员制码台账
+│   └── blacklist_local.txt        ← 本地黑名单
 │
 ├── logs/                          ← 📝 运行日志
 │
@@ -82,7 +88,7 @@ project_root/
             └── diagnosis/
 ```
 
-> **三区分离设计**：系统(`config/`)、单点(`single/`)、项目(`projects/`)，三层物理隔离，`single/` 与项目内子目录结构同构，复用同一套脚本逻辑。
+> **四区分离设计**：系统配置(`config/`) + 激活体系(`activation/`) + 单点数据(`single/`) + 项目数据(`projects/`)，四层物理隔离。`single/` 与项目内子目录结构同构，复用同一套脚本逻辑。
 
 ## 路径管理API
 
@@ -90,6 +96,7 @@ project_root/
 |------|------|------|
 | `get_app_dir()` | EXE所在目录根路径 | `D:\工具\` |
 | `get_config_dir()` | 系统配置子目录 | `D:\工具\config\` |
+| `get_activation_dir()` | 激活体系子目录 | `D:\工具\activation\` |
 | `get_single_dir()` | 单点运维子目录 | `D:\工具\single\` |
 | `get_config_path(filename)` | 相对于EXE根目录的路径 | `D:\工具\config\ai_config.json.enc` |
 | `resource_path(relative)` | 打包内嵌资源 | `_MEIPASS/scripts/` |

@@ -198,6 +198,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 |------|------|------|
 | `get_app_dir()` | EXE所在目录根路径 | `D:\工具\` |
 | `get_config_dir()` | 系统配置子目录 | `D:\工具\config\` |
+| `get_activation_dir()` | 激活体系子目录 | `D:\工具\activation\` |
 | `get_single_dir()` | 单点运维数据子目录 | `D:\工具\single\` |
 | `get_config_path(filename)` | 相对于EXE根目录的路径 | `D:\工具\config\ai_config.json.enc` |
 | `resource_path(relative)` | 打包内嵌资源（仅开发时） | `_MEIPASS/scripts/` |
@@ -232,6 +233,12 @@ PROJECTS_DIR = r"C:\Network-Config\projects"
 │   ├── ai_config.json.enc                 ← AI模型配置（加密存储）
 │   ├── projects_config.json               ← 项目列表索引
 │   └── ai_recent_files.json               ← AI最近文件记录
+│
+├── 📂 activation/                         ← 🔐 激活体系（V0.3.0新增）
+│   ├── license.dat                        ← 激活授权文件（AES-GCM加密）
+│   ├── bl_check.dat                       ← 黑名单校验时间记录
+│   ├── admin_records.json                 ← 管理员制码台账
+│   └── blacklist_local.txt                ← 本地黑名单
 │
 ├── 📂 logs/                               ← 📝 运行日志
 │   ├── netops_YYYYMMDD.log                ← 按日期分割

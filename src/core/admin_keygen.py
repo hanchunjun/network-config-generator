@@ -19,13 +19,12 @@ from typing import List, Optional
 
 from src.core.activation_engine import generate_activation_code, BLACKLIST_URL
 from src.core.logger import netops_logger
-from src.utils.resource_path import get_config_dir
+from src.utils.resource_path import get_activation_dir
 
-# ─── 台账文件路径 ───
-LICENSE_RECORDS_FILE: str = os.path.join(get_config_dir(), "admin_records.json")
-
-# ─── 本地黑名单文件（管理员工具维护，上传到云端）───
-BLACKLIST_LOCAL_FILE: str = os.path.join(get_config_dir(), "blacklist_local.txt")
+# ─── 激活文件路径（activation/ 独立目录）───
+_ACTIVATION_DIR: str = get_activation_dir()
+LICENSE_RECORDS_FILE: str = os.path.join(_ACTIVATION_DIR, "admin_records.json")
+BLACKLIST_LOCAL_FILE: str = os.path.join(_ACTIVATION_DIR, "blacklist_local.txt")
 
 
 def generate_code_for_machine(machine_code: str) -> str:

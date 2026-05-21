@@ -7,6 +7,7 @@
 目录结构（ensure_dirs 创建）：
     EXE所在目录/
     ├── config/         系统配置（加密密钥、AI配置、项目索引）
+    ├── activation/     激活体系（授权文件、台账、黑名单）
     ├── logs/           运行日志
     ├── single/         单点运维数据（备份/报告/异常）
     └── projects/       项目数据（每个项目独立子目录）
@@ -67,6 +68,17 @@ def get_config_dir() -> str:
         str: config/ 目录的绝对路径
     """
     return os.path.join(get_app_dir(), "config")
+
+
+def get_activation_dir() -> str:
+    """获取激活体系目录路径。
+
+    存放激活授权文件、管理员台账、黑名单等。
+
+    Returns:
+        str: activation/ 目录的绝对路径
+    """
+    return os.path.join(get_app_dir(), "activation")
 
 
 def get_single_dir() -> str:
@@ -131,6 +143,11 @@ def _migrate_old_data(base: str) -> None:
         ("single_devices.json.enc", os.path.join("single", "single_devices.json.enc"), False),
         ("config_backup", os.path.join("single", "config_backup"), True),
         ("output", os.path.join("single", "output"), True),
+        # V0.3.0：激活文件从 config/ 迁移到 activation/
+        (os.path.join("config", "license.dat"), os.path.join("activation", "license.dat"), False),
+        (os.path.join("config", "bl_check.dat"), os.path.join("activation", "bl_check.dat"), False),
+        (os.path.join("config", "admin_records.json"), os.path.join("activation", "admin_records.json"), False),
+        (os.path.join("config", "blacklist_local.txt"), os.path.join("activation", "blacklist_local.txt"), False),
     ]
 
     for old_rel, new_rel, is_dir in file_relocations:
@@ -163,7 +180,7 @@ def ensure_dirs():
     最后执行 _migrate_old_data() 迁移旧版散落文件。
     """
     base = get_app_dir()
-    for subdir in ["config"]:
+    for subdir in ["config", "activation"]:
         os.makedirs(os.path.join(base, subdir), exist_ok=True)
 
     single_root = os.path.join(base, "single")
