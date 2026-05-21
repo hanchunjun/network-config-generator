@@ -55,6 +55,9 @@ class ActivationDialog(QDialog):
         )
         self.setWindowTitle("软件未激活・请完成正版激活")
         self.setFixedSize(560, 420)
+        self.setMinimumSize(560, 420)
+        self.setMaximumSize(560, 420)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setModal(True)
 
         layout = QVBoxLayout(self)
