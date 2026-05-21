@@ -905,7 +905,7 @@ class MainWindow(QMainWindow):
     def _open_activation_dialog(self) -> None:
         """打开软件激活弹窗（试用模式下用户主动触发）。"""
         from src.ui.activation_dialog import show_activation_dialog
-        result = show_activation_dialog(self)
+        result = show_activation_dialog(self, trial_mode=True)
         if result:
             # 激活成功，刷新状态
             is_active, act_status, act_info = check_activation()

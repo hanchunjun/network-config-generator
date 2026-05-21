@@ -39,9 +39,10 @@ class ActivationDialog(QDialog):
         _activated: 激活是否成功
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, trial_mode: bool = False):
         super().__init__(parent)
         self._activated: bool = False
+        self._trial_mode: bool = trial_mode
         self._machine_code: str = get_machine_code()
         self._setup_ui()
         self._apply_style()
@@ -181,6 +182,27 @@ class ActivationDialog(QDialog):
         )
         layout.addWidget(activate_btn)
 
+        # ── 稍后再说（仅试用模式显示）──
+        if self._trial_mode:
+            later_btn = QPushButton("稍后再说")
+            later_btn.setFont(QFont("Microsoft YaHei", 9))
+            later_btn.setMinimumHeight(32)
+            later_btn.setCursor(Qt.PointingHandCursor)
+            later_btn.clicked.connect(self._on_later)
+            later_btn.setStyleSheet(
+                "QPushButton {"
+                "  background-color: transparent;"
+                "  color: #9E9E9E;"
+                "  border: 1px solid #E0E0E0;"
+                "  border-radius: 4px;"
+                "}"
+                "QPushButton:hover {"
+                "  color: #616161;"
+                "  border-color: #BDBDBD;"
+                "}"
+            )
+            layout.addWidget(later_btn)
+
         # ── 温馨须知 ──
         note_label = QLabel(
             "💡 温馨须知：本软件绑定单台设备使用，更换电脑需重新申请激活。"
@@ -244,9 +266,14 @@ class ActivationDialog(QDialog):
         """激活是否成功"""
         return self._activated
 
+    def _on_later(self) -> None:
+        """稍后再说 — 试用模式下允许关闭弹窗返回主窗口"""
+        self._activated = False
+        self.reject()
+
     def closeEvent(self, event) -> None:
-        """禁止关闭弹窗（无关闭按钮，此处为二次保险）"""
-        if not self._activated:
+        """禁止关闭弹窗（试用模式下允许通过「稍后再说」关闭）"""
+        if not self._activated and not self._trial_mode:
             event.ignore()
         else:
             event.accept()
@@ -259,16 +286,17 @@ class ActivationDialog(QDialog):
             super().keyPressEvent(event)
 
 
-def show_activation_dialog(parent=None) -> bool:
+def show_activation_dialog(parent=None, trial_mode: bool = False) -> bool:
     """显示激活弹窗的便捷函数。
 
     Args:
         parent: 父窗口
+        trial_mode: 是否为试用模式（试用模式下显示「稍后再说」按钮允许关闭）
 
     Returns:
         bool: 是否激活成功
     """
-    dialog = ActivationDialog(parent)
+    dialog = ActivationDialog(parent, trial_mode=trial_mode)
     dialog.exec_()
     return dialog.activated
 
