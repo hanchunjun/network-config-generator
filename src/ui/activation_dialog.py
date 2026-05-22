@@ -55,9 +55,9 @@ class ActivationDialog(QDialog):
             Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowTitle("软件未激活・请完成正版激活")
-        self.setFixedSize(560, 420)
-        self.setMinimumSize(560, 420)
-        self.setMaximumSize(560, 420)
+        self.setFixedSize(580, 560)
+        self.setMinimumSize(580, 560)
+        self.setMaximumSize(580, 560)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setModal(True)
 
@@ -81,8 +81,9 @@ class ActivationDialog(QDialog):
 
         # ── 正文说明 ──
         desc_label = QLabel(
-            "当前软件暂未完成授权激活。未激活状态下仅可试用【锐捷接入交换机】\n"
-            "配置生成功能，其他厂商及设备类型需完成激活后方可使用。"
+            "感谢您使用 NetOps！当前为试用模式，已开放【锐捷接入交换机配置】和"
+            "【批量命令生成】两项基础功能。激活后即可解锁全部功能："
+            "四厂商全设备配置、批量运维巡检、AI智能诊断等。"
         )
         desc_label.setFont(QFont("Microsoft YaHei", 10))
         desc_label.setWordWrap(True)
@@ -135,11 +136,8 @@ class ActivationDialog(QDialog):
 
         # ── 操作指引 ──
         guide_label = QLabel(
-            "操作指引：\n"
-            "1. 点击「一键复制」完整复制机器码\n"
-            "2. 将机器码发送给管理员【老韩】申领激活码\n"
-            "   QQ：223518  微信：tachlaohan\n"
-            "3. 填写管理员发放的激活码，点击「立即激活」"
+            "① 点击「📋一键复制」机器码 → 发送给老韩（QQ:223518 / 微信:tachlaohan）"
+            "  ② 收到激活码后填入上方输入框 → 点击「立即激活」"
         )
         guide_label.setFont(QFont("Microsoft YaHei", 9))
         guide_label.setWordWrap(True)
@@ -212,8 +210,7 @@ class ActivationDialog(QDialog):
 
         # ── 温馨须知 ──
         note_label = QLabel(
-            "💡 温馨须知：本软件绑定单台设备使用，更换电脑需重新申请激活。"
-            "无自助开通、无自助付费通道，全部由管理员人工统一发放权限。"
+            "💡 本软件一机一码，换电脑需重新申请。无自助开通渠道，请联系老韩人工办理。"
         )
         note_label.setFont(QFont("Microsoft YaHei", 8))
         note_label.setWordWrap(True)

@@ -17,7 +17,7 @@ class BaseConfigPage(QWidget):
         # 标题
         title_layout = QHBoxLayout()
         self.title_label = QLabel('配置页面')
-        self.title_label.setStyleSheet('font-size: 20px; font-weight: bold;')
+        self.title_label.setStyleSheet('font-size: 15pt; font-weight: bold;')
         title_layout.addWidget(self.title_label)
         
         # 返回按钮
@@ -28,7 +28,7 @@ class BaseConfigPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 14px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 border: 1px solid #165DFF;
@@ -45,7 +45,7 @@ class BaseConfigPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 14px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 border: 1px solid #165DFF;
@@ -75,7 +75,7 @@ class BaseConfigPage(QWidget):
         
         preview_header = QHBoxLayout()
         preview_label = QLabel('配置脚本预览')
-        preview_label.setStyleSheet('font-size: 16px; font-weight: bold;')
+        preview_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
         preview_header.addWidget(preview_label)
         preview_header.addStretch()
         
@@ -87,7 +87,7 @@ class BaseConfigPage(QWidget):
                 color: white;
                 border: none;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 background-color: #0E42D2;
@@ -103,7 +103,7 @@ class BaseConfigPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 border: 1px solid #165DFF;
@@ -119,7 +119,7 @@ class BaseConfigPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 border: 1px solid #165DFF;
@@ -135,7 +135,7 @@ class BaseConfigPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover {
                 border: 1px solid #165DFF;
@@ -154,7 +154,7 @@ class BaseConfigPage(QWidget):
                 border-radius: 4px;
                 padding: 10px;
                 font-family: 'Courier New', monospace;
-                font-size: 14px;
+                font-size: 10pt;
             }
         """)
         preview_layout.addWidget(self.preview_text, 1)
@@ -218,14 +218,14 @@ class BaseConfigPage(QWidget):
         # 卡片标题
         title_layout = QHBoxLayout()
         title_label = QLabel(f'{icon} {title}')
-        title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
+        title_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
         title_layout.addWidget(title_label)
         title_layout.addStretch()
         card_layout.addLayout(title_layout)
         
         # 卡片描述
         desc_label = QLabel(description)
-        desc_label.setStyleSheet('font-size: 14px; color: #86909C; margin-bottom: 10px;')
+        desc_label.setStyleSheet('font-size: 10pt; color: #86909C; margin-bottom: 10px;')
         card_layout.addWidget(desc_label)
         
         # 表单区域
@@ -248,13 +248,13 @@ class BaseConfigPage(QWidget):
         # 标签
         label = QLabel(label_text)
         label.setFixedWidth(120)
-        label.setStyleSheet('font-size: 14px;')
+        label.setStyleSheet('font-size: 10pt;')
         item_layout.addWidget(label)
         
         # 输入框
         if is_label:
             input_field = QLabel(default_value)
-            input_field.setStyleSheet('font-size: 14px; color: #86909C;')
+            input_field.setStyleSheet('font-size: 10pt; color: #86909C;')
         else:
             input_field = QLineEdit()
             input_field.setFixedHeight(32)
@@ -289,7 +289,7 @@ class BaseConfigPage(QWidget):
                     border: 1px solid #E5E6EB;
                     border-radius: 4px;
                     padding: 0 12px;
-                    font-size: 14px;
+                    font-size: 10pt;
                     color: #1D2129;
                 }
                 QLineEdit:focus {
@@ -310,7 +310,7 @@ class BaseConfigPage(QWidget):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 0 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 color: #1D2129;
             }
             QLineEdit:focus {

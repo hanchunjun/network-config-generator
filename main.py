@@ -107,8 +107,12 @@ _setup_crash_logger()
 _install_qt_message_handler()
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
 
 if __name__ == '__main__':
+    # 启用高DPI缩放，避免字体在125%/150%缩放下过大
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     app = QApplication(sys.argv)
 
     # ★ 最高优先级：激活校验（未激活不加载任何业务模块）

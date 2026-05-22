@@ -28,7 +28,7 @@ class CiscoACConfig(BaseConfigPage):
                 margin-right: 4px;
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
-                font-size: 14px;
+                font-size: 10pt;
                 color: #4E5969;
             }
             QTabBar::tab:selected {
@@ -57,18 +57,18 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel('登录方式:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         login_mode_layout.addWidget(label)
         
         # 仅配置密码登录
         pwd_only_radio = QRadioButton('仅配置密码登录')
         pwd_only_radio.setChecked(True)
-        pwd_only_radio.setStyleSheet('font-size: 14px; color: #4E5969;')
+        pwd_only_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
         login_mode_layout.addWidget(pwd_only_radio)
         
         # 配置用户名+密码
         user_pwd_radio = QRadioButton('配置用户名+密码')
-        user_pwd_radio.setStyleSheet('font-size: 14px; color: #4E5969;')
+        user_pwd_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
         login_mode_layout.addWidget(user_pwd_radio)
         
         login_mode_layout.addStretch()
@@ -80,7 +80,7 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel('console密码:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         pwd_layout.addWidget(label)
         
         console_pwd_input = QLineEdit()
@@ -91,7 +91,7 @@ class CiscoACConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -110,7 +110,7 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel('用户名:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         user_pwd_layout.addWidget(label)
         
         user_input = QLineEdit()
@@ -120,7 +120,7 @@ class CiscoACConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -132,7 +132,7 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel('密码:')
         label.setFixedWidth(80)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         user_pwd_layout.addWidget(label)
         
         user_pwd_input = QLineEdit()
@@ -143,7 +143,7 @@ class CiscoACConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -325,13 +325,13 @@ class CiscoACConfig(BaseConfigPage):
         title_layout.addWidget(checkbox)
         
         title_label = QLabel(f'{icon} {title}')
-        title_label.setStyleSheet('font-size: 16px; font-weight: bold; color: #1D2129;')
+        title_label.setStyleSheet('font-size: 12pt; font-weight: bold; color: #1D2129;')
         title_layout.addWidget(title_label)
         
         # 功能描述（如果有）
         if description:
             desc_label = QLabel(description)
-            desc_label.setStyleSheet('font-size: 12px; color: #86909C;')
+            desc_label.setStyleSheet('font-size: 9pt; color: #86909C;')
             title_layout.addWidget(desc_label)
         
         title_layout.addStretch()
@@ -358,13 +358,13 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         item_layout.addWidget(label)
         
         if is_label:
             # 标签模式（不可编辑）
             value_label = QLabel(default_value)
-            value_label.setStyleSheet('color: #1D2129; font-size: 14px;')
+            value_label.setStyleSheet('color: #1D2129; font-size: 10pt;')
             item_layout.addWidget(value_label)
         else:
             # 输入框模式
@@ -375,7 +375,7 @@ class CiscoACConfig(BaseConfigPage):
                     border: 1px solid #E5E6EB;
                     border-radius: 4px;
                     padding: 0 12px;
-                    font-size: 14px;
+                    font-size: 10pt;
                     color: #1D2129;
                 }
                 QLineEdit:focus {
@@ -422,7 +422,7 @@ class CiscoACConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         item_layout.addWidget(label)
         
         combo = QComboBox()
@@ -433,7 +433,7 @@ class CiscoACConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 0 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 color: #1D2129;
             }
             QComboBox:focus {

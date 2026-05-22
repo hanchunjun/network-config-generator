@@ -29,7 +29,7 @@ from src.utils.file_operators import JSONFileManager
 # 预置模板数据
 # ─────────────────────────────────────────────
 def _build_preset_templates() -> List[dict]:
-    """构建8个预置模板数据列表（四厂商 × VLAN + 接口VLAN）"""
+    """构建12个预置模板数据列表（四厂商 × VLAN + 接口VLAN + DHCP）"""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     presets: List[dict] = [
         # ── 锐捷 ──
@@ -55,6 +55,17 @@ def _build_preset_templates() -> List[dict]:
             "description": "锐捷交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
+        {
+            "id": "preset_ruijie_dhcp",
+            "name": "锐捷-DHCP地址池",
+            "category": "preset",
+            "vendor": "锐捷",
+            "type": "dhcp",
+            "content": "ip dhcp pool VLAN_%a\n network 192.168.%b.0 255.255.255.0\n default-router 192.168.%b.254\n dns-server 61.147.37.1 218.2.135.1\nexit\n",
+            "params": ["a", "b"],
+            "description": "锐捷交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+            "created_at": now,
+        },
         # ── 华为 ──
         {
             "id": "preset_huawei_vlan",
@@ -76,6 +87,17 @@ def _build_preset_templates() -> List[dict]:
             "content": "interface GigabitEthernet 0/%a\n port link-type access\n port default vlan %b\nquit\n",
             "params": ["a", "b"],
             "description": "华为交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
+            "created_at": now,
+        },
+        {
+            "id": "preset_huawei_dhcp",
+            "name": "华为-DHCP地址池",
+            "category": "preset",
+            "vendor": "华为",
+            "type": "dhcp",
+            "content": "ip pool VLAN_%a\n gateway-list 192.168.%b.254\n network 192.168.%b.0 mask 255.255.255.0\n dns-list 61.147.37.1 218.2.135.1\nquit\ndhcp enable\n",
+            "params": ["a", "b"],
+            "description": "华为交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
             "created_at": now,
         },
         # ── H3C ──
@@ -101,6 +123,17 @@ def _build_preset_templates() -> List[dict]:
             "description": "H3C交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
+        {
+            "id": "preset_h3c_dhcp",
+            "name": "H3C-DHCP地址池",
+            "category": "preset",
+            "vendor": "H3C",
+            "type": "dhcp",
+            "content": "dhcp server ip-pool VLAN_%a\n gateway-list 192.168.%b.254\n network 192.168.%b.0 mask 255.255.255.0\n dns-list 61.147.37.1 218.2.135.1\nquit\ndhcp enable\n",
+            "params": ["a", "b"],
+            "description": "H3C交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+            "created_at": now,
+        },
         # ── 思科 ──
         {
             "id": "preset_cisco_vlan",
@@ -124,6 +157,17 @@ def _build_preset_templates() -> List[dict]:
             "description": "Cisco交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
             "created_at": now,
         },
+        {
+            "id": "preset_cisco_dhcp",
+            "name": "思科-DHCP地址池",
+            "category": "preset",
+            "vendor": "思科",
+            "type": "dhcp",
+            "content": "ip dhcp pool VLAN_%a\n network 192.168.%b.0 255.255.255.0\n default-router 192.168.%b.254\n dns-server 61.147.37.1 218.2.135.1\nexit\n",
+            "params": ["a", "b"],
+            "description": "Cisco交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+            "created_at": now,
+        },
     ]
     return presets
 
@@ -137,7 +181,7 @@ class ParamGroupWidget(QGroupBox):
         self.param_char = param_char
         self.setStyleSheet(
             "QGroupBox {"
-            "  font-size: 12px; font-weight: bold; color: #1D2129;"
+            "  font-size: 9pt; font-weight: bold; color: #1D2129;"
             "  border: 1px solid #C9CDD4; border-radius: 6px;"
             "  margin-top: 8px; padding-top: 10px;"
             "}"
@@ -151,7 +195,7 @@ class ParamGroupWidget(QGroupBox):
         layout.addWidget(QLabel("基数:"), row, 0)
         self.base_spin = QSpinBox()
         self.base_spin.setRange(0, 99999)
-        self.base_spin.setValue(0)
+        self.base_spin.setValue(1)
         self.base_spin.setMinimumHeight(24)
         self.base_spin.setMinimumWidth(50)
         layout.addWidget(self.base_spin, row, 1)
@@ -169,7 +213,7 @@ class ParamGroupWidget(QGroupBox):
         layout.addWidget(self.repeat_cb, row, 0, 1, 2)
         self.repeat_spin = QSpinBox()
         self.repeat_spin.setRange(1, 9999)
-        self.repeat_spin.setValue(8)
+        self.repeat_spin.setValue(1)
         self.repeat_spin.setEnabled(False)
         self.repeat_spin.setMinimumHeight(24)
         self.repeat_spin.setMinimumWidth(48)
@@ -180,7 +224,7 @@ class ParamGroupWidget(QGroupBox):
         layout.addWidget(self.loop_cb, row, 0, 1, 2)
         self.loop_spin = QSpinBox()
         self.loop_spin.setRange(1, 9999)
-        self.loop_spin.setValue(24)
+        self.loop_spin.setValue(4)
         self.loop_spin.setEnabled(False)
         self.loop_spin.setMinimumHeight(24)
         self.loop_spin.setMinimumWidth(48)
@@ -209,7 +253,7 @@ class BatchCmdGeneratorPage(QWidget):
         self._param_widgets: List[ParamGroupWidget] = []
 
         # 模板数据
-        self._template_file: str = get_config_path("cmd_templates.json")
+        self._template_file: str = get_config_path("config/cmd_templates.json")
         self._templates: List[dict] = []
         self._preset_templates: List[dict] = []
         self._user_templates: List[dict] = []
@@ -224,6 +268,8 @@ class BatchCmdGeneratorPage(QWidget):
 
     def _init_template_data(self) -> None:
         """加载模板数据，不存在则从预置创建"""
+        from src.utils.resource_path import ensure_dirs
+        ensure_dirs()
         if self._template_file and self._template_file.endswith(".json"):
             data = JSONFileManager.load_json(self._template_file, default=None)
             if data and "templates" in data:
@@ -489,7 +535,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_combo.setStyleSheet(
             "QComboBox {"
             "  border: 1px solid #C9CDD4; border-radius: 4px;"
-            "  padding: 4px 8px; font-size: 12px; background: white;"
+            "  padding: 4px 8px; font-size: 9pt; background: white;"
             "}"
             "QComboBox:hover { border-color: #165DFF; }"
             "QComboBox::drop-down { border: none; width: 24px; }"
@@ -504,7 +550,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.manage_btn.setStyleSheet(
             "QPushButton {"
             "  background-color: #F2F3F5; color: #4E5969;"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; font-size: 12px;"
+            "  border: 1px solid #C9CDD4; border-radius: 4px; font-size: 9pt;"
             "}"
             "QPushButton:hover { background-color: #E5E6EB; border-color: #86909C; }"
         )
@@ -514,7 +560,7 @@ class BatchCmdGeneratorPage(QWidget):
         template_layout.addLayout(template_bar)
 
         hint_lbl = QLabel("请输入命令模板，参数格式为：%a ~ %f")
-        hint_lbl.setStyleSheet("font-size: 11px; color: #86909C;")
+        hint_lbl.setStyleSheet("font-size: 9pt; color: #86909C;")
         template_layout.addWidget(hint_lbl)
 
         self.template_edit = QTextEdit()
@@ -569,7 +615,7 @@ class BatchCmdGeneratorPage(QWidget):
         action_row.addWidget(QLabel("命令数量:"))
         self.cmd_count_spin = QSpinBox()
         self.cmd_count_spin.setRange(1, 999999)
-        self.cmd_count_spin.setValue(48)
+        self.cmd_count_spin.setValue(12)
         self.cmd_count_spin.setMinimumHeight(30)
         self.cmd_count_spin.setMinimumWidth(75)
         action_row.addWidget(self.cmd_count_spin)
@@ -614,7 +660,7 @@ class BatchCmdGeneratorPage(QWidget):
         status_bar = QLabel("  0 %")
         status_bar.setAlignment(Qt.AlignCenter)
         status_bar.setStyleSheet(
-            "background-color: #F2F3F5; color: #86909C; font-size: 11px;"
+            "background-color: #F2F3F5; color: #86909C; font-size: 9pt;"
             "border: 1px solid #E5E6EB; padding: 3px;"
         )
         status_bar.setMinimumHeight(24)
@@ -624,7 +670,7 @@ class BatchCmdGeneratorPage(QWidget):
     def _group_style(self) -> str:
         return (
             "QGroupBox {"
-            "  font-size: 13px; font-weight: bold; color: #1D2129;"
+            "  font-size: 10pt; font-weight: bold; color: #1D2129;"
             "  border: 1px solid #E5E6EB; border-radius: 6px;"
             "  margin-top: 8px; padding-top: 8px;"
             "}"
@@ -637,7 +683,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.setStyleSheet(
             "QTextEdit {"
             "  border: 1px solid #C9CDD4; border-radius: 4px; padding: 6px;"
-            "  background: white; font-size: 13px;"
+            "  background: white; font-size: 10pt;"
             "}"
             "QTextEdit:focus { border-color: #165DFF; }"
             "QSpinBox {"
@@ -647,22 +693,22 @@ class BatchCmdGeneratorPage(QWidget):
             "QSpinBox:focus { border-color: #165DFF; }"
             "QPushButton#genBtn {"
             "  background-color: #165DFF; color: white; border: none;"
-            "  border-radius: 4px; font-size: 13px; font-weight: bold;"
+            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
             "}"
             "QPushButton#genBtn:hover { background-color: #0E42D2; }"
             "QPushButton#saveBtn {"
             "  background-color: #43A047; color: white; border: none;"
-            "  border-radius: 4px; font-size: 13px; font-weight: bold;"
+            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
             "}"
             "QPushButton#saveBtn:hover { background-color: #2E7D32; }"
             "QPushButton#copyBtn {"
             "  background-color: #FAAD14; color: white; border: none;"
-            "  border-radius: 4px; font-size: 13px; font-weight: bold;"
+            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
             "}"
             "QPushButton#copyBtn:hover { background-color: #D48806; }"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn) {"
             "  background-color: #F2F3F5; color: #4E5969; border: 1px solid #C9CDD4;"
-            "  border-radius: 4px; font-size: 13px;"
+            "  border-radius: 4px; font-size: 10pt;"
             "}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn):hover {"
             "  background-color: #E5E6EB; border-color: #86909C;"
@@ -712,40 +758,42 @@ class BatchCmdGeneratorPage(QWidget):
         total_count = [0]
         max_count = self.cmd_count_spin.value()
 
-        def _generate_recursive(param_idx: int, current_values: Dict[str, int]) -> None:
-            if total_count[0] >= max_count:
-                return
-            if param_idx >= len(used_params):
-                rendered = template
-                for char, val in current_values.items():
-                    rendered = rendered.replace(f"%{char}", str(val))
-                lines.append(rendered)
-                total_count[0] += 1
-                pct = min(int(total_count[0] / max_count * 100), 100)
-                self._status_label.setText(f"  {pct} %")
-                QApplication.processEvents()
-                return
-
-            char = used_params[param_idx]
+        # 为每个使用的参数生成值列表
+        param_values: Dict[str, List[int]] = {}
+        for char in used_params:
             cfg = configs[char]
             base = cfg["base"]
             step = cfg["step"]
             loop = cfg["loop"] or 1
             repeat = cfg["repeat"] or 1
+            values = [base + i * step for i in range(loop)]
+            # 展开repeat：每个值重复repeat次
+            expanded = []
+            for v in values:
+                expanded.extend([v] * repeat)
+            param_values[char] = expanded
 
-            values = []
-            for i in range(loop):
-                values.append(base + i * step)
-
-            for val in values:
-                new_values = dict(current_values)
-                new_values[char] = val
-                for _ in range(repeat):
-                    if total_count[0] >= max_count:
-                        return
-                    _generate_recursive(param_idx + 1, new_values)
-
-        _generate_recursive(0, {})
+        # zip模式：所有参数同步变化，取最长列表长度
+        max_len = max((len(v) for v in param_values.values()), default=0)
+        for i in range(max_len):
+            if total_count[0] >= max_count:
+                break
+            current_values: Dict[str, int] = {}
+            for char in used_params:
+                vals = param_values[char]
+                if vals:
+                    # 如果该参数列表较短，则循环使用其值
+                    current_values[char] = vals[i % len(vals)]
+                else:
+                    current_values[char] = 0
+            rendered = template
+            for char, val in current_values.items():
+                rendered = rendered.replace(f"%{char}", str(val))
+            lines.append(rendered)
+            total_count[0] += 1
+            pct = min(int(total_count[0] / max_count * 100), 100)
+            self._status_label.setText(f"  {pct} %")
+            QApplication.processEvents()
         result_text = "\n".join(lines)
         self.output_edit.setPlainText(result_text)
         self._status_label.setText("  100 %")

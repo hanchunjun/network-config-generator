@@ -123,14 +123,14 @@ class ProjectManagerPage(QWidget):
         create_section = QVBoxLayout()
         create_section.setSpacing(4)
         create_header = QLabel("新建项目")
-        create_header.setStyleSheet("font-size: 13px; font-weight: bold; color: #1D2129;")
+        create_header.setStyleSheet("font-size: 10pt; font-weight: bold; color: #1D2129;")
         create_section.addWidget(create_header)
 
         input_layout = QHBoxLayout()
         input_layout.setSpacing(6)
         name_label = QLabel("项目名称")
         name_label.setFixedWidth(60)
-        name_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+        name_label.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
         input_layout.addWidget(name_label)
         self.project_name_input = QLineEdit()
         self.project_name_input.setFixedWidth(240)
@@ -151,7 +151,7 @@ class ProjectManagerPage(QWidget):
         path_layout.setSpacing(6)
         path_label = QLabel("存储路径")
         path_label.setFixedWidth(60)
-        path_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+        path_label.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
         path_layout.addWidget(path_label)
         self.path_label = QLabel(PROJECTS_DIR)
         self.path_label.setStyleSheet("font-size: 11px; color: #86909C;")
@@ -166,7 +166,7 @@ class ProjectManagerPage(QWidget):
         overview_header_row = QHBoxLayout()
         overview_header_row.setSpacing(12)
         overview_header = QLabel("项目总览")
-        overview_header.setStyleSheet("font-size: 13px; font-weight: bold; color: #1D2129;")
+        overview_header.setStyleSheet("font-size: 10pt; font-weight: bold; color: #1D2129;")
         overview_header_row.addWidget(overview_header)
         self.overview_stats_label = QLabel("")
         self.overview_stats_label.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
@@ -193,7 +193,7 @@ class ProjectManagerPage(QWidget):
 
         switch_label = QLabel("当前项目")
         switch_label.setFixedWidth(60)
-        switch_label.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+        switch_label.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
         console_layout.addWidget(switch_label)
         self.project_combo = QComboBox()
         self.project_combo.setFixedWidth(280)
@@ -203,7 +203,7 @@ class ProjectManagerPage(QWidget):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 2px 10px;
-                font-size: 12px;
+                font-size: 9pt;
                 background-color: #F5F7FA;
             }
             QComboBox:hover { border: 1px solid #165DFF; }
@@ -235,7 +235,7 @@ class ProjectManagerPage(QWidget):
         self.delete_project_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FFF2F0; border: 1px solid #F53F3F;
-                border-radius: 4px; font-size: 12px; color: #F53F3F;
+                border-radius: 4px; font-size: 9pt; color: #F53F3F;
             }
             QPushButton:hover { background-color: #FFECE8; }
         """)
@@ -313,7 +313,7 @@ class ProjectManagerPage(QWidget):
         self.template_lib_btn.setStyleSheet("""
             QPushButton {
                 background-color: #F0F5FF; border: 1px solid #165DFF;
-                border-radius: 4px; font-size: 13px; color: #165DFF;
+                border-radius: 4px; font-size: 10pt; color: #165DFF;
             }
             QPushButton:hover { background-color: #E0EAFF; }
         """)
@@ -325,7 +325,7 @@ class ProjectManagerPage(QWidget):
         self.discover_btn.setStyleSheet("""
             QPushButton {
                 background-color: #E8FFEA; border: 1px solid #00B42A;
-                border-radius: 4px; font-size: 13px; color: #00B42A;
+                border-radius: 4px; font-size: 10pt; color: #00B42A;
             }
             QPushButton:hover { background-color: #D0F5D3; }
         """)
@@ -337,7 +337,7 @@ class ProjectManagerPage(QWidget):
         self.test_conn_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FFF7E6; border: 1px solid #FF7D00;
-                border-radius: 4px; font-size: 13px; color: #FF7D00;
+                border-radius: 4px; font-size: 10pt; color: #FF7D00;
             }
             QPushButton:hover { background-color: #FFECD2; }
         """)
@@ -361,7 +361,7 @@ class ProjectManagerPage(QWidget):
         self.group_filter_combo.setStyleSheet("""
             QComboBox {
                 border: 1px solid #E5E6EB; border-radius: 4px;
-                padding: 6px 10px; font-size: 13px; background-color: #FFFFFF;
+                padding: 6px 10px; font-size: 10pt; background-color: #FFFFFF;
             }
             QComboBox:hover { border: 1px solid #165DFF; }
             QComboBox::drop-down { border: none; }
@@ -370,13 +370,13 @@ class ProjectManagerPage(QWidget):
         filter_layout.addWidget(self.group_filter_combo)
 
         self.show_pwd_cb = QCheckBox("显示密码")
-        self.show_pwd_cb.setStyleSheet("font-size: 13px;")
+        self.show_pwd_cb.setStyleSheet("font-size: 10pt;")
         self.show_pwd_cb.stateChanged.connect(self._toggle_password_display)
         filter_layout.addWidget(self.show_pwd_cb)
         filter_layout.addStretch()
 
         self.stats_label = QLabel("")
-        self.stats_label.setStyleSheet("font-size: 13px; color: #86909C;")
+        self.stats_label.setStyleSheet("font-size: 10pt; color: #86909C;")
         filter_layout.addWidget(self.stats_label)
         device_layout.addLayout(filter_layout)
 
@@ -415,7 +415,7 @@ class ProjectManagerPage(QWidget):
     def _group_style(self):
         return """
             QGroupBox {
-                font-size: 16px;
+                font-size: 12pt;
                 font-weight: bold;
                 color: #1D2129;
                 border: 1px solid #E5E6EB;
@@ -437,7 +437,7 @@ class ProjectManagerPage(QWidget):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #F5F7FA;
             }
             QLineEdit:focus { border: 1px solid #165DFF; }
@@ -450,7 +450,7 @@ class ProjectManagerPage(QWidget):
                 color: white;
                 border: none;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover { background-color: #0E42D2; }
         """
@@ -461,7 +461,7 @@ class ProjectManagerPage(QWidget):
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
-                font-size: 13px;
+                font-size: 10pt;
             }
             QPushButton:hover { border: 1px solid #165DFF; }
         """
@@ -1169,7 +1169,7 @@ class ProjectManagerPage(QWidget):
             card = QGroupBox(f"{status_icon} {name}")
             card.setStyleSheet("""
                 QGroupBox {
-                    font-size: 13px;
+                    font-size: 10pt;
                     font-weight: bold;
                     color: #1D2129;
                     border: 1px solid #E5E6EB;
@@ -1191,16 +1191,16 @@ class ProjectManagerPage(QWidget):
             card_layout.setContentsMargins(6, 14, 6, 6)
 
             info_dev = QLabel(f"设备: {device_count}台")
-            info_dev.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+            info_dev.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
             card_layout.addWidget(info_dev)
             info_bkp = QLabel(f"备份: {last_backup}")
-            info_bkp.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+            info_bkp.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
             card_layout.addWidget(info_bkp)
             info_ins = QLabel(f"巡检: {last_inspect}")
-            info_ins.setStyleSheet("font-size: 12px; color: #4E5969; font-weight: normal;")
+            info_ins.setStyleSheet("font-size: 9pt; color: #4E5969; font-weight: normal;")
             card_layout.addWidget(info_ins)
             info_fault = QLabel(f"故障: {fault_count}台")
-            info_fault.setStyleSheet(f"font-size: 12px; color: {status_color}; font-weight: normal;")
+            info_fault.setStyleSheet(f"font-size: 9pt; color: {status_color}; font-weight: normal;")
             card_layout.addWidget(info_fault)
 
             enter_btn = QPushButton("进入项目")
@@ -1211,7 +1211,7 @@ class ProjectManagerPage(QWidget):
                     color: #165DFF;
                     border: 1px solid #165DFF;
                     border-radius: 4px;
-                    font-size: 12px;
+                    font-size: 9pt;
                     font-weight: bold;
                 }
                 QPushButton:hover { background-color: #D6E8FF; }

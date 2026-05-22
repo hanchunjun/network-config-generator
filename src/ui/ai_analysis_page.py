@@ -40,7 +40,7 @@ BTN_STYLE = """
         color: #4E5969;
         border: 1px solid #E5E6EB;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 9pt;
         padding: 5px 12px;
     }
     QPushButton:hover { background-color: #E5E6EB; border-color: #C9CDD4; }
@@ -52,7 +52,7 @@ AI_BTN_STYLE = """
         color: #165DFF;
         border: 1px solid #165DFF;
         border-radius: 4px;
-        font-size: 13px;
+        font-size: 10pt;
         font-weight: bold;
         padding: 8px 16px;
     }
@@ -66,7 +66,7 @@ PRIMARY_BTN_STYLE = """
         color: white;
         border: none;
         border-radius: 4px;
-        font-size: 14px;
+        font-size: 10pt;
         font-weight: bold;
         padding: 8px 20px;
     }
@@ -79,7 +79,7 @@ LIST_STYLE = """
         border: 1px solid #E5E6EB;
         border-radius: 4px;
         background-color: #FFFFFF;
-        font-size: 13px;
+        font-size: 10pt;
         outline: none;
     }
     QListWidget::item { padding: 5px 8px; }
@@ -345,12 +345,12 @@ class AIAnalysisPage(QWidget):
         layout.setSpacing(8)
 
         title = QLabel("AI专家工作站")
-        title.setStyleSheet("font-size: 20px; font-weight: bold; color: #1D2129; text-decoration: none;")
+        title.setStyleSheet("font-size: 15pt; font-weight: bold; color: #1D2129; text-decoration: none;")
         layout.addWidget(title)
 
         desc = QLabel("深度分析、多文件对比、自定义指令、多轮对话。一键式分析请使用单点巡检或运维任务中心。")
         desc.setWordWrap(True)
-        desc.setStyleSheet("font-size: 12px; color: #86909C;")
+        desc.setStyleSheet("font-size: 9pt; color: #86909C;")
         layout.addWidget(desc)
 
         input_group = QGroupBox("📂 输入文件")
@@ -441,7 +441,7 @@ class AIAnalysisPage(QWidget):
         agent_row = QHBoxLayout()
         agent_row.setSpacing(8)
         agent_label = QLabel("Agent快捷指令：")
-        agent_label.setStyleSheet("font-size: 13px; color: #4E5969; font-weight: bold;")
+        agent_label.setStyleSheet("font-size: 10pt; color: #4E5969; font-weight: bold;")
         agent_row.addWidget(agent_label)
         self.agent_compliance_btn = QPushButton("🔍 一键合规巡检")
         self.agent_compliance_btn.setStyleSheet(AI_BTN_STYLE)
@@ -466,7 +466,7 @@ class AIAnalysisPage(QWidget):
             QTabBar::tab {
                 border: 1px solid #E5E6EB;
                 padding: 8px 20px;
-                font-size: 13px;
+                font-size: 10pt;
                 background-color: #F5F7FA;
                 margin-right: 2px;
             }
@@ -498,7 +498,7 @@ class AIAnalysisPage(QWidget):
         layout.setSpacing(6)
 
         prompt_label = QLabel("Prompt编辑区（可直接修改后发送）：")
-        prompt_label.setStyleSheet("font-size: 12px; color: #86909C; font-weight: bold;")
+        prompt_label.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         layout.addWidget(prompt_label)
 
         prompt_edit = QTextEdit()
@@ -514,7 +514,7 @@ class AIAnalysisPage(QWidget):
                 border-radius: 4px;
                 padding: 10px;
                 font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 13px;
+                font-size: 10pt;
                 background-color: #F7F8FA;
             }
             QTextEdit:focus { border: 1px solid #165DFF; }
@@ -569,7 +569,7 @@ class AIAnalysisPage(QWidget):
         layout.addWidget(self.progress_bar)
 
         self.status_label = QLabel("就绪，等待输入...")
-        self.status_label.setStyleSheet("font-size: 12px; color: #86909C;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #86909C;")
         layout.addWidget(self.status_label)
 
         result_edit = QTextEdit()
@@ -581,7 +581,7 @@ class AIAnalysisPage(QWidget):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 10px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -594,7 +594,7 @@ class AIAnalysisPage(QWidget):
     def _group_style(self):
         return """
             QGroupBox {
-                font-size: 14px;
+                font-size: 10pt;
                 font-weight: bold;
                 color: #1D2129;
                 border: 1px solid #E5E6EB;

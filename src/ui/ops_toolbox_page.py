@@ -60,7 +60,7 @@ BTN_STYLE = """
         color: #4E5969;
         border: 1px solid #E5E6EB;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 9pt;
         padding: 5px 12px;
     }
     QPushButton:hover { background-color: #E5E6EB; border-color: #C9CDD4; }
@@ -72,7 +72,7 @@ AI_BTN_STYLE = """
         color: #165DFF;
         border: 1px solid #165DFF;
         border-radius: 4px;
-        font-size: 13px;
+        font-size: 10pt;
         font-weight: bold;
         padding: 8px 16px;
     }
@@ -86,7 +86,7 @@ PRIMARY_BTN_STYLE = """
         color: white;
         border: none;
         border-radius: 4px;
-        font-size: 13px;
+        font-size: 10pt;
         font-weight: bold;
         padding: 6px 16px;
     }
@@ -99,7 +99,7 @@ LIST_STYLE = """
         border: 1px solid #E5E6EB;
         border-radius: 4px;
         background-color: #FFFFFF;
-        font-size: 13px;
+        font-size: 10pt;
         outline: none;
     }
     QListWidget::item { padding: 5px 8px; }
@@ -113,7 +113,7 @@ PREVIEW_STYLE = """
         border-radius: 4px;
         padding: 8px;
         font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 12px;
+        font-size: 9pt;
         background-color: #F7F8FA;
         color: #4E5969;
     }
@@ -565,7 +565,7 @@ class TaskCard(QGroupBox):
 
         self.setStyleSheet("""
             QGroupBox {
-                font-size: 14px;
+                font-size: 10pt;
                 font-weight: bold;
                 color: #1D2129;
                 border: 1px solid #E5E6EB;
@@ -587,7 +587,7 @@ class TaskCard(QGroupBox):
         layout.setContentsMargins(8, 16, 8, 8)
 
         self.status_label = QLabel("就绪")
-        self.status_label.setStyleSheet("font-size: 12px; color: #86909C; font-weight: normal;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: normal;")
         layout.addWidget(self.status_label)
 
         self.progress_bar = QProgressBar()
@@ -632,7 +632,7 @@ class TaskCard(QGroupBox):
         self.run_btn.setEnabled(False)
         self.progress_bar.setValue(0)
         self.status_label.setText("正在执行...")
-        self.status_label.setStyleSheet("font-size: 12px; color: #165DFF; font-weight: normal;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #165DFF; font-weight: normal;")
 
         self.worker = OpsWorkerThread(self.task_type, project_dir)
         self.worker.progress_signal.connect(self._on_progress)
@@ -651,14 +651,14 @@ class TaskCard(QGroupBox):
         self.progress_bar.setValue(self.progress_bar.maximum())
         self._last_run_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.status_label.setText(f"完成 ✅ {self._last_run_time}")
-        self.status_label.setStyleSheet("font-size: 12px; color: #00B42A; font-weight: normal;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #00B42A; font-weight: normal;")
         self.parent_page._on_task_completed(self.task_type)
 
     def _on_error(self, error_msg):
         self._running = False
         self.run_btn.setEnabled(True)
         self.status_label.setText("执行出错 ❌")
-        self.status_label.setStyleSheet("font-size: 12px; color: #F53F3F; font-weight: normal;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #F53F3F; font-weight: normal;")
         QMessageBox.critical(self, "任务执行失败", f"执行过程中出现错误：\n\n{error_msg}")
 
 
@@ -957,12 +957,12 @@ class OpsToolboxPage(QWidget):
 
         header_layout = QHBoxLayout()
         title_label = QLabel("项目运维")
-        title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #1D2129; text-decoration: none;")
+        title_label.setStyleSheet("font-size: 15pt; font-weight: bold; color: #1D2129; text-decoration: none;")
         header_layout.addWidget(title_label)
         header_layout.addStretch()
 
         proj_label = QLabel("项目：")
-        proj_label.setStyleSheet("font-size: 13px; color: #4E5969; font-weight: normal;")
+        proj_label.setStyleSheet("font-size: 10pt; color: #4E5969; font-weight: normal;")
         header_layout.addWidget(proj_label)
 
         self.project_combo = QComboBox()
@@ -970,7 +970,7 @@ class OpsToolboxPage(QWidget):
         self.project_combo.setStyleSheet("""
             QComboBox {
                 border: 1px solid #E5E6EB; border-radius: 4px;
-                padding: 5px 8px; font-size: 13px; background-color: #FFFFFF;
+                padding: 5px 8px; font-size: 10pt; background-color: #FFFFFF;
             }
             QComboBox:hover { border: 1px solid #165DFF; }
             QComboBox::drop-down { border: none; width: 20px; }
@@ -1009,7 +1009,7 @@ class OpsToolboxPage(QWidget):
             QTabBar::tab {
                 border: 1px solid #E5E6EB;
                 padding: 8px 20px;
-                font-size: 13px;
+                font-size: 10pt;
                 background-color: #F5F7FA;
                 margin-right: 2px;
             }
@@ -1036,7 +1036,7 @@ class OpsToolboxPage(QWidget):
 
         desc_label = QLabel("三个运维任务独立运行，所有操作仅执行只读指令。AI分析结果自动归档到项目 report/ 目录。")
         desc_label.setWordWrap(True)
-        desc_label.setStyleSheet("font-size: 12px; color: #86909C; padding: 2px 0;")
+        desc_label.setStyleSheet("font-size: 9pt; color: #86909C; padding: 2px 0;")
         layout.addWidget(desc_label)
 
         self.setLayout(layout)

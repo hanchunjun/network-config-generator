@@ -1334,22 +1334,22 @@ class DeviceFormDialog(QDialog):
 
     def _apply_styles(self):
         style = """
-            QLabel { font-size: 14px; color: #4E5969; }
+            QLabel { font-size: 10pt; color: #4E5969; }
             QLineEdit, QComboBox {
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 6px 10px;
-                font-size: 13px;
+                font-size: 10pt;
                 background-color: #F5F7FA;
             }
             QLineEdit:focus, QComboBox:focus { border-color: #165DFF; }
             QGroupBox {
-                font-size: 14px; font-weight: bold; color: #1D2129;
+                font-size: 10pt; font-weight: bold; color: #1D2129;
                 border: 1px solid #E5E6EB; border-radius: 6px;
                 margin-top: 8px; padding: 12px;
             }
             QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 6px; }
-            QPushButton { padding: 6px 20px; border-radius: 4px; font-size: 13px; }
+            QPushButton { padding: 6px 20px; border-radius: 4px; font-size: 10pt; }
         """
         self.setStyleSheet(style)
 
@@ -1432,7 +1432,7 @@ class SingleDevicePage(QWidget):
         toolbar.addWidget(self.clear_btn)
 
         self.select_count_lbl = QLabel("")
-        self.select_count_lbl.setStyleSheet("font-size: 12px; color: #86909C;")
+        self.select_count_lbl.setStyleSheet("font-size: 9pt; color: #86909C;")
         toolbar.addWidget(self.select_count_lbl)
         toolbar.addStretch()
         table_layout.addLayout(toolbar)
@@ -1457,14 +1457,14 @@ class SingleDevicePage(QWidget):
         self.table.setStyleSheet("""
             QTableWidget {
                 border: 1px solid #E5E6EB; border-radius: 6px;
-                gridline-color: #F2F3F5; background-color: #FFFFFF; font-size: 12px;
+                gridline-color: #F2F3F5; background-color: #FFFFFF; font-size: 9pt;
             }
             QTableWidget::item { padding: 2px 4px; }
             QTableWidget::item:alternate { background-color: #F7F8FA; }
             QHeaderView::section {
                 background-color: #F5F7FA; border: none;
                 border-bottom: 1px solid #E5E6EB; padding: 2px 6px;
-                font-size: 12px; font-weight: bold; color: #4E5969;
+                font-size: 9pt; font-weight: bold; color: #4E5969;
             }
         """)
         self.table.itemChanged.connect(self.on_item_changed)
@@ -1519,7 +1519,7 @@ class SingleDevicePage(QWidget):
         layout.addLayout(action_row)
 
         self.status_label = QLabel("就绪，等待操作...")
-        self.status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-left: 4px;")
+        self.status_label.setStyleSheet("font-size: 9pt; color: #86909C; padding-left: 4px;")
         layout.addWidget(self.status_label)
 
         self.result_tabs = QTabWidget()
@@ -1534,7 +1534,7 @@ class SingleDevicePage(QWidget):
                 background-color: #F5F7FA; border: 1px solid #E5E6EB;
                 border-bottom: none; border-top-left-radius: 6px;
                 border-top-right-radius: 6px; padding: 6px 16px;
-                font-size: 13px; color: #4E5969; margin-right: 2px;
+                font-size: 10pt; color: #4E5969; margin-right: 2px;
             }
             QTabBar::tab:selected {
                 background-color: #FFFFFF; color: #165DFF;
@@ -1553,7 +1553,7 @@ class SingleDevicePage(QWidget):
 
         desc_label = QLabel("管理常用设备清单，支持批量巡检/备份/连接测试/AI分析。数据加密存储，跟随EXE便携使用。")
         desc_label.setWordWrap(True)
-        desc_label.setStyleSheet("font-size: 12px; color: #86909C; padding: 4px 0;")
+        desc_label.setStyleSheet("font-size: 9pt; color: #86909C; padding: 4px 0;")
         layout.addWidget(desc_label)
 
         self.setLayout(layout)
@@ -1564,7 +1564,7 @@ class SingleDevicePage(QWidget):
             QTextEdit {
                 border: none; border-radius: 4px; padding: 10px;
                 font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 12px; background-color: #FAFBFC; color: #4E5969;
+                font-size: 9pt; background-color: #FAFBFC; color: #4E5969;
                 selection-background-color: #BEEAFF; selection-color: #1D2129;
             }
         """
@@ -1573,7 +1573,7 @@ class SingleDevicePage(QWidget):
         return """
             QListWidget {
                 border: 1px solid #E5E6EB; border-radius: 4px;
-                background-color: #FAFBFC; font-size: 12px; outline: none;
+                background-color: #FAFBFC; font-size: 9pt; outline: none;
             }
             QListWidget::item {
                 padding: 6px 10px; border-bottom: 1px solid #F2F3F5;
@@ -1588,7 +1588,7 @@ class SingleDevicePage(QWidget):
         return """
             QComboBox {
                 border: 1px solid #E5E6EB; border-radius: 4px;
-                padding: 5px 10px; font-size: 12px; background-color: #F5F7FA;
+                padding: 5px 10px; font-size: 9pt; background-color: #F5F7FA;
             }
             QComboBox:focus { border-color: #165DFF; }
             QComboBox::drop-down { border: none; width: 20px; }
@@ -1623,7 +1623,7 @@ class SingleDevicePage(QWidget):
         self.log_diagnose_btn.setFixedSize(100, 26)
         self.log_diagnose_btn.setStyleSheet("""
             QPushButton { background-color: #F53F3F; color: white; border: none;
-                border-radius: 4px; font-size: 12px; font-weight: bold; }
+                border-radius: 4px; font-size: 9pt; font-weight: bold; }
             QPushButton:hover { background-color: #CB2634; }
             QPushButton:disabled { background-color: #C9CDD4; color: white; }
         """)
@@ -1697,7 +1697,7 @@ class SingleDevicePage(QWidget):
 
         info_bar = QHBoxLayout()
         self.backup_file_name_lbl = QLabel("未选择文件")
-        self.backup_file_name_lbl.setStyleSheet("font-size: 12px; color: #86909C; font-weight: bold;")
+        self.backup_file_name_lbl.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         info_bar.addWidget(self.backup_file_name_lbl)
         info_bar.addStretch()
 
@@ -1705,7 +1705,7 @@ class SingleDevicePage(QWidget):
         self.ai_inspect_btn.setFixedSize(100, 26)
         self.ai_inspect_btn.setStyleSheet("""
             QPushButton { background-color: #165DFF; color: white; border: none;
-                border-radius: 4px; font-size: 12px; font-weight: bold; }
+                border-radius: 4px; font-size: 9pt; font-weight: bold; }
             QPushButton:hover { background-color: #0E42D2; }
             QPushButton:disabled { background-color: #C9CDD4; color: white; }
         """)
@@ -1779,7 +1779,7 @@ class SingleDevicePage(QWidget):
 
         info_bar = QHBoxLayout()
         self.report_title_lbl = QLabel("未选择报告")
-        self.report_title_lbl.setStyleSheet("font-size: 12px; color: #86909C; font-weight: bold;")
+        self.report_title_lbl.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         info_bar.addWidget(self.report_title_lbl)
         info_bar.addStretch()
 
@@ -1787,7 +1787,7 @@ class SingleDevicePage(QWidget):
         self.report_ai_btn.setFixedSize(100, 26)
         self.report_ai_btn.setStyleSheet("""
             QPushButton { background-color: #F53F3F; color: white; border: none;
-                border-radius: 4px; font-size: 12px; font-weight: bold; }
+                border-radius: 4px; font-size: 9pt; font-weight: bold; }
             QPushButton:hover { background-color: #CB2634; }
             QPushButton:disabled { background-color: #C9CDD4; color: white; }
         """)
@@ -1852,7 +1852,7 @@ class SingleDevicePage(QWidget):
 
         info_bar = QHBoxLayout()
         self.diagnosis_title_lbl = QLabel("未选择报告")
-        self.diagnosis_title_lbl.setStyleSheet("font-size: 12px; color: #86909C; font-weight: bold;")
+        self.diagnosis_title_lbl.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         info_bar.addWidget(self.diagnosis_title_lbl)
         info_bar.addStretch()
 
@@ -1913,7 +1913,7 @@ class SingleDevicePage(QWidget):
 
         info_bar = QHBoxLayout()
         self.compliance_title_lbl = QLabel("未选择报告")
-        self.compliance_title_lbl.setStyleSheet("font-size: 12px; color: #86909C; font-weight: bold;")
+        self.compliance_title_lbl.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         info_bar.addWidget(self.compliance_title_lbl)
         info_bar.addStretch()
 
@@ -1921,7 +1921,7 @@ class SingleDevicePage(QWidget):
         self.compliance_refine_btn.setFixedSize(80, 26)
         self.compliance_refine_btn.setStyleSheet("""
             QPushButton { background-color: #722ED1; color: white; border: none;
-                border-radius: 4px; font-size: 12px; font-weight: bold; }
+                border-radius: 4px; font-size: 9pt; font-weight: bold; }
             QPushButton:hover { background-color: #531DAB; }
             QPushButton:disabled { background-color: #C9CDD4; color: white; }
         """)
@@ -1944,7 +1944,7 @@ class SingleDevicePage(QWidget):
     def _group_style(self):
         return """
             QGroupBox {
-                font-size: 14px; font-weight: bold; color: #1D2129;
+                font-size: 10pt; font-weight: bold; color: #1D2129;
                 border: 1px solid #E5E6EB; border-radius: 8px;
                 margin-top: 4px; padding: 4px 10px; background-color: #FFFFFF;
             }
@@ -1955,7 +1955,7 @@ class SingleDevicePage(QWidget):
         return f"""
             QPushButton {{
                 background-color: {bg}; color: {fg}; border: 1px solid #E5E6EB;
-                border-radius: 4px; font-size: 12px;
+                border-radius: 4px; font-size: 9pt;
             }}
             QPushButton:hover {{ border-color: #165DFF; }}
         """
@@ -1964,7 +1964,7 @@ class SingleDevicePage(QWidget):
         return """
             QPushButton {
                 background-color: #165DFF; color: white; border: none;
-                border-radius: 4px; font-size: 13px; font-weight: bold;
+                border-radius: 4px; font-size: 10pt; font-weight: bold;
             }
             QPushButton:hover { background-color: #0E42D2; }
             QPushButton:disabled { background-color: #C9CDD4; }
@@ -1974,7 +1974,7 @@ class SingleDevicePage(QWidget):
         return """
             QPushButton {
                 background-color: #F5F7FA; border: 1px solid #E5E6EB;
-                border-radius: 4px; font-size: 13px;
+                border-radius: 4px; font-size: 10pt;
             }
             QPushButton:hover { border-color: #165DFF; color: #165DFF; }
             QPushButton:disabled { background-color: #C9CDD4; }
@@ -1984,7 +1984,7 @@ class SingleDevicePage(QWidget):
         return """
             QPushButton {
                 background-color: #00B42A; color: white; border: none;
-                border-radius: 4px; font-size: 13px;
+                border-radius: 4px; font-size: 10pt;
             }
             QPushButton:hover { background-color: #009A29; }
             QPushButton:disabled { background-color: #C9CDD4; }
@@ -1994,7 +1994,7 @@ class SingleDevicePage(QWidget):
         return """
             QPushButton {
                 background-color: #FFF7E8; color: #FF7D00;
-                border: 1px solid #FFD666; border-radius: 4px; font-size: 12px;
+                border: 1px solid #FFD666; border-radius: 4px; font-size: 9pt;
             }
             QPushButton:hover { background-color: #FFE7BA; }
         """
@@ -2306,7 +2306,7 @@ class SingleDevicePage(QWidget):
         try:
             self.ai_inspect_btn.setStyleSheet("""
                 QPushButton { background-color: #FF7D00; color: white; border: none;
-                    border-radius: 4px; font-size: 12px; font-weight: bold; }
+                    border-radius: 4px; font-size: 9pt; font-weight: bold; }
             """)
             self.ai_inspect_btn.setText("⏳ 分析中...")
             self.ai_inspect_btn.setEnabled(False)
@@ -2355,7 +2355,7 @@ class SingleDevicePage(QWidget):
     def _restore_inspect_btn(self):
         self.ai_inspect_btn.setStyleSheet("""
             QPushButton { background-color: #165DFF; color: white; border: none;
-                border-radius: 4px; font-size: 12px; font-weight: bold; }
+                border-radius: 4px; font-size: 9pt; font-weight: bold; }
             QPushButton:hover { background-color: #0E42D2; }
             QPushButton:disabled { background-color: #C9CDD4; color: white; }
         """)
@@ -2418,7 +2418,7 @@ class SingleDevicePage(QWidget):
                 active_btn.setText("⏳ 诊断中...")
                 active_btn.setStyleSheet("""
                     QPushButton { background-color: #FF7D00; color: white; border: none;
-                        border-radius: 4px; font-size: 12px; font-weight: bold; }
+                        border-radius: 4px; font-size: 9pt; font-weight: bold; }
                     QPushButton:disabled { background-color: #C9CDD4; color: white; }
                 """)
             self.result_tabs.setCurrentIndex(TAB_LOG)
@@ -2462,19 +2462,19 @@ class SingleDevicePage(QWidget):
             style_map = {
                 "report": """
                     QPushButton { background-color: #F53F3F; color: white; border: none;
-                        border-radius: 4px; font-size: 12px; font-weight: bold; }
+                        border-radius: 4px; font-size: 9pt; font-weight: bold; }
                     QPushButton:hover { background-color: #CB2634; }
                     QPushButton:disabled { background-color: #C9CDD4; color: white; }
                 """,
                 "compliance": """
                     QPushButton { background-color: #722ED1; color: white; border: none;
-                        border-radius: 4px; font-size: 12px; font-weight: bold; }
+                        border-radius: 4px; font-size: 9pt; font-weight: bold; }
                     QPushButton:hover { background-color: #531DAB; }
                     QPushButton:disabled { background-color: #C9CDD4; color: white; }
                 """,
                 "log": """
                     QPushButton { background-color: #F53F3F; color: white; border: none;
-                        border-radius: 4px; font-size: 12px; font-weight: bold; }
+                        border-radius: 4px; font-size: 9pt; font-weight: bold; }
                     QPushButton:hover { background-color: #CB2634; }
                     QPushButton:disabled { background-color: #C9CDD4; color: white; }
                 """,
@@ -2857,15 +2857,15 @@ class SingleDevicePage(QWidget):
                 html += f"<p style='color: #86909C; font-weight: bold; margin: 6px 0;'>{self._escape_html(line)}</p>"
             elif "Verdict:" in stripped or "判定:" in stripped:
                 if "PASS" in stripped or "通过" in stripped:
-                    html += f"<p style='color: #00B42A; font-weight: bold; font-size: 14px; margin-top: 12px; padding: 10px; background: #E8FFEA; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: #00B42A; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: #E8FFEA; border-radius: 4px;'>{self._escape_html(line)}</p>"
                 elif "BLOCK" in stripped or "阻止" in stripped:
-                    html += f"<p style='color: #F53F3F; font-weight: bold; font-size: 14px; margin-top: 12px; padding: 10px; background: #FFECE8; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: #F53F3F; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: #FFECE8; border-radius: 4px;'>{self._escape_html(line)}</p>"
                 elif "WARNING" in stripped or "警告" in stripped:
-                    html += f"<p style='color: #FF7D00; font-weight: bold; font-size: 14px; margin-top: 12px; padding: 10px; background: #FFF7E8; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: #FF7D00; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: #FFF7E8; border-radius: 4px;'>{self._escape_html(line)}</p>"
                 else:
                     html += f"<p style='margin: 4px 0;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("#"):
-                html += f"<p style='color: #165DFF; font-weight: bold; font-size: 14px; margin-top: 10px;'>{self._escape_html(line)}</p>"
+                html += f"<p style='color: #165DFF; font-weight: bold; font-size: 10pt; margin-top: 10px;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("|"):
                 html += f"<p style='color: #4E5969; margin: 2px 0; font-family: Consolas, monospace;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("---"):

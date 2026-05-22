@@ -83,7 +83,7 @@ class MainWindow(QMainWindow):
         self._trial_mode: bool = not is_active
         self._activation_info: dict = act_info
         if self._trial_mode:
-            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置")
+            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 
         self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0' + (' [试用模式]' if self._trial_mode else ''))
 
@@ -97,10 +97,10 @@ class MainWindow(QMainWindow):
         self.selected_device: Optional[str] = None
         self.config_pages: Dict[str, QWidget] = {}
 
-        # 试用模式检测：未激活时为True，仅开放锐捷接入交换机配置
+        # 试用模式检测：未激活时为True，仅开放锐捷接入交换机配置和批量命令生成
         self._trial_mode: bool = not check_activation()[0]
         if self._trial_mode:
-            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置")
+            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 
         # 设置全局样式
         self.setup_global_style()
@@ -132,8 +132,26 @@ class MainWindow(QMainWindow):
         Args:
             screen: 屏幕几何信息
         """
-        w = int(screen.width() * 0.76)
-        h = int(w * 9 / 15)
+        # 多屏幕适配：根据屏幕尺寸分档
+        sw, sh = screen.width(), screen.height()
+        if sw >= 2560:
+            # 2K/4K大屏：固定最大尺寸
+            w, h = 1600, 960
+        elif sw >= 1920:
+            # 1080p：85%屏幕宽度，80%高度
+            w = int(sw * 0.85)
+            h = int(sh * 0.80)
+        elif sw >= 1366:
+            # 笔记本常见分辨率
+            w = int(sw * 0.90)
+            h = int(sh * 0.85)
+        else:
+            # 小屏/老电脑（1024×768等）：尽量占满
+            w = int(sw * 0.95)
+            h = int(sh * 0.90)
+        # 兜底：不超过屏幕可用区域
+        w = min(w, sw - 40)
+        h = min(h, sh - 60)
         x = screen.x() + (screen.width() - w) // 2
         y = screen.y() + (screen.height() - h) // 2
         self.setGeometry(x, y, w, h)
@@ -197,7 +215,7 @@ class MainWindow(QMainWindow):
             QStatusBar {
                 background-color: #FFFFFF;
                 border-top: 1px solid #E5E6EB;
-                font-size: 12px;
+                font-size: 9pt;
                 color: #86909C;
                 padding: 2px 12px;
             }
@@ -281,10 +299,10 @@ class MainWindow(QMainWindow):
     def _update_project_status_label(self, project_name=None):
         if project_name:
             self.project_status_label.setText(f"当前项目：{project_name}")
-            self.project_status_label.setStyleSheet("font-size: 12px; color: #00B42A; padding-right: 12px; font-weight: bold;")
+            self.project_status_label.setStyleSheet("font-size: 9pt; color: #00B42A; padding-right: 12px; font-weight: bold;")
         else:
             self.project_status_label.setText("未选择项目")
-            self.project_status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-right: 12px;")
+            self.project_status_label.setStyleSheet("font-size: 9pt; color: #86909C; padding-right: 12px;")
 
     def refresh_project_status(self):
         try:
@@ -319,7 +337,7 @@ class MainWindow(QMainWindow):
             }
             QWidget {
                 font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-                font-size: 14px;
+                font-size: 10pt;
                 color: #1D2129;
             }
         """)
@@ -337,7 +355,7 @@ class MainWindow(QMainWindow):
         nav_bar.setLayout(nav_layout)
 
         logo_label = QLabel("  NetOps")
-        logo_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #165DFF; padding-right: 20px;")
+        logo_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: #165DFF; padding-right: 20px;")
         nav_layout.addWidget(logo_label)
 
         self.nav_buttons = {}
@@ -350,7 +368,7 @@ class MainWindow(QMainWindow):
                     border: none;
                     border-radius: 6px;
                     padding: 6px 16px;
-                    font-size: 14px;
+                    font-size: 10pt;
                     color: #4E5969;
                 }
                 QPushButton:hover {
@@ -370,7 +388,7 @@ class MainWindow(QMainWindow):
         nav_layout.addStretch()
 
         self.project_status_label = QLabel("未选择项目")
-        self.project_status_label.setStyleSheet("font-size: 12px; color: #86909C; padding-right: 12px;")
+        self.project_status_label.setStyleSheet("font-size: 9pt; color: #86909C; padding-right: 12px;")
         nav_layout.addWidget(self.project_status_label)
 
         # 激活状态按钮（未激活红色提示，已激活绿色勾选）
@@ -387,8 +405,8 @@ class MainWindow(QMainWindow):
             QPushButton {
                 background-color: #F5F7FA;
                 border: 1px solid #E5E6EB;
-                border-radius: 4px;
-                font-size: 13px;
+                border-radius: 4pt;
+                font-size: 10pt;
             }
             QPushButton:hover { border: 1px solid #165DFF; }
         """)
@@ -449,7 +467,7 @@ class MainWindow(QMainWindow):
         default_page.setLayout(default_layout)
         label = QLabel('请选择厂家和设备类型')
         label.setAlignment(Qt.AlignCenter)
-        label.setStyleSheet('font-size: 24px; color: #86909C;')
+        label.setStyleSheet('font-size: 18pt; color: #86909C;')
         default_layout.addWidget(label)
         self.config_stack.addWidget(default_page)
 
@@ -476,7 +494,7 @@ class MainWindow(QMainWindow):
                     background-color: #F5F7FA;
                     border: 1px solid #E5E6EB;
                     border-radius: 4px;
-                    font-size: 14px;
+                    font-size: 10pt;
                 }
                 QPushButton:hover { border: 1px solid #165DFF; }
             """)
@@ -501,7 +519,7 @@ class MainWindow(QMainWindow):
                     background-color: #F5F7FA;
                     border: 1px solid #E5E6EB;
                     border-radius: 4px;
-                    font-size: 14px;
+                    font-size: 10pt;
                 }
                 QPushButton:hover { border: 1px solid #165DFF; }
             """)
@@ -529,7 +547,7 @@ class MainWindow(QMainWindow):
                         color: white;
                         border: 1px solid #165DFF;
                         border-radius: 4px;
-                        font-size: 14px;
+                        font-size: 10pt;
                     }
                 """)
             else:
@@ -538,7 +556,7 @@ class MainWindow(QMainWindow):
                         background-color: #F5F7FA;
                         border: 1px solid #E5E6EB;
                         border-radius: 4px;
-                        font-size: 14px;
+                        font-size: 10pt;
                     }
                     QPushButton:hover { border: 1px solid #165DFF; }
                 """)
@@ -559,7 +577,7 @@ class MainWindow(QMainWindow):
                         color: white;
                         border: 1px solid #165DFF;
                         border-radius: 4px;
-                        font-size: 14px;
+                        font-size: 10pt;
                     }
                 """)
             else:
@@ -568,7 +586,7 @@ class MainWindow(QMainWindow):
                         background-color: #F5F7FA;
                         border: 1px solid #E5E6EB;
                         border-radius: 4px;
-                        font-size: 14px;
+                        font-size: 10pt;
                     }
                     QPushButton:hover { border: 1px solid #165DFF; }
                 """)
@@ -668,7 +686,7 @@ class MainWindow(QMainWindow):
                     background-color: #FFF2F0;
                     border: 1px solid #FF7875;
                     border-radius: 4px;
-                    font-size: 12px;
+                    font-size: 9pt;
                     color: #F5222D;
                     font-weight: bold;
                 }
@@ -690,7 +708,7 @@ class MainWindow(QMainWindow):
                         background-color: #FFF7E6;
                         border: 1px solid #FFA940;
                         border-radius: 4px;
-                        font-size: 12px;
+                        font-size: 9pt;
                         color: #FA8C16;
                         font-weight: bold;
                     }
@@ -706,7 +724,7 @@ class MainWindow(QMainWindow):
                         background-color: #F6FFED;
                         border: 1px solid #73D13D;
                         border-radius: 4px;
-                        font-size: 12px;
+                        font-size: 9pt;
                         color: #52C41A;
                         font-weight: bold;
                     }
@@ -774,28 +792,28 @@ class MainWindow(QMainWindow):
         version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
         title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
-        title_label.setStyleSheet('font-size: 16px; font-weight: bold;')
+        title_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
         layout.addWidget(title_label)
 
         desc1 = QLabel('面向网络工程师的多厂商网络设备配置脚本生成与自动化运维工具，支持锐捷、华为、华三、思科等设备。\n开源项目地址: https://github.com/hanchunjun/network-config-generator')
         desc1.setAlignment(Qt.AlignLeft)
-        desc1.setStyleSheet('font-size: 13px;')
+        desc1.setStyleSheet('font-size: 10pt;')
         desc1.setWordWrap(True)
         layout.addWidget(desc1)
 
         copyright_label = QLabel('Copyright @ 2026 laohan')
         copyright_label.setAlignment(Qt.AlignLeft)
-        copyright_label.setStyleSheet('font-size: 13px;')
+        copyright_label.setStyleSheet('font-size: 10pt;')
         layout.addWidget(copyright_label)
 
         license_label = QLabel('Released under the MIT License')
         license_label.setAlignment(Qt.AlignLeft)
-        license_label.setStyleSheet('font-size: 13px;')
+        license_label.setStyleSheet('font-size: 10pt;')
         layout.addWidget(license_label)
 
         disclaimer = QLabel('本软件源码基于 MIT License 开源发布，可自由获取与修改。软件全功能使用需授权激活，不代表任何厂商官方立场，无任何官方认证。')
         disclaimer.setAlignment(Qt.AlignLeft)
-        disclaimer.setStyleSheet('font-size: 13px;')
+        disclaimer.setStyleSheet('font-size: 10pt;')
         disclaimer.setWordWrap(True)
         layout.addWidget(disclaimer)
 
@@ -813,7 +831,7 @@ class MainWindow(QMainWindow):
                     color: white;
                     border: none;
                     border-radius: 4px;
-                    font-size: 14px;
+                    font-size: 10pt;
                 }
                 QPushButton:hover { background-color: #2E7D32; }
             """)
@@ -828,7 +846,7 @@ class MainWindow(QMainWindow):
                 color: white;
                 border: none;
                 border-radius: 4px;
-                font-size: 14px;
+                font-size: 10pt;
             }
             QPushButton:hover { background-color: #0E42D2; }
         """)

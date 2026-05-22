@@ -28,7 +28,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 margin-right: 4px;
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
-                font-size: 14px;
+                font-size: 10pt;
                 color: #4E5969;
             }
             QTabBar::tab:selected {
@@ -57,18 +57,18 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel('登录方式:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         login_mode_layout.addWidget(label)
         
         # 仅配置密码登录
         pwd_only_radio = QRadioButton('仅配置密码登录')
         pwd_only_radio.setChecked(True)
-        pwd_only_radio.setStyleSheet('font-size: 14px; color: #4E5969;')
+        pwd_only_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
         login_mode_layout.addWidget(pwd_only_radio)
         
         # 配置用户名+密码
         user_pwd_radio = QRadioButton('配置用户名+密码')
-        user_pwd_radio.setStyleSheet('font-size: 14px; color: #4E5969;')
+        user_pwd_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
         login_mode_layout.addWidget(user_pwd_radio)
         
         login_mode_layout.addStretch()
@@ -80,7 +80,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel('console密码:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         pwd_layout.addWidget(label)
         
         console_pwd_input = QLineEdit()
@@ -91,7 +91,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -110,7 +110,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel('用户名:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         user_pwd_layout.addWidget(label)
         
         user_input = QLineEdit()
@@ -120,7 +120,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -132,7 +132,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel('密码:')
         label.setFixedWidth(80)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         user_pwd_layout.addWidget(label)
         
         user_pwd_input = QLineEdit()
@@ -143,7 +143,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -168,7 +168,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel('批量创建:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         item_layout.addWidget(label)
         
         input_widget = QLineEdit()
@@ -178,7 +178,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
             QLineEdit:focus {
@@ -190,7 +190,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         # 添加小字提示
         hint_label = QLabel('批量创建vlan，用逗号隔开，连续的用to或者-，例如：2 to 8，11或2-8，11')
-        hint_label.setStyleSheet('color: #165DFF; font-size: 12px;')
+        hint_label.setStyleSheet('color: #165DFF; font-size: 9pt;')
         item_layout.addWidget(hint_label)
         
         item_layout.addStretch()
@@ -208,7 +208,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         # SSH登录方式选择
         ssh_login_layout = QHBoxLayout()
         ssh_login_label = QLabel('登录方式:')
-        ssh_login_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        ssh_login_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         ssh_login_layout.addWidget(ssh_login_label)
         
         self.ssh_login_type = QButtonGroup()
@@ -230,13 +230,13 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         # SSH用户名和密码（仅当选择配置用户名+密码时显示）
         self.ssh_user_layout = QHBoxLayout()
         ssh_user_label = QLabel('用户名:')
-        ssh_user_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        ssh_user_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         self.ssh_user_input = QLineEdit()
         self.ssh_user_input.setPlaceholderText('请输入SSH用户名')
         self.ssh_user_input.setStyleSheet(self.get_input_style())
         
         ssh_pass_label = QLabel('密码:')
-        ssh_pass_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        ssh_pass_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         self.ssh_user_pass_input = QLineEdit()
         self.ssh_user_pass_input.setPlaceholderText('请输入SSH密码')
         self.ssh_user_pass_input.setEchoMode(QLineEdit.Password)
@@ -268,7 +268,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         # Telnet登录方式选择
         telnet_login_layout = QHBoxLayout()
         telnet_login_label = QLabel('登录方式:')
-        telnet_login_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        telnet_login_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         telnet_login_layout.addWidget(telnet_login_label)
         
         self.telnet_login_type = QButtonGroup()
@@ -290,13 +290,13 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         # Telnet用户名和密码（仅当选择配置用户名+密码时显示）
         self.telnet_user_layout = QHBoxLayout()
         telnet_user_label = QLabel('用户名:')
-        telnet_user_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        telnet_user_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         self.telnet_user_input = QLineEdit()
         self.telnet_user_input.setPlaceholderText('请输入Telnet用户名')
         self.telnet_user_input.setStyleSheet(self.get_input_style())
         
         telnet_pass_label = QLabel('密码:')
-        telnet_pass_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        telnet_pass_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         self.telnet_user_pass_input = QLineEdit()
         self.telnet_user_pass_input.setPlaceholderText('请输入Telnet密码')
         self.telnet_user_pass_input.setEchoMode(QLineEdit.Password)
@@ -343,7 +343,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         interface_layout = QVBoxLayout()
         interface_layout.setSpacing(12)
         interface_label = QLabel('接口类型:')
-        interface_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        interface_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         interface_layout.addWidget(interface_label)
         self.access_interface_combo = QComboBox()
         self.access_interface_combo.addItems(['GigabitEthernet 0/', 'GigabitEthernet 1/', 'TenGigabitEthernet 0/'])
@@ -352,7 +352,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -362,7 +362,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         port_layout = QVBoxLayout()
         port_layout.setSpacing(12)
         port_label = QLabel('端口范围:')
-        port_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        port_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         port_layout.addWidget(port_label)
         port_range_layout = QHBoxLayout()
         port_range_layout.setSpacing(12)
@@ -374,7 +374,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -388,7 +388,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -399,7 +399,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         vlan_layout = QVBoxLayout()
         vlan_layout.setSpacing(12)
         vlan_label = QLabel('加入VLAN:')
-        vlan_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        vlan_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         vlan_layout.addWidget(vlan_label)
         self.access_vlan_input = QLineEdit()
         self.access_vlan_input.setPlaceholderText('请输入VLAN ID')
@@ -409,7 +409,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -424,7 +424,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 color: #FFFFFF;
-                font-size: 16px;
+                font-size: 12pt;
                 font-weight: 600;
             }
             QPushButton:hover {
@@ -440,7 +440,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 background-color: #F2F3F5;
                 border: none;
                 padding: 8px;
-                font-size: 12px;
+                font-size: 9pt;
                 color: #4E5969;
             }
         """)
@@ -452,7 +452,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
             }
             QTableWidget::item {
                 padding: 8px;
-                font-size: 14px;
+                font-size: 10pt;
             }
         """)
         self.access_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -478,7 +478,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         interface_layout = QVBoxLayout()
         interface_layout.setSpacing(12)
         interface_label = QLabel('接口类型:')
-        interface_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        interface_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         interface_layout.addWidget(interface_label)
         self.trunk_interface_combo = QComboBox()
         self.trunk_interface_combo.addItems(['GigabitEthernet 0/', 'GigabitEthernet 1/', 'TenGigabitEthernet 0/'])
@@ -487,7 +487,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -497,7 +497,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         port_layout = QVBoxLayout()
         port_layout.setSpacing(12)
         port_label = QLabel('端口范围:')
-        port_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        port_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         port_layout.addWidget(port_label)
         port_range_layout = QHBoxLayout()
         port_range_layout.setSpacing(12)
@@ -509,7 +509,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -523,7 +523,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -534,7 +534,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         vlan_layout = QVBoxLayout()
         vlan_layout.setSpacing(12)
         vlan_label = QLabel('允许通行:')
-        vlan_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        vlan_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         vlan_layout.addWidget(vlan_label)
         self.trunk_vlan_input = QLineEdit()
         self.trunk_vlan_input.setPlaceholderText('all 或 10-20')
@@ -544,7 +544,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -559,7 +559,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 color: #FFFFFF;
-                font-size: 16px;
+                font-size: 12pt;
                 font-weight: 600;
             }
             QPushButton:hover {
@@ -575,7 +575,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 background-color: #F2F3F5;
                 border: none;
                 padding: 8px;
-                font-size: 12px;
+                font-size: 9pt;
                 color: #4E5969;
             }
         """)
@@ -587,7 +587,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
             }
             QTableWidget::item {
                 padding: 8px;
-                font-size: 14px;
+                font-size: 10pt;
             }
         """)
         self.trunk_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -615,7 +615,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         agg_id_layout = QVBoxLayout()
         agg_id_layout.setSpacing(8)
         agg_id_label = QLabel('聚合ID:')
-        agg_id_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        agg_id_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         agg_id_layout.addWidget(agg_id_label)
         self.agg_id_input = QLineEdit()
         self.agg_id_input.setPlaceholderText('1')
@@ -626,7 +626,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -637,7 +637,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         mode_layout = QVBoxLayout()
         mode_layout.setSpacing(8)
         mode_label = QLabel('模式:')
-        mode_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        mode_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         mode_layout.addWidget(mode_label)
         self.agg_mode_combo = QComboBox()
         self.agg_mode_combo.addItems(['LACP (动态)', 'Static (静态)'])
@@ -646,7 +646,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -657,7 +657,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         lb_layout = QVBoxLayout()
         lb_layout.setSpacing(8)
         lb_label = QLabel('负载均衡:')
-        lb_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        lb_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         lb_layout.addWidget(lb_label)
         self.agg_lb_combo = QComboBox()
         self.agg_lb_combo.addItems(['src-dst-ip (推荐)', 'src-dst-mac', 'src-dst-ip+port'])
@@ -666,7 +666,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -677,7 +677,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         member_layout = QVBoxLayout()
         member_layout.setSpacing(8)
         member_label = QLabel('成员端口:')
-        member_label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        member_label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         member_layout.addWidget(member_label)
         member_port_layout = QHBoxLayout()
         member_port_layout.setSpacing(8)
@@ -689,7 +689,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -702,7 +702,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -716,7 +716,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
             }
         """)
@@ -733,7 +733,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 color: #FFFFFF;
-                font-size: 14px;
+                font-size: 10pt;
                 font-weight: 600;
             }
             QPushButton:hover {
@@ -754,7 +754,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 background-color: #F2F3F5;
                 border: none;
                 padding: 8px;
-                font-size: 12px;
+                font-size: 9pt;
                 color: #4E5969;
             }
         """)
@@ -766,7 +766,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
             }
             QTableWidget::item {
                 padding: 8px;
-                font-size: 14px;
+                font-size: 10pt;
             }
         """)
         self.agg_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -942,13 +942,13 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         title_layout.addWidget(checkbox)
         
         title_label = QLabel(f'{icon} {title}')
-        title_label.setStyleSheet('font-size: 16px; font-weight: bold; color: #1D2129;')
+        title_label.setStyleSheet('font-size: 12pt; font-weight: bold; color: #1D2129;')
         title_layout.addWidget(title_label)
         
         # 功能描述（如果有）
         if description:
             desc_label = QLabel(description)
-            desc_label.setStyleSheet('font-size: 12px; color: #86909C;')
+            desc_label.setStyleSheet('font-size: 9pt; color: #86909C;')
             title_layout.addWidget(desc_label)
         
         title_layout.addStretch()
@@ -977,12 +977,12 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         item_layout.addWidget(label)
         
         if is_label:
             value_label = QLabel(default_value)
-            value_label.setStyleSheet('color: #86909C; font-size: 14px;')
+            value_label.setStyleSheet('color: #86909C; font-size: 10pt;')
             item_layout.addWidget(value_label)
         else:
             input_widget = QLineEdit()
@@ -1016,7 +1016,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                     border: 1px solid #E5E6EB;
                     border-radius: 4px;
                     padding: 8px 12px;
-                    font-size: 14px;
+                    font-size: 10pt;
                     background-color: #FFFFFF;
                 }
                 QLineEdit:focus {
@@ -1036,7 +1036,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 14px;')
+        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
         item_layout.addWidget(label)
         
         combo = QComboBox()
@@ -1046,7 +1046,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: 1px solid #E5E6EB;
                 border-radius: 4px;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 10pt;
                 background-color: #FFFFFF;
                 min-width: 200px;
             }
@@ -1137,7 +1137,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 padding: 4px 8px;
-                font-size: 12px;
+                font-size: 9pt;
             }
             QPushButton:hover {
                 background-color: #FF7875;
@@ -1196,7 +1196,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 padding: 4px 8px;
-                font-size: 12px;
+                font-size: 9pt;
             }
             QPushButton:hover {
                 background-color: #FF7875;
@@ -1265,7 +1265,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 border: none;
                 border-radius: 4px;
                 padding: 4px 8px;
-                font-size: 12px;
+                font-size: 9pt;
             }
             QPushButton:hover {
                 background-color: #FF7875;
