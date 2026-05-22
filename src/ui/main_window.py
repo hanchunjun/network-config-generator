@@ -868,7 +868,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.1')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
             activated_at = act_info.get("activated_at", "")[:16]
@@ -884,7 +884,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 15, 20, 15)
         layout.setSpacing(10)
 
-        version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
+        version_str = 'V0.3.1' + (' 试用版' if self._trial_mode else '')
         title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
@@ -962,7 +962,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.1')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
 
