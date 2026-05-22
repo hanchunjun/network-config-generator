@@ -124,7 +124,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 - 界面框架：PyQt5
 - 设计模式：面向对象 + 工厂模式 + 单例模式
 - 加密算法：AES-GCM (V0.2版本)
-- 打包部署：PyInstaller 单EXE封装（约47.1MB）
+- 打包部署：PyInstaller 单EXE封装（约48.5MB）
 - AI能力：三层架构（嵌入式按钮 → Agent快捷指令 → 自由对话）+ 双层分析（本地预检 + AI精审）
 
 ## 顶部固定主菜单（V0.3.1）
@@ -310,7 +310,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 |------|------|---------|
 | [INDEX.md](docs/CODEMAPS/INDEX.md) | 总索引 + 架构总览 + 快速导航 | 了解项目全貌 |
 | [architecture.md](docs/CODEMAPS/architecture.md) | 三层架构 + 模块依赖关系 + 关键路径 | 理解代码分层和调用链 |
-| [ui-pages.md](docs/CODEMAPS/ui-pages.md) | 6大UI页面 + 16个配置页面 + AI按钮 | 定位UI相关代码 |
+| [ui-pages.md](docs/CODEMAPS/ui-pages.md) | 7大UI页面 + 16个配置页面 + AI按钮 | 定位UI相关代码 |
 | [core-engines.md](docs/CODEMAPS/core-engines.md) | AI双引擎 + 安全加密 + 设备管理 | 定位业务逻辑代码 |
 | [utils.md](docs/CODEMAPS/utils.md) | 路径管理 + 验证器 + 文件操作 | 定位工具函数代码 |
 | [ai-agents.md](docs/CODEMAPS/ai-agents.md) | Agent提示词 + AI三层架构 + 双层分析 | 定位AI相关代码 |
@@ -484,7 +484,7 @@ D:\网络工具\NetworkConfigGenerator.exe
 - **核心模块：** src/core/ (7文件：含activation_engine.py、admin_keygen.py), src/ui/ (8文件：含activation_dialog.py、admin_tool_window.py), src/utils/ (3文件)
 - **业务脚本：** scripts/ (4文件：含build_admin_tool.py)
 - **AI Agent：** agents/ (2个系统提示词)
-- **测试用例：** tests/ (305个单元测试，核心模块覆盖率≥83%)
+- **测试用例：** tests/ (310个单元测试，核心模块覆盖率≥83%)
 
 ### 文档
 
@@ -562,6 +562,21 @@ D:\网络工具\NetworkConfigGenerator.exe
 - ✅ 主窗口默认几何调整为 **1200×780**，改善窗口比例
 - 🐛 修复 EXE 崩溃：`chardet` 7.4.3（含 mypyc .pyd 文件）降级至 4.0.0（纯 Python），修复启动时 ACCESS VIOLATION
 - 📦 `NetworkConfigGenerator.spec` 扩展排除列表，移除 tensorflow/torch/pandas 等非必要依赖
+
+### V0.3.1 DPI适配增强版（2026-05-22）
+
+- ✅ **高DPI缩放支持**：`main.py` 新增 `Qt.AA_EnableHighDpiScaling` + `AA_UseHighDpiPixmaps`，解决 125%/150% DPI 缩放过大问题
+- ✅ **字体单位全部转换**：所有 22 个 UI 文件的 `font-size: XXpx` 统一转换为 `pt` 单位（12px→9pt, 13px→10pt, 14px→10pt, 16px→12pt, 18px→14pt, 24px→18pt）
+- ✅ **多屏幕自适应窗口**：`main_window.py` 实现 4 档分辨率断点（≥2560/≥1920/≥1366/<1366），适配 1024×800 到 4K 屏幕
+- ✅ **参数循环算法修复**：批量命令生成器从笛卡尔积改为 **zip 同步循环**模式，多参数同时勾选时同步变化
+- ✅ **模板管理功能**：批量命令生成器新增模板下拉框 + 管理菜单（新增/重命名/删除/保存），12 个预置模板（四厂商×VLAN/接口VLAN/DHCP）
+- ✅ **模板路径迁移**：`cmd_templates.json` 移至 `config/` 子目录，首次运行自动生成
+- ✅ **试用模式增强**：开放「批量命令生成」功能（与锐捷接入交换机配置并列）
+- ✅ **激活弹窗文案更新**：补充批量命令生成功能说明，联系方式优化排版
+- ✅ **预置模板内容修正**：接口模板补全完整接口名（如 `GigabitEthernet 0/%a`），DHCP 模板使用正确 DNS
+- 📝 新增测试文件：`test_batch_cmd_generator.py`、`test_batch_cmd_logic.py`
+- ✅ 全量310个测试用例通过，32/32质量检查通过
+- ✅ 用户端EXE重新打包：`dist/NetworkConfigGenerator.exe`（48.5MB）
 
 ### V0.3.0 激活体系版（2026-05-21）
 

@@ -14,7 +14,8 @@ EXE所在目录/
 │   ├── machine_id.json            # 机器ID
 │   ├── ai_config.json.enc         # AI配置（加密）
 │   ├── projects_config.json       # 项目列表索引
-│   └── ai_recent_files.json       # AI最近文件记录
+│   ├── ai_recent_files.json       # AI最近文件记录
+│   └── cmd_templates.json         # 批量命令模板（明文JSON）★V0.3.1新增
 │
 ├── activation/       ← 🔐 用户端激活体系
 │   ├── license.dat                # 激活授权文件（AES-GCM加密）
@@ -130,6 +131,7 @@ EXE所在目录/
 | 密钥文件 | `config/key_info.json` | 动态派生（V0.2版本） |
 | 机器ID | `config/machine_id.json` | 明文 |
 | 激活授权 | `activation/license.dat` | AES-GCM（V0.3.0新增） |
+| 命令模板 | `config/cmd_templates.json` | 明文JSON（V0.3.1新增） |
 
 ---
 

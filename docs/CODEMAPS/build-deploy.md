@@ -39,7 +39,6 @@ python -m py_compile src/ui/ops_toolbox_page.py
 python -m py_compile src/ui/single_device_page.py
 python -m py_compile src/ui/ai_analysis_page.py
 python -m py_compile src/ui/project_manager_page.py
-python -m py_compile src/ui/subnet_calculator_page.py
 python -m py_compile src/ui/batch_cmd_generator_page.py
 python -m py_compile src/ui/system_settings_page.py
 python -m py_compile src/core/local_audit_engine.py
