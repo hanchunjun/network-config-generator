@@ -2,30 +2,34 @@
 
 所有重要版本变更记录于此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/) 格式。
 
-## [2.2.0] - 2026-05-22
+## [0.3.1] - 2026-05-22
 
 ### Added
-- 🌐 **子网掩码计算器** `src/ui/subnet_calculator_page.py`：IP/掩码实时计算 + 二进制位对照 + 子网划分详情表
-- 📜 **批量命令生成器** `src/ui/batch_cmd_generator_page.py`：命令模板 + %a~%e多参数占位 + 循环/步进/重复模式 + 预置模板
-- 导航栏扩展至8个模块：Ctrl+1~Ctrl+8，新增子网计算、命令生成（试用模式下也开放使用）
+- 📜 **批量命令生成器** `src/ui/batch_cmd_generator_page.py`：命令模板 + %a~%e多参数占位 + zip同步循环 + 模板管理（12预置+用户模板）
+- 导航栏扩展至7个模块：Ctrl+1~Ctrl+7，新增命令生成（试用模式下也开放使用）
+- 高DPI缩放支持：`Qt.AA_EnableHighDpiScaling` + `AA_UseHighDpiPixmaps`
+- 多屏幕自适应窗口：4档分辨率断点（≥2560/≥1920/≥1366/<1366）
 
 ### Changed
-- 项目管理页UI布局压缩：合并项目切换/信息框，压缩上部组件高度，最大化设备清单区域
-- 主窗口默认几何调整：1200×780
-- 激活弹窗「稍后再说」按钮视觉醒目化（蓝色底色）
-- 试用模式提示文案优化：明确告知仅「锐捷接入交换机」可免激活使用
-- 激活弹窗窗口尺寸三重锁定，防止移动时高度变化
+- 全部22个UI文件 `font-size` 从 `px` 转换为 `pt` 单位，适配DPI缩放
+- 试用模式文案更新：开放「锐捷接入交换机配置」+「批量命令生成」两个基础功能
+- 激活弹窗文案更新：补充批量命令生成功能说明
+- 批量命令生成器模板路径迁移至 `config/cmd_templates.json`
+- 批量命令生成器默认值调整：base=1, loop=4, repeat=1, cmd_count=12
 
 ### Fixed
-- 🐛 EXE 启动崩溃：`chardet` 从 7.4.3 降级至 4.0.0（纯Python，去除 mypyc .pyd），修复 ACCESS VIOLATION
-- 🐛 `subnet_calculator_page.py` 遗漏 `QAbstractItemView` 导入导致运行时 NameError
+- 🐛 批量命令生成器参数循环bug：从笛卡尔积改为zip同步循环模式
+- 🐛 EXE 启动崩溃：`chardet` 从 7.4.3 降级至 4.0.0（纯Python），修复 ACCESS VIOLATION
+- 🐛 预置模板内容修正：接口模板补全完整接口名（如 `GigabitEthernet 0/%a`）
+- 🐛 预置模板DHCP：使用正确的DNS服务器地址
 
 ### Packaging
 - `NetworkConfigGenerator.spec` 扩展排除列表，移除 tensorflow/torch/pandas 等非必要依赖
+- 用户端EXE重新打包：48.5MB
 
 ---
 
-## [2.1.0] - 2026-05-20
+## [0.2.1] - 2026-05-20
 
 ### Added
 - 双层AI分析架构：本地规则引擎预检 → 精简摘要 + 精准上下文 → AI精审
@@ -50,7 +54,7 @@
 
 ---
 
-## [2.0.0] - 2026-05-19
+## [0.2.0] - 2026-05-19
 
 ### Added
 - 运维工具箱重构为「项目运维」：3任务卡片 + 4Tab + AI嵌入 + 文件三件套
@@ -66,7 +70,7 @@
 
 ---
 
-## [1.0.0] - 2026-05-18
+## [0.1.0] - 2026-05-18
 
 ### Added
 - 全面路径便携化改造，所有数据跟随EXE
@@ -82,7 +86,7 @@
 
 ---
 
-## [0.9.0] - 2026-05-17
+## [0.0.9] - 2026-05-17
 
 ### Added
 - 基础六菜单框架
