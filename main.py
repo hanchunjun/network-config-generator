@@ -3,10 +3,11 @@
 """
 NetOps网络自动化运维工具主程序入口
 
-V0.3.0 新增：启动时强制激活校验（最高优先级）
-- 未激活 → 弹出激活弹窗，激活成功后继续
-- 激活失败退出 → 软件不加载任何业务模块
-- 方案B：激活成功后静默校验180天黑名单
+V0.3.1 新增：启动闪屏 + 延迟加载非关键页面
+- 启动时立即显示闪屏窗口（蓝色背景 + Logo + 版本号）
+- 主窗口初始化仅创建首屏（设备配置）页面
+- 其他页面在首次切换到该Tab时才创建（懒加载）
+- 消除重复的 check_activation() 调用
 """
 
 import os
@@ -69,7 +70,7 @@ def _check_activation() -> bool:
     1. 检查本地激活状态
     2. 已激活 → 方案B静默黑名单校验
     3. 黑名单命中 → 提示失效并退出
-    4. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置）
+    4. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置和批量命令生成）
 
     Returns:
         bool: 是否允许继续启动（激活或试用模式均返回True）
@@ -99,8 +100,58 @@ def _check_activation() -> bool:
         return True
 
     # 未激活 → 进入试用模式
-    netops_logger.get_logger().info("未激活，进入试用模式（仅开放锐捷接入交换机配置）")
+    netops_logger.get_logger().info("未激活，进入试用模式（仅开放锐捷接入交换机配置和批量命令生成）")
     return True  # 试用模式也允许启动
+
+
+def _create_splash_screen(app):
+    """创建并显示闪屏窗口。
+
+    使用纯代码绘制，不依赖外部图片资源，确保在任何环境下都能正常显示。
+
+    Returns:
+        QSplashScreen: 闪屏窗口实例
+    """
+    from PyQt5.QtWidgets import QSplashScreen
+    from PyQt5.QtCore import Qt
+    from PyQt5.QtGui import QPixmap, QFont, QColor, QPainter
+
+    pixmap = QPixmap(480, 320)
+    pixmap.fill(QColor(22, 93, 255))  # 品牌蓝
+
+    painter = QPainter(pixmap)
+    painter.setPen(QColor(255, 255, 255))
+
+    # 主标题
+    title_font = QFont("Microsoft YaHei", 24, QFont.Bold)
+    painter.setFont(title_font)
+    painter.drawText(pixmap.rect().adjusted(0, -60, 0, 0), Qt.AlignCenter, "NetOps")
+
+    # 副标题
+    sub_font = QFont("Microsoft YaHei", 11)
+    painter.setFont(sub_font)
+    painter.drawText(pixmap.rect().adjusted(0, -10, 0, 0), Qt.AlignCenter, "企业网络自动化运维平台")
+
+    # 分隔线
+    painter.drawLine(140, 170, 340, 170)
+
+    # 版本号
+    ver_font = QFont("Microsoft YaHei", 10)
+    painter.setFont(ver_font)
+    painter.drawText(pixmap.rect().adjusted(0, 50, 0, 0), Qt.AlignCenter, "V0.3.1")
+
+    # 加载提示
+    loading_font = QFont("Microsoft YaHei", 9)
+    painter.setFont(loading_font)
+    painter.setPen(QColor(200, 210, 240))
+    painter.drawText(pixmap.rect().adjusted(0, 90, 0, 0), Qt.AlignCenter, "正在初始化...")
+
+    painter.end()
+
+    splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
+    splash.show()
+    app.processEvents()
+    return splash
 
 
 _setup_crash_logger()
@@ -110,7 +161,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 
 if __name__ == '__main__':
-    # 启用高DPI缩放，避免字体在125%/150%缩放下过大
+    # 启用高DPI缩放，避免字体在125%/150%缩放过过大
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     app = QApplication(sys.argv)
@@ -119,8 +170,12 @@ if __name__ == '__main__':
     if not _check_activation():
         sys.exit(1)
 
+    # 显示闪屏（激活通过后立即显示，给用户即时反馈）
+    splash = _create_splash_screen(app)
+
     # 激活通过后才加载主窗口
     from src.ui.main_window import MainWindow
-    window = MainWindow()
+    window = MainWindow(splash=splash)
     window.show()
+    splash.finish(window)
     sys.exit(app.exec_())
