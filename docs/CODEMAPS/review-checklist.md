@@ -42,17 +42,23 @@ python -m py_compile src/ui/ops_toolbox_page.py
 python -m py_compile src/ui/single_device_page.py
 python -m py_compile src/ui/ai_analysis_page.py
 python -m py_compile src/ui/project_manager_page.py
-python -m py_compile src/ui/batch_cmd_generator_page.py
 python -m py_compile src/ui/system_settings_page.py
+python -m py_compile src/ui/subnet_calculator_page.py
+python -m py_compile src/ui/batch_cmd_generator_page.py
+python -m py_compile src/ui/login_dialog.py
+python -m py_compile src/ui/account_manager_dialog.py
 python -m py_compile src/core/local_audit_engine.py
 python -m py_compile src/core/local_diagnostic_engine.py
+python -m py_compile src/core/account_manager.py
 python -m py_compile src/utils/resource_path.py
 
 # 2. 导入链验证
 python -c "from src.ui.main_window import MainWindow; print('OK')"
 python -c "from src.core.local_audit_engine import LocalAuditEngine; print('OK')"
 python -c "from src.core.local_diagnostic_engine import LocalDiagnosticEngine; print('OK')"
-python -c "from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage; print('OK')"
+python -c "from src.core.account_manager import AccountManager; print('OK')"
+python -c "from src.ui.login_dialog import LoginDialog; print('OK')"
+python -c "from src.ui.account_manager_dialog import AccountManagerDialog; print('OK')"
 
 # 3. 类型检查
 py -3.11 -m mypy src/utils/ src/core/key_manager.py src/core/secure_config.py src/core/logger.py

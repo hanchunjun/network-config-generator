@@ -9,6 +9,8 @@ a = Analysis(
     hiddenimports=[
         'src.core.local_audit_engine', 'src.core.local_diagnostic_engine',
         'src.ui.subnet_calculator_page', 'src.ui.batch_cmd_generator_page',
+        'src.core.account_manager', 'src.ui.login_dialog',
+        'src.ui.account_manager_dialog',
         'PyQt5.sip',
     ],
     hookspath=[],
@@ -44,4 +46,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    manifest='app.manifest',
 )

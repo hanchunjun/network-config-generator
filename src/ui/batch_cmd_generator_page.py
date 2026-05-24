@@ -15,10 +15,9 @@ from PyQt5.QtWidgets import (
     QLineEdit, QPushButton, QSpinBox, QCheckBox,
     QGroupBox, QTextEdit, QScrollArea,
     QApplication, QGridLayout, QFileDialog,
-    QMessageBox, QWidget as QW, QComboBox, QInputDialog, QMenu,
-    QAction
+    QMessageBox, QWidget as QW, QComboBox, QInputDialog,
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QColor
 
 from src.utils.resource_path import get_config_path
@@ -176,6 +175,8 @@ def _build_preset_templates() -> List[dict]:
 # 参数组控件
 # ─────────────────────────────────────────────
 class ParamGroupWidget(QGroupBox):
+    loop_toggled = pyqtSignal(str, bool)
+
     def __init__(self, label: str, param_char: str, parent=None):
         super().__init__(f"参数{label}:", parent)
         self.param_char = param_char
@@ -224,14 +225,23 @@ class ParamGroupWidget(QGroupBox):
         layout.addWidget(self.loop_cb, row, 0, 1, 2)
         self.loop_spin = QSpinBox()
         self.loop_spin.setRange(1, 9999)
-        self.loop_spin.setValue(4)
+        self.loop_spin.setValue(12)
         self.loop_spin.setEnabled(False)
         self.loop_spin.setMinimumHeight(24)
         self.loop_spin.setMinimumWidth(48)
         layout.addWidget(self.loop_spin, row, 2, 1, 2)
 
         self.repeat_cb.toggled.connect(self.repeat_spin.setEnabled)
+        self.loop_cb.toggled.connect(self._on_loop_toggled)
         self.loop_cb.toggled.connect(self.loop_spin.setEnabled)
+
+    def _on_loop_toggled(self, checked: bool) -> None:
+        self.loop_toggled.emit(self.param_char, checked)
+
+    def set_loop_enabled(self, enabled: bool) -> None:
+        if not enabled:
+            self.loop_cb.setChecked(False)
+        self.loop_spin.setEnabled(self.loop_cb.isChecked())
 
     def get_config(self) -> dict:
         return {
@@ -303,7 +313,6 @@ class BatchCmdGeneratorPage(QWidget):
                 idx = self.template_combo.count()
                 self.template_combo.addItem(t["name"])
                 self.template_combo.setItemData(idx, t)
-                # 预置模板灰色显示
                 self.template_combo.setItemData(
                     idx, QColor("#86909C"), Qt.ForegroundRole
                 )
@@ -315,6 +324,8 @@ class BatchCmdGeneratorPage(QWidget):
                 idx = self.template_combo.count()
                 self.template_combo.addItem(t["name"])
                 self.template_combo.setItemData(idx, t)
+
+        self._update_template_buttons()
 
     def _get_template_by_index(self, index: int) -> Optional[dict]:
         """根据combo索引获取模板数据"""
@@ -331,6 +342,7 @@ class BatchCmdGeneratorPage(QWidget):
 
     def _on_template_selected(self, index: int) -> None:
         """下拉框选中模板→填入编辑区"""
+        self._update_template_buttons()
         template = self._get_template_by_index(index)
         if template is None:
             return
@@ -349,39 +361,16 @@ class BatchCmdGeneratorPage(QWidget):
                 self.template_combo.blockSignals(True)
                 self.template_combo.setCurrentIndex(0)
                 self.template_combo.blockSignals(False)
+                self._update_template_buttons()
                 return
 
         self.template_edit.setPlainText(template.get("content", ""))
 
-    def _on_manage_template(self) -> None:
-        """管理按钮→弹出菜单"""
-        menu = QMenu(self)
-
-        action_add = QAction("➕ 新增模板", self)
-        action_add.triggered.connect(self._on_add_template)
-        menu.addAction(action_add)
-
-        action_rename = QAction("✏️ 重命名模板", self)
-        action_rename.triggered.connect(self._on_rename_template)
-        menu.addAction(action_rename)
-
-        action_delete = QAction("🗑 删除模板", self)
-        action_delete.triggered.connect(self._on_delete_template)
-        menu.addAction(action_delete)
-
-        menu.addSeparator()
-
-        action_save = QAction("💾 保存当前为模板", self)
-        action_save.triggered.connect(self._on_save_current_as_template)
-        menu.addAction(action_save)
-
-        # 根据当前选中项设置可用性
+    def _update_template_buttons(self) -> None:
         current = self._get_current_template()
         is_user = current is not None and current.get("category") == "user"
-        action_rename.setEnabled(is_user)
-        action_delete.setEnabled(is_user)
-
-        menu.exec_(self.manage_btn.mapToGlobal(self.manage_btn.rect().bottomLeft()))
+        self.btn_rename_template.setEnabled(is_user)
+        self.btn_delete_template.setEnabled(is_user)
 
     def _on_add_template(self) -> None:
         """新增用户模板"""
@@ -543,19 +532,33 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_combo.currentIndexChanged.connect(self._on_template_selected)
         template_bar.addWidget(self.template_combo)
 
-        self.manage_btn = QPushButton("管理...")
-        self.manage_btn.setCursor(Qt.PointingHandCursor)
-        self.manage_btn.setMinimumHeight(28)
-        self.manage_btn.setMinimumWidth(60)
-        self.manage_btn.setStyleSheet(
-            "QPushButton {"
-            "  background-color: #F2F3F5; color: #4E5969;"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; font-size: 9pt;"
-            "}"
-            "QPushButton:hover { background-color: #E5E6EB; border-color: #86909C; }"
-        )
-        self.manage_btn.clicked.connect(self._on_manage_template)
-        template_bar.addWidget(self.manage_btn)
+        self.btn_add_template = QPushButton("+ 新增")
+        self.btn_add_template.setObjectName("tplAddBtn")
+        self.btn_add_template.setCursor(Qt.PointingHandCursor)
+        self.btn_add_template.setMinimumHeight(28)
+        self.btn_add_template.setMinimumWidth(52)
+        template_bar.addWidget(self.btn_add_template)
+
+        self.btn_rename_template = QPushButton("重命名")
+        self.btn_rename_template.setObjectName("tplRenameBtn")
+        self.btn_rename_template.setCursor(Qt.PointingHandCursor)
+        self.btn_rename_template.setMinimumHeight(28)
+        self.btn_rename_template.setMinimumWidth(52)
+        template_bar.addWidget(self.btn_rename_template)
+
+        self.btn_save_template = QPushButton("保存")
+        self.btn_save_template.setObjectName("tplSaveBtn")
+        self.btn_save_template.setCursor(Qt.PointingHandCursor)
+        self.btn_save_template.setMinimumHeight(28)
+        self.btn_save_template.setMinimumWidth(40)
+        template_bar.addWidget(self.btn_save_template)
+
+        self.btn_delete_template = QPushButton("删除")
+        self.btn_delete_template.setCursor(Qt.PointingHandCursor)
+        self.btn_delete_template.setMinimumHeight(28)
+        self.btn_delete_template.setMinimumWidth(40)
+        template_bar.addWidget(self.btn_delete_template)
+
         template_bar.addStretch()
         template_layout.addLayout(template_bar)
 
@@ -566,7 +569,10 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_edit = QTextEdit()
         self.template_edit.setPlaceholderText(
             "在此输入命令模板，或从上方下拉框选择预置模板...\n\n"
-            "参数格式: %a=第1个参数, %b=第2个参数, ... %f=第6个参数\n\n"
+            "参数格式: %a=第1个参数, %b=第2个参数, ... %f=第6个参数\n"
+            "两种模式：\n"
+            "  ① 固定重复：勾选下方「重复次数」，输出N条相同命令（适合无参/纯文本）\n"
+            "  ② 差异化生成：勾选参数的「循环个数」，按基数+步长自动递增生成不同命令\n\n"
             "示例（锐捷接口划分VLAN）:\n"
             "interface GigabitEthernet 0/%a\n"
             " switchport mode access\n"
@@ -581,7 +587,7 @@ class BatchCmdGeneratorPage(QWidget):
         main_layout.addWidget(template_group)
 
         # 参数设置区
-        param_group = QGroupBox("参数设置")
+        param_group = QGroupBox("参数设置  （勾选「循环个数」→ 差异化批量生成模式）")
         param_group.setStyleSheet(self._group_style())
         param_outer_layout = QVBoxLayout(param_group)
         param_outer_layout.setContentsMargins(8, 8, 8, 6)
@@ -612,13 +618,27 @@ class BatchCmdGeneratorPage(QWidget):
         action_row = QHBoxLayout()
         action_row.setSpacing(8)
 
-        action_row.addWidget(QLabel("命令数量:"))
+        self.cmd_count_cb = QCheckBox()
+        self.cmd_count_cb.setChecked(True)
+        self.cmd_count_cb.setCursor(Qt.PointingHandCursor)
+        self.cmd_count_cb.setToolTip("勾选：重复输出相同命令（适用于无参数/纯文本模板）")
+        action_row.addWidget(self.cmd_count_cb)
+
+        action_row.addWidget(QLabel("重复次数:"))
         self.cmd_count_spin = QSpinBox()
         self.cmd_count_spin.setRange(1, 999999)
         self.cmd_count_spin.setValue(12)
         self.cmd_count_spin.setMinimumHeight(30)
         self.cmd_count_spin.setMinimumWidth(75)
+        self.cmd_count_spin.setToolTip("输出多少条相同的命令\n取消勾选后由下方「循环个数」控制差异化条数")
         action_row.addWidget(self.cmd_count_spin)
+
+        self.mode_hint_label = QLabel()
+        self.mode_hint_label.setStyleSheet(
+            "color: #86909C; font-size: 8pt; padding: 0 4px;"
+        )
+        self.mode_hint_label.setText("📌 当前模式：固定重复")
+        action_row.addWidget(self.mode_hint_label)
 
         btn_gen = QPushButton("生成命令")
         btn_gen.setObjectName("genBtn")
@@ -706,11 +726,28 @@ class BatchCmdGeneratorPage(QWidget):
             "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
             "}"
             "QPushButton#copyBtn:hover { background-color: #D48806; }"
-            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn) {"
+            "QPushButton#tplAddBtn {"
+            "  background-color: #165DFF; color: white; border: none;"
+            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
+            "}"
+            "QPushButton#tplAddBtn:hover { background-color: #0E42D2; }"
+            "QPushButton#tplRenameBtn {"
+            "  background-color: #FAAD14; color: white; border: none;"
+            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
+            "}"
+            "QPushButton#tplRenameBtn:hover { background-color: #D48806; }"
+            "QPushButton#tplSaveBtn {"
+            "  background-color: #43A047; color: white; border: none;"
+            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
+            "}"
+            "QPushButton#tplSaveBtn:hover { background-color: #2E7D32; }"
+            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
+            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn) {"
             "  background-color: #F2F3F5; color: #4E5969; border: 1px solid #C9CDD4;"
             "  border-radius: 4px; font-size: 10pt;"
             "}"
-            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn):hover {"
+            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
+            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):hover {"
             "  background-color: #E5E6EB; border-color: #86909C;"
             "}"
             "QCheckBox { spacing: 4px; }"
@@ -730,7 +767,59 @@ class BatchCmdGeneratorPage(QWidget):
             elif txt == "清空":
                 btn.clicked.connect(self._clear_output)
 
-    # ─── 生成逻辑（不变）───
+        for pw in self._param_widgets:
+            pw.loop_toggled.connect(self._on_param_loop_toggled)
+        self.cmd_count_cb.toggled.connect(self._on_cmd_count_toggled)
+
+        self.btn_add_template.clicked.connect(self._on_add_template)
+        self.btn_rename_template.clicked.connect(self._on_rename_template)
+        self.btn_delete_template.clicked.connect(self._on_delete_template)
+        self.btn_save_template.clicked.connect(self._on_save_current_as_template)
+
+        self._init_mutual_exclusion()
+
+    def _init_mutual_exclusion(self) -> None:
+        self._sync_ui_from_cmd_count_mode()
+
+    def _on_param_loop_toggled(self, char: str, checked: bool) -> None:
+        if checked:
+            self.cmd_count_cb.blockSignals(True)
+            self.cmd_count_cb.setChecked(False)
+            self.cmd_count_cb.blockSignals(False)
+            self._update_mode_hint()
+        else:
+            any_still_checked = any(pw.loop_cb.isChecked() for pw in self._param_widgets)
+            if not any_still_checked:
+                self.cmd_count_cb.blockSignals(True)
+                self.cmd_count_cb.setChecked(True)
+                self.cmd_count_cb.blockSignals(False)
+                self._update_mode_hint()
+
+    def _on_cmd_count_toggled(self, checked: bool) -> None:
+        if checked:
+            for pw in self._param_widgets:
+                pw.set_loop_enabled(False)
+        self._update_mode_hint()
+
+    def _sync_ui_from_cmd_count_mode(self) -> None:
+        for pw in self._param_widgets:
+            pw.set_loop_enabled(False)
+        self.cmd_count_cb.setChecked(True)
+        self._update_mode_hint()
+
+    def _update_mode_hint(self) -> None:
+        if self.cmd_count_cb.isChecked():
+            self.mode_hint_label.setText("📌 当前模式：固定重复")
+        else:
+            loop_vals = [
+                pw.loop_spin.value()
+                for pw in self._param_widgets
+                if pw.loop_cb.isChecked()
+            ]
+            max_v = max(loop_vals) if loop_vals else 0
+            self.mode_hint_label.setText(f"📌 当前模式：差异化生成（{max_v}条）")
+
+    # ─── 生成逻辑 ───
 
     def _generate(self) -> None:
         template = self.template_edit.toPlainText().strip()
@@ -754,9 +843,17 @@ class BatchCmdGeneratorPage(QWidget):
             else:
                 configs[char] = {"char": char, "base": 0, "step": 1, "repeat": None, "loop": None}
 
-        lines: List[str] = []
-        total_count = [0]
-        max_count = self.cmd_count_spin.value()
+        # 确定循环次数
+        if self.cmd_count_cb.isChecked():
+            loop_count = self.cmd_count_spin.value()
+        else:
+            loop_values = [
+                self._param_widgets[ord(c) - ord('a')].loop_spin.value()
+                for c in used_params
+                if ord(c) - ord('a') < len(self._param_widgets)
+                and self._param_widgets[ord(c) - ord('a')].loop_cb.isChecked()
+            ]
+            loop_count = max(loop_values) if loop_values else self.cmd_count_spin.value()
 
         # 为每个使用的参数生成值列表
         param_values: Dict[str, List[int]] = {}
@@ -764,25 +861,25 @@ class BatchCmdGeneratorPage(QWidget):
             cfg = configs[char]
             base = cfg["base"]
             step = cfg["step"]
-            loop = cfg["loop"] or 1
+            loop = cfg["loop"]
             repeat = cfg["repeat"] or 1
-            values = [base + i * step for i in range(loop)]
-            # 展开repeat：每个值重复repeat次
+            if self.cmd_count_cb.isChecked():
+                values = [base + i * step for i in range(loop_count)]
+            elif loop is not None:
+                values = [base + i * step for i in range(loop)]
+            else:
+                values = [base]
             expanded = []
             for v in values:
                 expanded.extend([v] * repeat)
             param_values[char] = expanded
 
-        # zip模式：所有参数同步变化，取最长列表长度
-        max_len = max((len(v) for v in param_values.values()), default=0)
-        for i in range(max_len):
-            if total_count[0] >= max_count:
-                break
+        lines: List[str] = []
+        for i in range(loop_count):
             current_values: Dict[str, int] = {}
             for char in used_params:
                 vals = param_values[char]
                 if vals:
-                    # 如果该参数列表较短，则循环使用其值
                     current_values[char] = vals[i % len(vals)]
                 else:
                     current_values[char] = 0
@@ -790,8 +887,7 @@ class BatchCmdGeneratorPage(QWidget):
             for char, val in current_values.items():
                 rendered = rendered.replace(f"%{char}", str(val))
             lines.append(rendered)
-            total_count[0] += 1
-            pct = min(int(total_count[0] / max_count * 100), 100)
+            pct = min(int((i + 1) / loop_count * 100), 100)
             self._status_label.setText(f"  {pct} %")
             QApplication.processEvents()
         result_text = "\n".join(lines)

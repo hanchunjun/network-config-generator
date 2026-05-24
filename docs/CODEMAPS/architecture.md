@@ -1,6 +1,7 @@
 # 架构代码地图
 
 **最后更新：** 2026-05-22
+**项目版本：** V0.3.3
 
 ---
 
@@ -45,12 +46,13 @@
 | `device_manager.py` | 设备CRUD、清单管理 | `project_manager_page`, `device_form_dialog` |
 | `local_audit_engine.py` | 本地合规规则引擎（双层审计预检层） | `ops_toolbox_page`, `single_device_page`, `ai_analysis_page` |
 | `local_diagnostic_engine.py` | 本地运行时诊断引擎（异常提取+精准上下文） | `ops_toolbox_page`, `single_device_page`, `ai_analysis_page` |
+| `account_manager.py` | 账户管理核心（读写/校验/加密/复杂度校验） ★V0.3.3新增 | `login_dialog`, `account_manager_dialog` |
 
 ### UI页面层（src/ui/）— 依赖 core/ 和 utils/
 
 | 模块 | 职责 | 导航名称 |
 |------|------|---------|
-| `main_window.py` | 主窗口、导航栏、8页面切换 | — |
+| `main_window.py` | 主窗口、导航栏、7页面切换、账户管理按钮 | — |
 | `project_manager_page.py` | 项目CRUD + 卡片总览 + 全局统计 | 📁 新建项目 |
 | `ops_toolbox_page.py` | 3任务卡片 + 4Tab + AI嵌入 | 🔧 项目运维 |
 | `single_device_page.py` | 5Tab全链条 + 测试连接 + AI分析 | 🔍 单点运维 |
@@ -62,6 +64,10 @@
 | `device_template_dialog.py` | 设备模板弹窗 | 对话框 |
 | `history_dialog.py` | 历史记录弹窗 | 对话框 |
 | `security_dialogs.py` | 安全确认弹窗（导出/删除/查看密码） | 对话框 |
+| `login_dialog.py` | 登录弹窗（无关闭按钮/禁止ESC） ★V0.3.3新增 | 对话框 |
+| `account_manager_dialog.py` | 账户管理弹窗（修改用户名/密码） ★V0.3.3新增 | 对话框 |
+| `subnet_calculator_page.py` | 子网掩码计算器 ★V0.3.1新增 | 🔢 子网计算（试用模式开放） |
+| `batch_cmd_generator_page.py` | 批量命令生成器 ★V0.3.1新增 | 📜 命令生成（试用模式开放） |
 
 ### 业务脚本层（scripts/）— 相对独立
 
@@ -78,16 +84,28 @@
 | `network-config-reviewer.md` | 配置合规审计系统提示词 | 所有AI合规巡检按钮 |
 | `network-troubleshooter.md` | OSI分层故障诊断提示词 | 所有AI故障诊断按钮 |
 
+### 打包配置层
+
+| 模块 | 职责 |
+|------|------|
+| `app.manifest` | Windows DPI清单（dpiAwareness:unaware），通过 spec 内嵌EXE |
+| `NetworkConfigGenerator.spec` | 用户端PyInstaller打包规格 |
+| `admin_tool.spec` | 管理员工具PyInstaller打包规格 |
+
 ---
 
 ## 关键依赖路径
 
 ### 启动链路
 ```
-main.py → QApplication → MainWindow.__init__()
+main.py → SetProcessDpiAwareness(0) [DPI Unaware声明]
+  → QApplication.setAttribute(AA_UseHighDpiPixmaps)
+  → _check_activation() [激活校验]
+  → LoginDialog [登录认证，V0.3.3新增]
+  → QApplication → MainWindow.__init__()
   → ensure_dirs() [创建目录结构]
   → _load_current_project() [加载当前项目]
-  → 初始化8个UI页面
+  → 初始化7个UI页面
 ```
 
 ### AI诊断链路（单点运维）

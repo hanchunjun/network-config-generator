@@ -6,21 +6,26 @@ NetOps网络自动化运维工具主窗口
 
 import json
 import os
-from typing import Dict, List, Tuple, Optional, Any, TYPE_CHECKING
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional, Any
 
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout,
                                QPushButton, QWidget, QLabel, QDialog, QStatusBar, QMessageBox)
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QKeySequence
 
-# 延迟导入：页面类在首次使用时才加载，加速启动
-if TYPE_CHECKING:
-    from src.ui.system_settings_page import SystemSettingsPage
-    from src.ui.project_manager_page import ProjectManagerPage
-    from src.ui.ops_toolbox_page import OpsToolboxPage
-    from src.ui.single_device_page import SingleDevicePage
-    from src.ui.ai_analysis_page import AIAnalysisPage
-    from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
+# UI页面导入
+from src.ui.system_settings_page import SystemSettingsPage
+from src.ui.project_manager_page import ProjectManagerPage
+from src.ui.ops_toolbox_page import OpsToolboxPage
+from src.ui.single_device_page import SingleDevicePage
+from src.ui.ai_analysis_page import AIAnalysisPage
+
+# 配置页面导入（按厂商分组）
+from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
+from src.ui.config_pages.huawei import HuaweiAccessSwitchConfig, HuaweiCoreSwitchConfig, HuaweiRouterConfig, HuaweiACConfig
+from src.ui.config_pages.h3c import H3CAccessSwitchConfig, H3CCoreSwitchConfig, H3CRouterConfig, H3CACConfig
+from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchConfig, CiscoRouterConfig, CiscoACConfig
 
 from src.utils.resource_path import get_config_path, ensure_dirs
 from src.core.logger import netops_logger
@@ -40,62 +45,47 @@ MODULES: List[Tuple[str, str, str]] = [
     ("system", "模型设置", "⚙"),
 ]
 
-# 厂商配置映射（延迟导入，避免启动时加载全部配置页面）
-_VENDOR_CONFIG_MAP: Optional[Dict[str, Dict[str, type]]] = None
-
-
-def _get_vendor_config_map() -> Dict[str, Dict[str, type]]:
-    """获取厂商配置映射，首次调用时延迟导入配置页面类"""
-    global _VENDOR_CONFIG_MAP
-    if _VENDOR_CONFIG_MAP is not None:
-        return _VENDOR_CONFIG_MAP
-    from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
-    from src.ui.config_pages.huawei import HuaweiAccessSwitchConfig, HuaweiCoreSwitchConfig, HuaweiRouterConfig, HuaweiACConfig
-    from src.ui.config_pages.h3c import H3CAccessSwitchConfig, H3CCoreSwitchConfig, H3CRouterConfig, H3CACConfig
-    from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchConfig, CiscoRouterConfig, CiscoACConfig
-    _VENDOR_CONFIG_MAP = {
-        "锐捷": {
-            "接入交换机": RuijieAccessSwitchConfig,
-            "核心交换机": RuijieCoreSwitchConfig,
-            "路由器": RuijieRouterConfig,
-            "AC控制器": RuijieACConfig,
-        },
-        "华为": {
-            "接入交换机": HuaweiAccessSwitchConfig,
-            "核心交换机": HuaweiCoreSwitchConfig,
-            "路由器": HuaweiRouterConfig,
-            "AC控制器": HuaweiACConfig,
-        },
-        "H3C": {
-            "接入交换机": H3CAccessSwitchConfig,
-            "核心交换机": H3CCoreSwitchConfig,
-            "路由器": H3CRouterConfig,
-            "AC控制器": H3CACConfig,
-        },
-        "思科": {
-            "接入交换机": CiscoAccessSwitchConfig,
-            "核心交换机": CiscoCoreSwitchConfig,
-            "路由器": CiscoRouterConfig,
-            "AC控制器": CiscoACConfig,
-        },
-    }
-    return _VENDOR_CONFIG_MAP
+# 厂商配置映射
+VENDOR_CONFIG_MAP: Dict[str, Dict[str, type]] = {
+    "锐捷": {
+        "接入交换机": RuijieAccessSwitchConfig,
+        "核心交换机": RuijieCoreSwitchConfig,
+        "路由器": RuijieRouterConfig,
+        "AC控制器": RuijieACConfig,
+    },
+    "华为": {
+        "接入交换机": HuaweiAccessSwitchConfig,
+        "核心交换机": HuaweiCoreSwitchConfig,
+        "路由器": HuaweiRouterConfig,
+        "AC控制器": HuaweiACConfig,
+    },
+    "H3C": {
+        "接入交换机": H3CAccessSwitchConfig,
+        "核心交换机": H3CCoreSwitchConfig,
+        "路由器": H3CRouterConfig,
+        "AC控制器": H3CACConfig,
+    },
+    "思科": {
+        "接入交换机": CiscoAccessSwitchConfig,
+        "核心交换机": CiscoCoreSwitchConfig,
+        "路由器": CiscoRouterConfig,
+        "AC控制器": CiscoACConfig,
+    },
+}
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, splash=None):
+    def __init__(self):
         super().__init__()
-        self._splash = splash
-
-        # ★ 激活状态检测（仅调用一次，结果复用）
         ensure_dirs()
+        # 激活状态检测
         is_active, act_status, act_info = check_activation()
         self._trial_mode: bool = not is_active
         self._activation_info: dict = act_info
         if self._trial_mode:
             netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.1' + (' [试用模式]' if self._trial_mode else ''))
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0' + (' [试用模式]' if self._trial_mode else ''))
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()
@@ -107,6 +97,11 @@ class MainWindow(QMainWindow):
         self.selected_device: Optional[str] = None
         self.config_pages: Dict[str, QWidget] = {}
 
+        # 试用模式检测：未激活时为True，仅开放锐捷接入交换机配置和批量命令生成
+        self._trial_mode: bool = not check_activation()[0]
+        if self._trial_mode:
+            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
+
         # 设置全局样式
         self.setup_global_style()
 
@@ -114,7 +109,7 @@ class MainWindow(QMainWindow):
         main_widget = self._create_main_layout()
         self.setCentralWidget(main_widget)
 
-        # 创建模块堆栈（仅创建首屏，其他延迟加载）
+        # 创建模块堆栈和配置页面
         self._create_module_stack(main_widget.layout())
         self._init_config_module()
 
@@ -125,20 +120,11 @@ class MainWindow(QMainWindow):
         # 创建状态栏
         self._create_status_bar()
 
-        # 加载项目配置
+        # 加载项目配置（必须在UI创建之后）
         self._load_current_project()
 
-        # 延迟加载：首次切换到某个页面时才创建该页面实例
-        self._lazy_loaded: Dict[str, bool] = {
-            "config": True,   # 设备配置是首屏，已创建
-        }
-        # 标记哪些页面尚未创建
-        self._pending_pages = {"system", "project", "ops", "single", "ai", "batchcmd"}
-
-        # 更新闪屏提示
-        if self._splash:
-            self._splash.showMessage("正在加载核心模块...", Qt.AlignBottom | Qt.AlignHCenter, QColor(200, 210, 240))
-            QApplication.processEvents()
+        # 加载项目配置（必须在UI创建之后）
+        self._load_current_project()
 
     def _init_window_geometry(self, screen):
         """初始化窗口几何尺寸
@@ -196,7 +182,7 @@ class MainWindow(QMainWindow):
         return main_widget
 
     def _create_module_stack(self, main_layout: QVBoxLayout):
-        """创建模块堆栈（仅创建首屏，其他页面用占位符延迟加载）
+        """创建模块堆栈
 
         Args:
             main_layout: 主布局
@@ -204,96 +190,24 @@ class MainWindow(QMainWindow):
         self.module_stack = QStackedWidget()
         main_layout.addWidget(self.module_stack)
 
-        # 创建占位符（延迟加载的页面先用空QWidget占位）
-        self._placeholder_system = QWidget()
-        self._placeholder_project = QWidget()
-        self._placeholder_ops = QWidget()
-        self._placeholder_single = QWidget()
-        self._placeholder_ai = QWidget()
-        self._placeholder_batchcmd = QWidget()
+        # 创建各功能页面
+        self.system_page = SystemSettingsPage(self)
+        self.project_page = ProjectManagerPage(self)
+        self.ops_page = OpsToolboxPage(self)
+        self.single_page = SingleDevicePage(self)
+        self.ai_page = AIAnalysisPage(self)
+        from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
+        self.batchcmd_page = BatchCmdGeneratorPage(self)
         self.config_container = QWidget()
 
-        # 添加到堆栈（顺序必须与 switch_module 的 page_map 一致）
-        self.module_stack.addWidget(self._placeholder_system)   # index 0: system
-        self.module_stack.addWidget(self._placeholder_project)   # index 1: project
-        self.module_stack.addWidget(self._placeholder_ops)       # index 2: ops
-        self.module_stack.addWidget(self._placeholder_single)    # index 3: single
-        self.module_stack.addWidget(self._placeholder_ai)        # index 4: ai
-        self.module_stack.addWidget(self._placeholder_batchcmd)  # index 5: batchcmd
-        self.module_stack.addWidget(self.config_container)        # index 6: config
-
-        # 页面属性初始化为占位符，首次切换时替换为真实页面
-        self.system_page: QWidget = self._placeholder_system
-        self.project_page: QWidget = self._placeholder_project
-        self.ops_page: QWidget = self._placeholder_ops
-        self.single_page: QWidget = self._placeholder_single
-        self.ai_page: QWidget = self._placeholder_ai
-        self.batchcmd_page: QWidget = self._placeholder_batchcmd
-
-    def _ensure_page_loaded(self, module_id: str):
-        """延迟加载页面：首次切换到某个页面时才创建该页面实例。
-
-        Args:
-            module_id: 模块标识符
-        """
-        if module_id in self._lazy_loaded:
-            return  # 已加载，跳过
-
-        if self._splash:
-            splash_msgs = {
-                "system": "正在加载模型设置...",
-                "project": "正在加载项目管理...",
-                "ops": "正在加载项目运维...",
-                "single": "正在加载单点运维...",
-                "ai": "正在加载专家工作站...",
-                "batchcmd": "正在加载命令生成...",
-            }
-            self._splash.showMessage(
-                splash_msgs.get(module_id, "正在加载..."),
-                Qt.AlignBottom | Qt.AlignHCenter,
-                QColor(200, 210, 240)
-            )
-            QApplication.processEvents()
-
-        # 根据模块ID创建真实页面实例
-        if module_id == "system":
-            from src.ui.system_settings_page import SystemSettingsPage
-            self.system_page = SystemSettingsPage(self)
-            self.module_stack.insertWidget(0, self.system_page)
-            self.module_stack.removeWidget(self._placeholder_system)
-        elif module_id == "project":
-            from src.ui.project_manager_page import ProjectManagerPage
-            self.project_page = ProjectManagerPage(self)
-            self.module_stack.insertWidget(1, self.project_page)
-            self.module_stack.removeWidget(self._placeholder_project)
-        elif module_id == "ops":
-            from src.ui.ops_toolbox_page import OpsToolboxPage
-            self.ops_page = OpsToolboxPage(self)
-            self.module_stack.insertWidget(2, self.ops_page)
-            self.module_stack.removeWidget(self._placeholder_ops)
-        elif module_id == "single":
-            from src.ui.single_device_page import SingleDevicePage
-            self.single_page = SingleDevicePage(self)
-            self.module_stack.insertWidget(3, self.single_page)
-            self.module_stack.removeWidget(self._placeholder_single)
-        elif module_id == "ai":
-            from src.ui.ai_analysis_page import AIAnalysisPage
-            self.ai_page = AIAnalysisPage(self)
-            self.module_stack.insertWidget(4, self.ai_page)
-            self.module_stack.removeWidget(self._placeholder_ai)
-        elif module_id == "batchcmd":
-            from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
-            self.batchcmd_page = BatchCmdGeneratorPage(self)
-            self.module_stack.insertWidget(5, self.batchcmd_page)
-            self.module_stack.removeWidget(self._placeholder_batchcmd)
-
-        # 清理占位符
-        placeholder = getattr(self, f"_placeholder_{module_id}", None)
-        if placeholder:
-            placeholder.deleteLater()
-
-        self._lazy_loaded[module_id] = True
-        self._pending_pages.discard(module_id)
+        # 添加到堆栈
+        self.module_stack.addWidget(self.system_page)
+        self.module_stack.addWidget(self.project_page)
+        self.module_stack.addWidget(self.ops_page)
+        self.module_stack.addWidget(self.single_page)
+        self.module_stack.addWidget(self.ai_page)
+        self.module_stack.addWidget(self.batchcmd_page)
+        self.module_stack.addWidget(self.config_container)
 
     def _create_status_bar(self):
         self.status_bar = QStatusBar()
@@ -485,6 +399,21 @@ class MainWindow(QMainWindow):
         self._update_activation_btn_style()
         nav_layout.addWidget(self._activation_btn)
 
+        # 账户管理按钮
+        account_btn = QPushButton("账户管理")
+        account_btn.setFixedSize(80, 32)
+        account_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #F5F7FA;
+                border: 1px solid #E5E6EB;
+                border-radius: 4pt;
+                font-size: 10pt;
+            }
+            QPushButton:hover { border: 1px solid #165DFF; }
+        """)
+        account_btn.clicked.connect(self._show_account_dialog)
+        nav_layout.addWidget(account_btn)
+
         about_btn = QPushButton("关于")
         about_btn.setFixedSize(60, 32)
         about_btn.setStyleSheet("""
@@ -505,10 +434,6 @@ class MainWindow(QMainWindow):
         if self._trial_mode and module_id not in ("config", "batchcmd"):
             self._show_trial_prompt()
             return
-
-        # 延迟加载：首次切换到该页面时才创建实例
-        if module_id not in self._lazy_loaded:
-            self._ensure_page_loaded(module_id)
 
         page_map = {
             "system": self.system_page,
@@ -697,9 +622,7 @@ class MainWindow(QMainWindow):
         page_key = f"{vendor}_{device_type}"
         config_page = None
 
-        # 延迟导入配置页面类（首次使用时才加载）
         if vendor == 'ruijie':
-            from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
             if device_type == 'access_switch':
                 config_page = RuijieAccessSwitchConfig(self)
             elif device_type == 'core_switch':
@@ -709,7 +632,6 @@ class MainWindow(QMainWindow):
             elif device_type == 'ac':
                 config_page = RuijieACConfig(self)
         elif vendor == 'huawei':
-            from src.ui.config_pages.huawei import HuaweiAccessSwitchConfig, HuaweiCoreSwitchConfig, HuaweiRouterConfig, HuaweiACConfig
             if device_type == 'access_switch':
                 config_page = HuaweiAccessSwitchConfig(self)
             elif device_type == 'core_switch':
@@ -719,7 +641,6 @@ class MainWindow(QMainWindow):
             elif device_type == 'ac':
                 config_page = HuaweiACConfig(self)
         elif vendor == 'h3c':
-            from src.ui.config_pages.h3c import H3CAccessSwitchConfig, H3CCoreSwitchConfig, H3CRouterConfig, H3CACConfig
             if device_type == 'access_switch':
                 config_page = H3CAccessSwitchConfig(self)
             elif device_type == 'core_switch':
@@ -729,7 +650,6 @@ class MainWindow(QMainWindow):
             elif device_type == 'ac':
                 config_page = H3CACConfig(self)
         elif vendor == 'cisco':
-            from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchConfig, CiscoRouterConfig, CiscoACConfig
             if device_type == 'access_switch':
                 config_page = CiscoAccessSwitchConfig(self)
             elif device_type == 'core_switch':
@@ -868,7 +788,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.1')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
             activated_at = act_info.get("activated_at", "")[:16]
@@ -884,7 +804,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 15, 20, 15)
         layout.setSpacing(10)
 
-        version_str = 'V0.3.1' + (' 试用版' if self._trial_mode else '')
+        version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
         title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
@@ -962,7 +882,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.1')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
 
@@ -977,3 +897,9 @@ class MainWindow(QMainWindow):
             else:
                 msg += f"到期时间：{expire_at}"
             QMessageBox.information(self, "激活成功", msg)
+
+    def _show_account_dialog(self) -> None:
+        """打开账户管理弹窗。"""
+        from src.ui.account_manager_dialog import AccountManagerDialog
+        dialog = AccountManagerDialog(self)
+        dialog.exec_()

@@ -15,8 +15,6 @@
 
 快捷键：`Ctrl+1` ~ `Ctrl+7` 切换对应页面
 
-> 注：`subnet_calculator_page.py` 文件存在但暂未加入导航（V0.3.1开发中功能）。
-
 ---
 
 ## 页面1：📁 新建项目（project_manager_page.py）
@@ -229,74 +227,62 @@ config_pages/
 
 ---
 
-## 页面7：🌐 子网计算（subnet_calculator_page.py）★V0.3.1新增
-
-**文件：** `src/ui/subnet_calculator_page.py`
-
-### 功能清单
-| 功能 | 说明 |
-|------|------|
-| IP地址输入 | 支持点分十进制IP（如 192.168.1.0） |
-| 子网掩码选择 | 支持 CIDR（/0~/32）和点分十进制两种模式 |
-| 实时计算 | 网络地址、广播地址、可用IP范围、总IP数 |
-| 二进制位对照表 | 每字节8位，直观展示IP与掩码AND运算 |
-| 子网划分详情表 | 完整的网络属性表格（网络号、掩码、可用地址等） |
-
-### 关键方法
-| 方法 | 说明 |
-|------|------|
-| `_ip_changed()` | IP输入变化时实时计算 |
-| `_mask_changed()` | 掩码模式/值变化时实时计算 |
-| `_calculate()` | 核心计算逻辑（IP转二进制、AND运算） |
-| `_display_result()` | 填充结果表格和二进制位对照 |
-
-### 设计约束
-- 试用模式下开放使用（无需激活）
-- 实时计算，无需点击按钮
-- 子网划分表使用 QTableWidget，只读不可编辑
-
----
-
-## 页面7：📜 命令生成（batch_cmd_generator_page.py）★V0.3.1新增
+## 页面7：📜 命令生成（batch_cmd_generator_page.py）★V0.3.1新增 → V0.3.2重构
 
 **文件：** `src/ui/batch_cmd_generator_page.py`
 
 ### 功能清单
 | 功能 | 说明 |
 |------|------|
-| 模板管理 | 下拉选择预置/用户模板，管理菜单（新增/重命名/删除/保存当前） |
-| 预置模板 | 12个（四厂商 × VLAN批量/接口VLAN/DHCP），存储于 `config/cmd_templates.json` |
-| 用户模板 | 自定义模板持久化，明文JSON存储 |
-| 命令模板编辑 | 多行文本编辑，`%a`~`%e` 5组参数占位 |
-| 参数配置 | 每组参数：基数(base)、步长(step)、循环个数(loop)、重复次数(repeat) |
-| 生成模式 | **zip同步循环**：所有参数同步变化，短列表循环补齐 |
-| 实时预览 | 修改模板/参数后自动重新生成（防抖） |
-| 导出 | 复制全部命令到剪贴板 / 导出TXT文件 |
+| 命令模板编辑 | 支持多行命令输入，`%a`~`%e` 参数占位 |
+| 参数配置 | 5组参数（`ParamGroupWidget`），每组支持起止/步长，含循环勾选框 |
+| 固定重复模式 | 命令数量勾选→所有参数值展开到 `loop_count`，每轮重复相同命令 |
+| 差异化生成模式 | 参数循环勾选→各参数按各自范围独立展开，同步索引生成 |
+| 互斥联动 | `loop_cb` ↔ `cmd_count_cb` 双向互斥（`blockSignals` 防信号循环） |
+| 模式提示标签 | `mode_hint_label` 实时显示当前模式（固定重复/差异化生成N条） |
+| 预置模板 | 内置常用命令模板（VLAN批量、接口配置等），`_update_template_buttons()` 按类型启用 |
+| 模板管理4按钮 | 📝新增(蓝)/✏️重命名(橙)/💾保存(绿)/🗑删除(灰黑) — 平铺独立按钮 |
+| 命令预览 | 实时生成预览，展示最终命令序列 |
+| 导出 | 复制全部命令到剪贴板 |
 
-### 生成算法（zip同步循环）
+### 核心逻辑（V0.3.2重构）
 ```
-所有参数同步变化，取最长列表长度，较短列表循环使用：
-%a: base=1, step=1, loop=4  → [1, 2, 3, 4]
-%b: base=10, step=2, loop=2 → [10, 12, 10, 12]  (循环补齐)
+_generate() 重构：
+  1. 判定模式：cmd_count_cb 勾选 → 固定重复 / 有loop_cb勾选 → 差异化生成
+  2. loop_count 统一驱动外层 for i in range(loop_count):
+  3. 固定重复：参数值展开 values = [base + i * step for i in range(loop_count)]
+  4. 差异化生成：各参数单独展开，同步索引取值
+  
+ParamGroupWidget:
+  - loop_cb.toggled → loop_toggled 信号 → _on_param_loop_toggled()
+  - set_loop_enabled(enabled) → 仅控制勾选状态，不物理禁用控件
 ```
+
+### 占位符映射
+| 占位符 | 用途示例 |
+|--------|----------|
+| `%a` | VLAN ID |
+| `%b` | 端口号 |
+| `%c` | IP第三段 |
+| `%d` | IP第四段 |
+| `%e` | 描述/备注 |
 
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
-| `_init_template_data()` | 加载JSON，不存在则从预置创建 |
-| `_build_preset_templates()` | 构建12个预置模板数据 |
-| `_save_templates()` | 原子保存到 `config/cmd_templates.json` |
-| `_refresh_template_combo()` | 刷新下拉框（含separator、颜色区分） |
-| `_on_template_selected()` | 选中模板→填入编辑区，切换前确认覆盖 |
-| `_on_manage_template()` | 弹出管理QMenu |
-| `_generate_commands()` | zip同步循环生成命令序列 |
+| `_generate()` | 双模式命令生成（`loop_count` 统一驱动） |
+| `_on_param_loop_toggled()` | 参数循环勾选→取消命令数量勾选 |
+| `_on_cmd_count_toggled()` | 命令数量勾选→取消所有参数循环勾选 |
 | `_preview_commands()` | 在预览区展示生成的命令 |
 | `_copy_commands()` | 复制全部命令到剪贴板 |
+| `_load_template()` | 加载预置模板 |
+| `_add_template()` / `_rename_template()` / `_save_template()` / `_delete_template()` | 模板CRUD |
 
 ### 设计约束
 - 试用模式下开放使用（无需激活）
-- 模板文件路径：`config/cmd_templates.json`（跟随EXE）
-- 所有 font-size 使用 `pt` 单位（适配DPI缩放）
+- 命令生成逻辑在后台线程执行，不阻塞UI
+- 参数解析失败时给出明确错误提示
+- 模板管理按钮 QSS 排除选择器 `QPushButton:not(#id1):not(#id2)...` 避免样式污染
 
 ---
 
@@ -310,6 +296,39 @@ config_pages/
 | `history_dialog.py` | 历史记录查看 |
 | `security_dialogs.py` | 安全确认（导出/删除/查看密码） |
 | `activation_dialog.py` | 用户激活弹窗 ★V0.3.0新增 |
+| `login_dialog.py` | 登录弹窗（无关闭按钮/禁止ESC） ★V0.3.3新增 |
+| `account_manager_dialog.py` | 账户管理弹窗（修改用户名/密码） ★V0.3.3新增 |
+
+---
+
+## 登录弹窗（login_dialog.py）— V0.3.3新增
+
+**文件：** `src/ui/login_dialog.py`
+
+### 设计约束
+- 模态对话框，无关闭按钮（`Qt.CustomizeWindowHint | Qt.WindowTitleHint`），禁止ESC
+- 固定大小：400×320
+- 窗口标题：`NetOps 用户登录`
+- 登录失败：弹窗提示「用户名或密码不正确，请重新输入」，清空密码框
+- 调用 `AccountManager.verify_login()` 校验
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `exec_()` | 显示模态登录窗口，返回 `QDialog.Accepted` 表示登录成功 |
+
+---
+
+## 账户管理弹窗（account_manager_dialog.py）— V0.3.3新增
+
+**文件：** `src/ui/account_manager_dialog.py`
+
+### 设计约束
+- 模态对话框，固定大小：420×320
+- 窗口标题：`账户管理`
+- 组件：新用户名输入（预填当前用户名）、新密码、确认密码、保存按钮
+- 校验：两次密码一致 + 复杂度校验（≥8位，大写+小写+数字）
+- 成功：提示「账户信息已加密保存，重启软件生效」
 
 ---
 
@@ -322,7 +341,7 @@ config_pages/
 - 模态对话框，无关闭按钮、无跳过按钮、无试用入口
 - 机器码只读展示 + 一键复制
 - 激活码输入框 + 立即激活按钮
-- 严格按定稿文案实现
+- V0.3.2：去掉正文硬编码 `\n` 换行，改为自然排版
 
 ### 关键方法
 | 方法 | 说明 |

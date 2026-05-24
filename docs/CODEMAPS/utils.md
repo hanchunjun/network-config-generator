@@ -86,12 +86,17 @@ EXE所在目录/
 ### 核心类
 | 类 | 说明 |
 |------|------|
+| `AtomicFileWriter` | 原子文件写入（`.tmp` + `os.replace`，防损坏） |
 | `JSONFileManager` | JSON文件读写（原子操作） |
 | `DeviceListParser` | 设备列表文件解析 |
+| `DeviceFileManager` | 设备文件管理（device_list.txt读写） |
 
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
+| `AtomicFileWriter(path)` | 上下文管理器，原子写入任意文本文件 |
 | `JSONFileManager.load_json(path, default)` | 安全读取JSON |
 | `JSONFileManager.save_json(path, data)` | 原子写入JSON |
 | `DeviceListParser.parse(path)` | 解析device_list.txt |
+| `DeviceFileManager.load(project_path)` | 加载设备清单 |
+| `DeviceFileManager.save(project_path, devices)` | 保存设备清单 |

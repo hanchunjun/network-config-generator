@@ -1,4 +1,4 @@
-# 项目扩建底层逻辑 & 目录结构（V0.2.0）
+# 项目扩建底层逻辑 & 目录结构（V0.3.3）
 
 ## 项目扩建底层逻辑
 
@@ -43,7 +43,7 @@ project_root/
 
 核心规则：项目间数据完全物理隔离，禁止跨项目读取、写入、操作，所有运维操作仅绑定当前选中项目。
 
-## EXE运行时目录结构（V0.3.0 五区分离）
+## EXE运行时目录结构（V0.3.3 五区分离）
 
 ```
 程序根目录/
@@ -54,7 +54,8 @@ project_root/
 │   ├── machine_id.json            ← 机器绑定ID
 │   ├── ai_config.json.enc         ← AI模型配置（加密）
 │   ├── projects_config.json       ← 项目列表索引
-│   └── ai_recent_files.json       ← AI最近文件记录
+│   ├── ai_recent_files.json       ← AI最近文件记录
+│   └── account.json               ← 账户信息（用户名明文+密码AES-GCM密文）★V0.3.3新增
 │
 ├── activation/                    ← 🔐 用户端激活体系
 │   ├── license.dat                ← 激活授权文件（AES-GCM加密）

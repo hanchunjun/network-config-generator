@@ -4,7 +4,7 @@
 
 ---
 
-## 三区分离架构
+## 五区分离架构
 
 ```
 EXE所在目录/
@@ -15,7 +15,7 @@ EXE所在目录/
 │   ├── ai_config.json.enc         # AI配置（加密）
 │   ├── projects_config.json       # 项目列表索引
 │   ├── ai_recent_files.json       # AI最近文件记录
-│   └── cmd_templates.json         # 批量命令模板（明文JSON）★V0.3.1新增
+│   └── account.json               # 账户信息（用户名明文+密码AES-GCM密文）★V0.3.3新增
 │
 ├── activation/       ← 🔐 用户端激活体系
 │   ├── license.dat                # 激活授权文件（AES-GCM加密）
@@ -131,25 +131,29 @@ EXE所在目录/
 | 密钥文件 | `config/key_info.json` | 动态派生（V0.2版本） |
 | 机器ID | `config/machine_id.json` | 明文 |
 | 激活授权 | `activation/license.dat` | AES-GCM（V0.3.0新增） |
-| 命令模板 | `config/cmd_templates.json` | 明文JSON（V0.3.1新增） |
+| 账户密码 | `config/account.json` | AES-GCM，`ENC:`前缀密文（V0.3.3新增） |
 
 ---
 
 ## 激活数据流（V0.3.0新增）
 
-### 用户端激活流程
+### 用户端启动流程（V0.3.3）
 ```
-启动 → _check_activation()
-  → check_activation() 读取 config/license.dat
-  → 已激活 → perform_silent_check()（方案B黑名单校验）
-      → 联网失败 → 跳过（不判失效）
-      → 黑名单命中 → 弹出失效窗口 → 退出
-      → 正常 → 启动主程序
-  → 未激活 → 弹出激活弹窗
-      → 用户复制机器码 → 发送给管理员
-      → 填入激活码 → verify_activation_code()
-      → 校验通过 → save_license() → 启动主程序
-      → 校验失败 → 提示错误，留在弹窗
+启动 → SetProcessDpiAwareness(0) [DPI适配]
+  → _check_activation() [激活校验]
+      → 未激活 → 弹出激活弹窗
+          → 用户复制机器码 → 发送给管理员
+          → 填入激活码 → verify_activation_code()
+          → 校验通过 → save_license() → 进入登录
+          → 校验失败 → 提示错误，留在弹窗
+      → 已激活 → perform_silent_check()（方案B黑名单校验）
+          → 联网失败 → 跳过（不判失效）
+          → 黑名单命中 → 弹出失效窗口 → 退出
+          → 正常 → 进入登录
+  → LoginDialog [登录认证，V0.3.3新增]
+      → 验证用户名密码 → account.json
+      → 成功 → 启动主程序
+      → 失败 → 提示错误，留在登录窗口
 ```
 
 ### 管理员制码流程

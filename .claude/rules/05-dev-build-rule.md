@@ -1,6 +1,30 @@
-# 开发实施步骤 & 打包规范（V0.3.0）
+# 开发实施步骤 & 打包规范（V0.3.3）
 
 ## 开发实施步骤
+
+### V0.3.3 登录认证 + 账户管理（2026年5月22日）
+
+1. **账户管理核心**：新增 `src/core/account_manager.py` — 账户读写/校验/加密/复杂度校验/损坏恢复，复用 AES-256-GCM 加密体系
+2. **登录弹窗**：新增 `src/ui/login_dialog.py` — 模态登录窗口，无关闭按钮/禁止ESC，启动链插入激活校验之后
+3. **账户管理弹窗**：新增 `src/ui/account_manager_dialog.py` — 修改用户名和密码，密码复杂度校验
+4. **导航栏账户管理按钮**：`main_window.py` 新增「账户管理」按钮，位于「关于」左侧
+5. **启动链更新**：`main.py` 启动链改为 DPI → 激活校验 → 登录认证 → 主窗口
+6. **测试覆盖**：新增 `tests/core/test_account_manager.py`（31个测试用例，全通过）
+7. **spec更新**：`NetworkConfigGenerator.spec` 新增 account_manager/login_dialog/account_manager_dialog hiddenimports
+
+### V0.3.2 DPI适配 + 命令生成器重构（2026年5月22日）
+
+1. **DPI全方案修复**：`main.py` 新增 `SetProcessDpiAwareness(0)` + 新建 `app.manifest`（dpiAwareness:unaware）+ `spec` manifest参数内嵌，三层控制确保100%/125%/150%布局稳定
+2. **批量命令生成器重构**：互斥双模式（固定重复/差异化生成），`loop_count` 统一驱动，双向联动 CheckBox，模式提示标签
+3. **模板管理按钮改造**：下拉菜单→4个彩色平铺按钮（新增蓝/重命名橙/保存绿/删除灰黑）
+4. **激活弹窗文案优化**：去掉硬编码 `\n` 换行
+
+### V0.3.1 工具增强（2026年5月22日）
+
+1. **批量命令生成器新增**：`src/ui/batch_cmd_generator_page.py` — 命令模板 + %a~%e参数 + 批量生成 + 预置模板
+2. **导航栏扩展至7模块**：Ctrl+1~7
+3. **项目管理页UI优化**：合并项目切换/信息框，压缩高度
+4. **chardet降级修复**：7.4.3→4.0.0，修复ACCESS VIOLATION崩溃
 
 ### V0.3.0 激活体系（2026年5月21日）
 
@@ -78,7 +102,8 @@ thread.start()
 
 - **原有源码：** 全量源文件
 - **新增模块：** 日志系统、验证器、密钥管理、文件操作、本地审计引擎
-- **激活体系（V0.3.0新增）：** activation_engine、admin_keygen、activation_dialog、admin_tool_window
+- **激活体系（V0.3.0新增）：** activation_engine, admin_keygen, activation_dialog, admin_tool_window
+- **DPI适配（V0.3.2新增）：** app.manifest（dpiAwareness:unaware，通过 spec 内嵌EXE）
 - **公共脚本：** backup_all_config.py, network_inspect.py, run_trouble_cmd.py, build_admin_tool.py
 - **AI Agent：** agents/network-config-reviewer.md, agents/network-troubleshooter.md
 - **第三方依赖：** PyQt5, cryptography, Netmiko, Paramiko, requests 等
@@ -123,6 +148,7 @@ python -m py_compile src/ui/project_manager_page.py
 python -m py_compile src/ui/main_window.py
 python -m py_compile src/ui/single_device_page.py
 python -m py_compile src/ui/system_settings_page.py
+python -m py_compile src/ui/batch_cmd_generator_page.py
 python -m py_compile src/core/activation_engine.py
 python -m py_compile src/core/admin_keygen.py
 
@@ -139,7 +165,7 @@ pyinstaller admin_tool.spec --noconfirm
 
 ## 版本信息
 
-- **版本：** NetOps V0.3.0（试用模式版）
-- **日期：** 2026年5月21日
-- **升级：** 试用模式（未激活仅开放锐捷接入交换机配置）+ 激活提示弹窗（联系老韩 QQ:223518 / WeChat:tachlaohan）
+- **版本：** NetOps V0.3.3（登录认证版）
+- **日期：** 2026年5月22日
+- **升级：** 软件登录认证 + 账户管理 + AES-GCM密码加密存储 + 密码复杂度校验 + 341测试用例
 - **状态：** 已完成，可商用交付

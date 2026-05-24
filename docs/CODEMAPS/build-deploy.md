@@ -1,6 +1,7 @@
 # 构建与部署代码地图
 
 **最后更新：** 2026-05-22
+**项目版本：** V0.3.3 登录认证版
 
 ---
 
@@ -39,10 +40,14 @@ python -m py_compile src/ui/ops_toolbox_page.py
 python -m py_compile src/ui/single_device_page.py
 python -m py_compile src/ui/ai_analysis_page.py
 python -m py_compile src/ui/project_manager_page.py
+python -m py_compile src/ui/subnet_calculator_page.py
 python -m py_compile src/ui/batch_cmd_generator_page.py
 python -m py_compile src/ui/system_settings_page.py
+python -m py_compile src/ui/login_dialog.py
+python -m py_compile src/ui/account_manager_dialog.py
 python -m py_compile src/core/local_audit_engine.py
 python -m py_compile src/core/local_diagnostic_engine.py
+python -m py_compile src/core/account_manager.py
 python -m py_compile src/utils/resource_path.py
 
 # 2. 导入链验证
@@ -51,6 +56,9 @@ python -c "from src.core.local_audit_engine import LocalAuditEngine; print('OK')
 python -c "from src.core.local_diagnostic_engine import LocalDiagnosticEngine; print('OK')"
 python -c "from src.ui.subnet_calculator_page import SubnetCalculatorPage; print('OK')"
 python -c "from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage; print('OK')"
+python -c "from src.core.account_manager import AccountManager; print('OK')"
+python -c "from src.ui.login_dialog import LoginDialog; print('OK')"
+python -c "from src.ui.account_manager_dialog import AccountManagerDialog; print('OK')"
 
 # 3. 类型检查
 py -3.11 -m mypy src/utils/ src/core/key_manager.py src/core/secure_config.py src/core/logger.py
@@ -94,6 +102,20 @@ pyinstaller admin_tool.spec --noconfirm
 | 大小 | ~47MB | PyInstaller单文件封装 |
 | 控制台 | `console=False` | 无命令行窗口 |
 | 数据文件 | `scripts/`, `agents/` | 打包内嵌 |
+| **DPI清单** | `manifest='app.manifest'` | ★V0.3.2新增，内嵌EXE |
+
+### DPI缩放适配（V0.3.2）
+
+```
+三层控制体系（优先级从高到低）：
+
+1. app.manifest → dpiAwareness: unaware（最高优先级，内嵌EXE）
+2. main.py → SetProcessDpiAwareness(0)（进程级API调用）
+3. main.py → QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+效果：Windows 全窗口 bitmap 拉伸，100%/125%/150% 缩放下布局完全一致。
+125%: 完美锐利 / 150%: 轻微柔化但无溢出
+```
 
 ### 管理员工具（admin_tool.spec）
 
@@ -104,13 +126,16 @@ pyinstaller admin_tool.spec --noconfirm
 | 大小 | ~41MB | PyInstaller单文件封装 |
 | 控制台 | `console=False` | 无命令行窗口 |
 
-### 关键隐藏导入（V0.3.1更新）
+### 关键隐藏导入（V0.3.3更新）
 ```
-src.core.activation_engine      # 激活核心引擎
-src.core.admin_keygen           # 管理员制码核心
-src.ui.activation_dialog        # 用户激活弹窗
-src.core.local_audit_engine     # 本地合规规则引擎
+src.core.activation_engine       # 激活核心引擎
+src.core.admin_keygen            # 管理员制码核心
+src.ui.activation_dialog         # 用户激活弹窗
+src.core.local_audit_engine      # 本地合规规则引擎
 src.core.local_diagnostic_engine # 本地运行时诊断引擎
+src.core.account_manager         # 账户管理核心 ★V0.3.3新增
+src.ui.login_dialog              # 登录弹窗 ★V0.3.3新增
+src.ui.account_manager_dialog    # 账户管理弹窗 ★V0.3.3新增
 cryptography.hazmat.primitives.ciphers.aead
 cryptography.hazmat.primitives.kdf.pbkdf2
 certifi
@@ -132,7 +157,7 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 | 文件 | 位置 | 大小 | 用途 |
 |------|------|------|------|
-| `NetworkConfigGenerator.exe` | `dist/` | 47.1MB | 用户端主程序 |
+| `NetworkConfigGenerator.exe` | `dist/` | 48.6MB | 用户端主程序 |
 | `AdminKeyGenTool.exe` | `dist/` | 41.2MB | 管理员制码工具 |
 | 构建日志 | `build/` | — | 分产品目录存储 |
 | 警告日志 | `build/*/warn-*.txt` | — | — |
@@ -178,7 +203,9 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
-| V0.3.1 工具增强版 | 2026-05-22 | 子网计算器 + 批量命令生成器 + 8模块导航 + chardet修复 |
+| V0.3.3 登录认证版 | 2026-05-22 | 软件登录认证 + 账户管理 + AES-GCM密码加密 + 341测试用例 |
+| V0.3.2 DPI适配版 | 2026-05-22 | DPI全方案修复 + 批量命令生成器重构 + 模板管理4按钮 + 激活弹窗文案优化 |
+| V0.3.1 工具增强版 | 2026-05-22 | 子网计算器 + 批量命令生成器 + 7模块导航 + chardet修复 |
 | V0.3.0 激活体系版 | 2026-05-21 | 三套激活方案 + 双EXE + 启动强制校验 + 180天黑名单 |
 | V0.2.1 AI精审优化版 | 2026-05-20 | 双层AI分析 + 精准上下文提取 + Agent文件精简 + Token压缩 |
 | V0.2.0 架构升级版 | 2026-05-19 | 三页面重构 + AI三层架构 + 命名体系统一 |

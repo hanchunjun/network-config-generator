@@ -17,7 +17,8 @@ src/core/
 ├── local_audit_engine.py        # 本地合规规则引擎
 ├── local_diagnostic_engine.py   # 本地运行时诊断引擎
 ├── activation_engine.py         # 激活核心引擎 ⭐V0.3.0新增
-└── admin_keygen.py              # 管理员制码核心 ⭐V0.3.0新增
+├── admin_keygen.py              # 管理员制码核心 ⭐V0.3.0新增
+└── account_manager.py           # 账户管理核心 ⭐V0.3.3新增
 ```
 
 ---
@@ -255,6 +256,37 @@ AuditResult: findings[], audit_time_ms
 | `remove_device(project_path, ip)` | 删除设备 |
 | `encrypt_device_data(data)` | 加密设备数据 |
 | `decrypt_device_data(data)` | 解密设备数据 |
+
+---
+
+## account_manager.py — 账户管理核心（V0.3.3新增）
+
+**职责：** 账户数据的读写、密码加密/验证、复杂度校验、首次初始化、损坏恢复。
+
+### 数据存储
+| 文件 | 路径 | 说明 |
+|------|------|------|
+| 账户文件 | `config/account.json` | 用户名明文 + 密码AES-GCM密文（`ENC:`前缀） |
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `verify_login(username, password)` | 验证用户名和密码，返回bool |
+| `verify_password(input_pwd)` | 仅验证密码（用于修改密码时校验旧密码） |
+| `change_account(new_username, new_pwd)` | 修改用户名和密码，返回(bool, str) |
+| `validate_password_complexity(pwd)` | 静态方法，校验密码复杂度（≥8位，大写+小写+数字） |
+| `_load_account()` | 读取账户配置（损坏时自动重置为默认） |
+| `_write_account_file(username, encrypted_pwd)` | 原子写入账户文件 |
+| `_init_default_account()` | 首次运行初始化默认账户 admin/admin |
+
+### 密码复杂度规则
+- 长度 ≥ 8 位
+- 必须同时包含大写字母、小写字母、阿拉伯数字
+- 仅修改新密码时校验，默认初始密码 admin 不受限制
+
+### 损坏恢复
+- JSON解析失败 → 自动重置为默认账户 admin/admin
+- 非字典JSON → 自动重置为默认账户 admin/admin
 
 ---
 
