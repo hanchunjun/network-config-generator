@@ -183,10 +183,10 @@ class ParamGroupWidget(QGroupBox):
         self.setStyleSheet(
             "QGroupBox {"
             "  font-size: 9pt; font-weight: bold; color: #1D2129;"
-            "  border: 1px solid #C9CDD4; border-radius: 6px;"
+            "  border: 1px solid #E5E6EB; border-radius: 6px;"
             "  margin-top: 8px; padding-top: 10px;"
             "}"
-            "QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }"
+            "QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 6px; }"
         )
         layout = QGridLayout(self)
         layout.setContentsMargins(10, 10, 10, 8)
@@ -523,7 +523,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_combo.setMinimumWidth(260)
         self.template_combo.setStyleSheet(
             "QComboBox {"
-            "  border: 1px solid #C9CDD4; border-radius: 4px;"
+            "  border: 1px solid #E5E6EB; border-radius: 4px;"
             "  padding: 4px 8px; font-size: 9pt; background: white;"
             "}"
             "QComboBox:hover { border-color: #165DFF; }"
@@ -554,6 +554,7 @@ class BatchCmdGeneratorPage(QWidget):
         template_bar.addWidget(self.btn_save_template)
 
         self.btn_delete_template = QPushButton("删除")
+        self.btn_delete_template.setObjectName("tplDeleteBtn")
         self.btn_delete_template.setCursor(Qt.PointingHandCursor)
         self.btn_delete_template.setMinimumHeight(28)
         self.btn_delete_template.setMinimumWidth(40)
@@ -702,12 +703,12 @@ class BatchCmdGeneratorPage(QWidget):
     def _apply_style(self) -> None:
         self.setStyleSheet(
             "QTextEdit {"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; padding: 6px;"
+            "  border: 1px solid #E5E6EB; border-radius: 4px; padding: 6px;"
             "  background: white; font-size: 10pt;"
             "}"
             "QTextEdit:focus { border-color: #165DFF; }"
             "QSpinBox {"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; padding: 2px 6px;"
+            "  border: 1px solid #E5E6EB; border-radius: 4px; padding: 2px 6px;"
             "  background: white;"
             "}"
             "QSpinBox:focus { border-color: #165DFF; }"
@@ -741,13 +742,18 @@ class BatchCmdGeneratorPage(QWidget):
             "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
             "}"
             "QPushButton#tplSaveBtn:hover { background-color: #2E7D32; }"
+            "QPushButton#tplDeleteBtn {"
+            "  background-color: #F53F3F; color: white; border: none;"
+            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
+            "}"
+            "QPushButton#tplDeleteBtn:hover { background-color: #D9363E; }"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
-            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn) {"
+            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn) {"
             "  background-color: #F2F3F5; color: #4E5969; border: 1px solid #C9CDD4;"
             "  border-radius: 4px; font-size: 10pt;"
             "}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
-            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):hover {"
+            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn):hover {"
             "  background-color: #E5E6EB; border-color: #86909C;"
             "}"
             "QCheckBox { spacing: 4px; }"

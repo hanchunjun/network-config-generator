@@ -5,6 +5,7 @@
 1. 默认全局遵循：`C:\Users\Administrator\.claude\CLAUDE.md` 通用底层规范。
 2. 本项目代码开发，强制遵循：[.claude/rules/00-karpathy-guidelines.md](.claude/rules/00-karpathy-guidelines.md) 官方编码准则。
 3. 工程化规范：强制遵循 [.claude/rules/09-engineering-workflow.md](.claude/rules/09-engineering-workflow.md)，每次改动和打包必须按流程执行。
+4. **界面设计规范**：所有界面代码的生成与修改，必须以项目根目录的 [DESIGN.md](DESIGN.md) 为唯一标准，禁止任何脱离规范的主观发挥。包括但不限于：色彩、字体、按钮样式、输入框样式、表格样式、间距、圆角、交互状态，均须严格对照 DESIGN.md 执行。
 
 ## 项目概述
 
