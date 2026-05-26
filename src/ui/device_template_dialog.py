@@ -5,11 +5,13 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
 from PyQt5.QtCore import Qt
 
 from src.core.device_manager import DEVICE_TEMPLATES
+from src.core.theme_engine import ThemeEngine
 
 
 class DeviceTemplateDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._theme_engine = ThemeEngine.get()
         self.setWindowTitle("设备模板库")
         self.setMinimumWidth(600)
         self.setMinimumHeight(500)
@@ -17,29 +19,30 @@ class DeviceTemplateDialog(QDialog):
         self.init_ui()
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         layout = QVBoxLayout()
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
         title = QLabel("设备模板库")
-        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #1D2129;")
+        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         desc = QLabel("选择模板后，将自动填充厂商、设备类型和协议信息，您只需补充IP和登录凭据即可。")
-        desc.setStyleSheet("font-size: 13px; color: #86909C;")
+        desc.setStyleSheet(f"font-size: 13px; color: {t['text_tertiary']};")
         desc.setWordWrap(True)
         layout.addWidget(desc)
 
         template_group = QGroupBox("可用模板")
-        template_group.setStyleSheet("""
-            QGroupBox {
-                font-size: 14px; font-weight: bold; color: #1D2129;
-                border: 1px solid #E5E6EB; border-radius: 6px;
-                margin-top: 8px; padding: 16px; background-color: #FAFBFC;
-            }
-            QGroupBox::title {
+        template_group.setStyleSheet(f"""
+            QGroupBox {{
+                font-size: 14px; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: 6px;
+                margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin; left: 12px; padding: 0 6px;
-            }
+            }}
         """)
         template_layout = QVBoxLayout()
         template_layout.setSpacing(12)
@@ -49,17 +52,17 @@ class DeviceTemplateDialog(QDialog):
         self.template_table.setHorizontalHeaderLabels(["选择", "模板名称", "厂商", "设备类型"])
         self.template_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.template_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.template_table.setStyleSheet("""
-            QTableWidget {
-                border: 1px solid #E5E6EB; border-radius: 4px;
-                background-color: #FFFFFF; gridline-color: #F2F3F5;
-            }
-            QTableWidget::item { padding: 6px; }
-            QHeaderView::section {
-                background-color: #F7F8FA; border: none;
-                border-bottom: 1px solid #E5E6EB; padding: 8px;
-                font-weight: bold; color: #1D2129;
-            }
+        self.template_table.setStyleSheet(f"""
+            QTableWidget {{
+                border: 1px solid {t['border']}; border-radius: 4px;
+                background-color: {t['card_bg']}; gridline-color: {t['hover_bg']};
+            }}
+            QTableWidget::item {{ padding: 6px; }}
+            QHeaderView::section {{
+                background-color: {t['hover_bg']}; border: none;
+                border-bottom: 1px solid {t['border']}; padding: 8px;
+                font-weight: bold; color: {t['text_main']};
+            }}
         """)
 
         row = 0
@@ -77,7 +80,7 @@ class DeviceTemplateDialog(QDialog):
         select_layout = QHBoxLayout()
         select_layout.setSpacing(12)
         self.select_all_cb = QCheckBox("全选")
-        self.select_all_cb.setStyleSheet("font-size: 13px;")
+        self.select_all_cb.setStyleSheet(f"font-size: 13px;")
         self.select_all_cb.stateChanged.connect(self._toggle_select_all)
         select_layout.addWidget(self.select_all_cb)
         select_layout.addStretch()
@@ -92,24 +95,24 @@ class DeviceTemplateDialog(QDialog):
 
         cancel_btn = QPushButton("取消")
         cancel_btn.setFixedSize(100, 38)
-        cancel_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA; border: 1px solid #E5E6EB;
+        cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: 4px; font-size: 14px;
-            }
-            QPushButton:hover { border: 1px solid #165DFF; }
+            }}
+            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
 
         apply_btn = QPushButton("应用选中模板")
         apply_btn.setFixedSize(140, 38)
-        apply_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF; color: white; border: none;
+        apply_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
                 border-radius: 4px; font-size: 14px;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
         """)
         apply_btn.clicked.connect(self._apply_templates)
         btn_layout.addWidget(apply_btn)

@@ -50,6 +50,7 @@ from src.core.admin_keygen import (
     get_record_expire_status,
 )
 from src.core.activation_engine import get_machine_code
+from src.core.theme_engine import ThemeEngine
 from src.utils.resource_path import get_admin_data_dir
 
 
@@ -58,6 +59,7 @@ class AdminToolWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self._theme_engine = ThemeEngine.get()
         self.setWindowTitle("NetOps 管理员制码工具 V0.3.0 — 老韩专用")
         self.setMinimumSize(900, 650)
         self._setup_ui()
@@ -67,6 +69,7 @@ class AdminToolWindow(QMainWindow):
         self._refresh_backup_list()
 
     def _setup_ui(self) -> None:
+        t = self._theme_engine.current_theme
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
@@ -77,19 +80,19 @@ class AdminToolWindow(QMainWindow):
         title = QLabel("🔐 NetOps 管理员制码工具")
         title.setFont(QFont("Microsoft YaHei", 16, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("color: #1565C0;")
+        title.setStyleSheet(f"color: {t['primary']};")
         main_layout.addWidget(title)
 
         subtitle = QLabel("台账加密存储 · 独立数据目录 · 备份恢复 · 仅限管理员本地使用")
         subtitle.setFont(QFont("Microsoft YaHei", 9))
         subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet("color: #9E9E9E;")
+        subtitle.setStyleSheet(f"color: {t['text_tertiary']};")
         main_layout.addWidget(subtitle)
 
         # ── 数据目录提示 ──
         dir_label = QLabel(f"📁 数据目录：{get_admin_data_dir()}")
         dir_label.setFont(QFont("Consolas", 8))
-        dir_label.setStyleSheet("color: #BDBDBD; padding: 2px 8px;")
+        dir_label.setStyleSheet(f"color: {t['border_deep']}; padding: 2px 8px;")
         dir_label.setWordWrap(True)
         main_layout.addWidget(dir_label)
 
@@ -134,9 +137,6 @@ class AdminToolWindow(QMainWindow):
         self._code_result.setFont(QFont("Consolas", 14, QFont.Bold))
         self._code_result.setAlignment(Qt.AlignCenter)
         self._code_result.setMinimumHeight(40)
-        self._code_result.setStyleSheet(
-            "QLineEdit { color: #1565C0; background-color: #E3F2FD; }"
-        )
         result_layout.addWidget(self._code_result, stretch=1)
         copy_code_btn = QPushButton("📋 复制")
         copy_code_btn.setFixedSize(80, 40)
@@ -178,7 +178,6 @@ class AdminToolWindow(QMainWindow):
         # 生成时间标签
         self._gen_time_label = QLabel("")
         self._gen_time_label.setFont(QFont("Microsoft YaHei", 9))
-        self._gen_time_label.setStyleSheet("color: #00B42A;")
         validity_layout.addWidget(self._gen_time_label)
         mg_layout.addLayout(validity_layout)
 
@@ -311,44 +310,51 @@ class AdminToolWindow(QMainWindow):
         splitter.setSizes([280, 370])
 
     def _apply_style(self) -> None:
-        self.setStyleSheet("""
-            QMainWindow { background-color: #FAFAFA; }
-            QGroupBox {
-                border: 1px solid #E0E0E0;
+        t = self._theme_engine.current_theme
+        self.setStyleSheet(f"""
+            QMainWindow {{ background-color: {t['card_bg']}; }}
+            QGroupBox {{
+                border: 1px solid {t['border']};
                 border-radius: 6px;
                 margin-top: 12px;
                 padding-top: 16px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 12px;
                 padding: 0 8px;
-                color: #424242;
-            }
-            QPushButton {
-                background-color: #1565C0;
-                color: white;
+                color: {t['text_main']};
+            }}
+            QPushButton {{
+                background-color: {t['primary']};
+                color: {t['text_primary']};
                 border: none;
                 border-radius: 4px;
                 padding: 6px 16px;
-            }
-            QPushButton:hover { background-color: #0D47A1; }
-            QLineEdit {
-                border: 1px solid #BDBDBD;
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QLineEdit {{
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 4px 8px;
-            }
-            QLineEdit:focus { border-color: #1565C0; }
-            QTableWidget {
-                border: 1px solid #E0E0E0;
-                gridline-color: #EEEEEE;
-            }
-            QComboBox {
-                border: 1px solid #BDBDBD;
+            }}
+            QLineEdit:focus {{ border-color: {t['primary']}; }}
+            QTableWidget {{
+                border: 1px solid {t['border']};
+                gridline-color: {t['card_bg']};
+            }}
+            QComboBox {{
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 4px 8px;
-            }
+            }}
         """)
+        # 激活码结果框样式（特殊处理）
+        self._code_result.setStyleSheet(
+            f"QLineEdit {{ color: {t['primary']}; background-color: {t['hover_bg']}; }}"
+        )
+        # 生成时间标签样式
+        self._gen_time_label.setStyleSheet(f"color: {t['success']};")
 
     # ═══════════════════════════════════════════
     # 事件处理

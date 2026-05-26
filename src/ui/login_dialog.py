@@ -19,6 +19,7 @@ from PyQt5.QtWidgets import (
 
 from src.core.account_manager import AccountManager
 from src.core.logger import netops_logger
+from src.core.theme_engine import ThemeEngine
 
 
 class LoginDialog(QDialog):
@@ -34,8 +35,11 @@ class LoginDialog(QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._account_manager = AccountManager()
+        self._theme = ThemeEngine.get().current_theme
         self._setup_ui()
         self._apply_style()
+        # 监听主题变化
+        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
 
     def _setup_ui(self) -> None:
         """构建登录窗口UI。"""
@@ -52,24 +56,26 @@ class LoginDialog(QDialog):
         layout.setContentsMargins(36, 28, 36, 28)
         layout.setSpacing(14)
 
+        t = self._theme
+
         # ── 标题 ──
         title_label = QLabel("🔐  用户登录")
         title_label.setFont(QFont("Microsoft YaHei", 15, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("color: #165DFF;")
+        title_label.setStyleSheet(f"color: {t['primary']};")
         layout.addWidget(title_label)
 
         # ── 分隔线 ──
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
-        line.setStyleSheet("background-color: #E5E6EB;")
+        line.setStyleSheet(f"background-color: {t['border']};")
         line.setFixedHeight(1)
         layout.addWidget(line)
 
         # ── 用户名 ──
         username_label = QLabel("用户名")
         username_label.setFont(QFont("Microsoft YaHei", 10))
-        username_label.setStyleSheet("color: #4E5969;")
+        username_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(username_label)
 
         self._username_input = QLineEdit()
@@ -77,20 +83,21 @@ class LoginDialog(QDialog):
         self._username_input.setFont(QFont("Microsoft YaHei", 11))
         self._username_input.setMinimumHeight(38)
         self._username_input.setStyleSheet(
-            "QLineEdit {"
-            "  border: 1px solid #C9CDD4;"
-            "  border-radius: 4px;"
-            "  padding: 4px 12px;"
-            "  color: #1D2129;"
-            "}"
-            "QLineEdit:focus { border-color: #165DFF; }"
+            f"QLineEdit {{"
+            f"  border: 1px solid {t['input_border']};"
+            f"  border-radius: {t['radius_md']}px;"
+            f"  padding: 4px 12px;"
+            f"  background-color: {t['input_bg']};"
+            f"  color: {t['text_main']};"
+            f"}}"
+            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
         )
         layout.addWidget(self._username_input)
 
         # ── 密码 ──
         password_label = QLabel("密码")
         password_label.setFont(QFont("Microsoft YaHei", 10))
-        password_label.setStyleSheet("color: #4E5969;")
+        password_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(password_label)
 
         self._password_input = QLineEdit()
@@ -99,13 +106,14 @@ class LoginDialog(QDialog):
         self._password_input.setEchoMode(QLineEdit.Password)
         self._password_input.setMinimumHeight(38)
         self._password_input.setStyleSheet(
-            "QLineEdit {"
-            "  border: 1px solid #C9CDD4;"
-            "  border-radius: 4px;"
-            "  padding: 4px 12px;"
-            "  color: #1D2129;"
-            "}"
-            "QLineEdit:focus { border-color: #165DFF; }"
+            f"QLineEdit {{"
+            f"  border: 1px solid {t['input_border']};"
+            f"  border-radius: {t['radius_md']}px;"
+            f"  padding: 4px 12px;"
+            f"  background-color: {t['input_bg']};"
+            f"  color: {t['text_main']};"
+            f"}}"
+            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
         )
         self._password_input.returnPressed.connect(self._on_login)
         layout.addWidget(self._password_input)
@@ -119,14 +127,14 @@ class LoginDialog(QDialog):
         login_btn.setCursor(Qt.PointingHandCursor)
         login_btn.clicked.connect(self._on_login)
         login_btn.setStyleSheet(
-            "QPushButton {"
-            "  background-color: #165DFF;"
-            "  color: white;"
-            "  border: none;"
-            "  border-radius: 4px;"
-            "}"
-            "QPushButton:hover { background-color: #0E42D2; }"
-            "QPushButton:pressed { background-color: #0A3680; }"
+            f"QPushButton {{"
+            f"  background-color: {t['primary']};"
+            f"  color: {t['text_primary']};"
+            f"  border: none;"
+            f"  border-radius: {t['radius_md']}px;"
+            f"}}"
+            f"QPushButton:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}"
         )
         layout.addWidget(login_btn)
 
@@ -134,12 +142,23 @@ class LoginDialog(QDialog):
         tip_label = QLabel("默认账户：admin / admin")
         tip_label.setFont(QFont("Microsoft YaHei", 8))
         tip_label.setAlignment(Qt.AlignCenter)
-        tip_label.setStyleSheet("color: #C9CDD4;")
+        tip_label.setStyleSheet(f"color: {t['text_tertiary']};")
         layout.addWidget(tip_label)
 
     def _apply_style(self) -> None:
         """应用全局样式。"""
-        self.setStyleSheet("QDialog { background-color: #FFFFFF; }")
+        t = self._theme
+        self.setStyleSheet(
+            f"QDialog {{ background-color: {t['card_bg']}; }}"
+            f"QLabel {{ color: {t['text_secondary']}; }}"
+        )
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """主题切换时刷新样式。"""
+        self._theme = ThemeEngine.get().current_theme
+        self._apply_style()
+        # 通知父窗口更新（如果有）
+        self.update()
 
     def _on_login(self) -> None:
         """点击「登录」按钮处理。"""

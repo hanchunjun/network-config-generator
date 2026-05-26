@@ -1,6 +1,6 @@
-# QSS 主题系统与信号联动开发规范（V0.3.5 教训）
+# QSS 主题系统与信号联动开发规范（V0.3.5 / V0.3.6 教训）
 
-> 本文件记录 V0.3.5 主题切换功能开发中暴露的问题及其规范约束，
+> 本文件记录 V0.3.5~V0.3.6 主题切换功能开发中暴露的问题及其规范约束，
 > 后续涉及 QSS 样式、主题切换、信号联动的新功能开发，必须遵守本文件。
 
 ---
@@ -15,7 +15,6 @@
 
 **教训**：
 - **自定义绘制组件（paintEvent）必须实时从引擎获取配色数据，禁止构造时快照**
-- 或者：组件必须连接 `theme_changed` 信号，在回调中调用 `self.update()` 触发重绘
 
 **正确做法**：
 ```python
@@ -24,11 +23,8 @@ class _PreviewCard(QFrame):
         super().__init__(parent)
         self._theme_id = theme_id
         self._engine = engine  # 持有引擎引用，不持有配色快照
-        # 连接主题变化信号
-        self._engine.theme_changed.connect(self._on_theme_changed)
-
-    def _on_theme_changed(self, theme_id: str) -> None:
-        self.update()  # 触发重绘
+        # 注意：不连接 theme_changed 信号，避免与 clicked 信号嵌套导致死锁
+        # 卡片刷新由父组件 ThemeSwitcherPage._on_theme_changed 集中调用
 
     def paintEvent(self, event) -> None:
         t = self._engine.get_theme(self._theme_id)  # 实时获取，非快照
@@ -151,7 +147,7 @@ class _PreviewCard(QFrame):
 |------|------|
 | 适用场景 | 任何使用 `paintEvent` 自绘的组件 |
 | 强制规则 | 禁止在 `__init__` 中保存配色快照；`paintEvent` 内必须实时从 `ThemeEngine` 获取数据 |
-| 信号要求 | 必须连接 `theme_changed` 信号，在回调中调用 `self.update()` |
+| 信号要求 | **禁止**直接连接 `theme_changed` 信号并调用 `self.update()`（避免死锁）；刷新由父组件在 `_on_theme_changed` 中集中调用 `card.update()` |
 
 ### 规范 2：局部 setStyleSheet 禁止设置 color 属性
 
@@ -179,7 +175,7 @@ class _PreviewCard(QFrame):
 | 检查项 | 1. `MODULES` 列表 2. `_create_module_stack` 3. `page_map` 4. `keyPressEvent` 快捷键 5. 状态栏文案 |
 | 验证要求 | 代码审查时必须逐项勾选，缺一不可 |
 
-### 规范 4：功能上线前必须端到端验证
+### 规范 5：功能上线前必须端到端验证
 
 | 项目 | 要求 |
 |------|------|
@@ -207,9 +203,48 @@ class _PreviewCard(QFrame):
 
 ---
 
-## 四、版本信息
+## 四、V0.3.6 新增踩坑记录
 
-- **版本**：NetOps V0.3.5 补丁
-- **日期**：2026年5月25日
-- **触发事件**：用户报告"主题切换无效"和"有的地方白有的地方黑"
-- **根因**：paintEvent 快照不更新 + 局部 setStyleSheet 覆盖全局 QSS + 信号链路断裂
+### 坑 5：导航栏控件主题切换不刷新
+
+**现象**：切换主题后，导航栏（Logo、导航按钮、账户管理/关于按钮）颜色不变。
+
+**根因**：导航栏控件（`nav_bar`、`logo_label`、`account_btn`、`about_btn`）是局部变量，`_refresh_nav_style()` 使用 `findChildren` 查找不可靠，导致刷新失败。
+
+**教训**：
+- **导航栏控件必须保存为实例变量**（`self._xxx`），主题切换时直接通过引用刷新
+- **禁止在 `_refresh_xxx_style()` 中使用 `findChildren` 查找控件**，应保存实例变量引用
+
+**正确做法**：
+```python
+# 创建时保存引用
+self._nav_bar = QWidget()
+self._logo_label = QLabel("NetOps")
+
+# 刷新时直接使用
+def _refresh_nav_style(self):
+    t = self._theme_engine.current_theme
+    if self._nav_bar is not None:
+        self._nav_bar.setStyleSheet(f"background-color: {t['nav_bg']};")
+    if self._logo_label is not None:
+        self._logo_label.setStyleSheet(f"color: {t['primary_light']};")
+```
+
+### 坑 6：Windows 原生标题栏不跟随主题
+
+**现象**：切换到 VS Code/Raycast 主题后，Windows 标题栏仍然是白色。
+
+**根因**：Windows 原生标题栏颜色由系统主题控制，QSS 无法影响。
+
+**教训**：
+- **深色主题必须调用 `DwmSetWindowAttribute(hwnd, 20, ...)` 设置标题栏深色模式**
+- `DWMWA_USE_IMMERSIVE_DARK_MODE = 20`，值 1 = 深色，0 = 浅色
+
+---
+
+## 五、版本信息
+
+- **版本**：NetOps V0.3.6 主题增强版
+- **日期**：2026年5月26日
+- **触发事件**：用户报告"导航栏主题切换不刷新"和"标题栏白色"
+- **根因**：导航栏控件未保存实例变量 + 未调用 DwmSetWindowAttribute

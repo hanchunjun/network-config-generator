@@ -79,15 +79,14 @@ class TestThemeDataIntegrity:
 
     @pytest.mark.parametrize("theme_id", [Theme.RAYCAST, Theme.VSCODE, Theme.BUSINESS])
     def test_text_main_darker_than_text_secondary(self, theme_id):
-        """text_main 必须比 text_secondary 深（对比度更高）。"""
+        """text_main 和 text_secondary 必须是不同颜色（确保视觉层次区分）。"""
         t = _THEMES[theme_id]
-        # 简单验证：text_main 的 hex 值应比 text_secondary 小（更深）
-        main_val = int(t["text_main"].replace("#", ""), 16)
-        secondary_val = int(t["text_secondary"].replace("#", ""), 16)
-        # 对于浅色主题（business），text_main 应比 text_secondary 暗
-        # 对于深色主题，text_main 应比 text_secondary 亮
-        # 这里只验证两者不相等
-        assert main_val != secondary_val, f"{theme_id}: text_main == text_secondary"
+        # 注意：深色主题中 text_main 是亮色、text_secondary 是暗色；
+        # 浅色主题中 text_main 是暗色、text_secondary 是亮色。
+        # 因此不能用 hex 值大小比较，只验证两者不相等。
+        assert t["text_main"] != t["text_secondary"], (
+            f"{theme_id}: text_main 与 text_secondary 不能相同"
+        )
 
     def test_business_theme_contrast(self):
         """Business 主题 text_secondary 在浅色背景上对比度足够。"""
@@ -187,17 +186,50 @@ class TestThemeSwitcherPage:
         """_PreviewCard 通过 engine 实时获取主题数据，非构造时快照。"""
         from src.ui.theme_switcher_page import _PreviewCard
         card = _PreviewCard(Theme.BUSINESS, self.engine)
-        # 验证 card 持有 engine 引用
-        assert hasattr(card, "_engine")
+        # 验证 card 持有 engine 引用，不持有 _theme 快照
+        assert hasattr(card, "_engine"), "_PreviewCard 应持有 _engine 引用"
         assert card._engine is self.engine
-        # 验证 paintEvent 使用的数据来自 engine（非快照）
-        assert not hasattr(card, "_theme") or card._theme is None or True  # _theme 已移除
+        assert not hasattr(card, "_theme"), "_PreviewCard 不应持有 _theme 快照属性"
+
+    def test_card_does_not_connect_theme_changed_signal(self):
+        """死锁修复验证：_PreviewCard 不连接 theme_changed 信号。"""
+        from src.ui.theme_switcher_page import _PreviewCard
+        received = []
+        # 临时连接 engine 信号以追踪发射次数
+        self.engine.theme_changed.connect(lambda tid: received.append(tid))
+        card = _PreviewCard(Theme.RAYCAST, self.engine)
+        # 验证 _PreviewCard 没有 _on_theme_changed 方法
+        assert not hasattr(card, '_on_theme_changed'), (
+            "_PreviewCard 不应有 _on_theme_changed 方法（不连接 theme_changed 信号）"
+        )
+        assert hasattr(card, '_engine'), (
+            "_PreviewCard 应持有 _engine 引用"
+        )
+        # 清理临时连接
+        self.engine.theme_changed.disconnect()
+
+    def test_rapid_theme_switch_no_deadlock(self):
+        """死锁回归测试：快速连续切换主题不应挂起。"""
+        from src.ui.theme_switcher_page import ThemeSwitcherPage
+        page = ThemeSwitcherPage()
+        app = QApplication.instance()
+        themes = [Theme.VSCODE, Theme.RAYCAST, Theme.BUSINESS, Theme.VSCODE, Theme.RAYCAST]
+        for tid in themes:
+            self.engine.apply(app, tid)
+            # 每次切换后验证卡片状态正确
+            for cid, card in page._cards.items():
+                expected = (cid == tid)
+                assert card._selected is expected, (
+                    f"切换到 {tid} 后，{cid} 选中状态应为 {expected}，实际 {card._selected}"
+                )
 
     def test_page_on_theme_changed_refreshes_cards(self):
         """ThemeSwitcherPage._on_theme_changed 集中刷新所有卡片（防死锁设计）。"""
         from src.ui.theme_switcher_page import ThemeSwitcherPage
-        page = ThemeSwitcherPage()
         app = QApplication.instance()
+        # 先重置为 vscode，确保测试独立
+        self.engine.apply(app, Theme.VSCODE)
+        page = ThemeSwitcherPage()
         # 记录调用前状态
         assert page._cards[Theme.VSCODE]._selected is True
         # 切换主题

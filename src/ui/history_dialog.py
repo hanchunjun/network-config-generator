@@ -3,10 +3,13 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                                QHeaderView, QAbstractItemView)
 from PyQt5.QtCore import Qt
 
+from src.core.theme_engine import ThemeEngine
+
 
 class HistoryDialog(QDialog):
     def __init__(self, parent=None, history=None):
         super().__init__(parent)
+        self._theme_engine = ThemeEngine.get()
         self.setWindowTitle("设备变更历史")
         self.setMinimumWidth(700)
         self.setMinimumHeight(450)
@@ -14,17 +17,18 @@ class HistoryDialog(QDialog):
         self.init_ui()
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         layout = QVBoxLayout()
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
         title = QLabel("设备变更历史")
-        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #1D2129;")
+        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         if not self.history:
             empty_label = QLabel("暂无变更记录")
-            empty_label.setStyleSheet("font-size: 14px; color: #86909C;")
+            empty_label.setStyleSheet(f"font-size: 14px; color: {t['text_tertiary']};")
             empty_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(empty_label)
         else:
@@ -34,17 +38,17 @@ class HistoryDialog(QDialog):
             table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
             table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            table.setStyleSheet("""
-                QTableWidget {
-                    border: 1px solid #E5E6EB; border-radius: 4px;
-                    background-color: #FFFFFF; gridline-color: #F2F3F5;
-                }
-                QTableWidget::item { padding: 6px; }
-                QHeaderView::section {
-                    background-color: #F7F8FA; border: none;
-                    border-bottom: 1px solid #E5E6EB; padding: 8px;
-                    font-weight: bold; color: #1D2129;
-                }
+            table.setStyleSheet(f"""
+                QTableWidget {{
+                    border: 1px solid {t['border']}; border-radius: 4px;
+                    background-color: {t['card_bg']}; gridline-color: {t['hover_bg']};
+                }}
+                QTableWidget::item {{ padding: 6px; }}
+                QHeaderView::section {{
+                    background-color: {t['hover_bg']}; border: none;
+                    border-bottom: 1px solid {t['border']}; padding: 8px;
+                    font-weight: bold; color: {t['text_main']};
+                }}
             """)
 
             action_labels = {
@@ -68,12 +72,12 @@ class HistoryDialog(QDialog):
         btn_layout.addStretch()
         close_btn = QPushButton("关闭")
         close_btn.setFixedSize(100, 38)
-        close_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA; border: 1px solid #E5E6EB;
+        close_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: 4px; font-size: 14px;
-            }
-            QPushButton:hover { border: 1px solid #165DFF; }
+            }}
+            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
         """)
         close_btn.clicked.connect(self.accept)
         btn_layout.addWidget(close_btn)

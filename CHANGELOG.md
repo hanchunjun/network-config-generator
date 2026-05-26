@@ -2,6 +2,43 @@
 
 所有重要版本变更记录于此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/) 格式。
 
+## [V0.3.6] - 2026-05-26
+
+### Added
+- 🪟 **Windows 原生标题栏深色模式**：VS Code/Raycast 主题下通过 `DwmSetWindowAttribute` API 自动设置深色标题栏，Business 主题恢复浅色
+- 🎨 **输入框边框色优化**：新增 `input_border` 颜色键，QLineEdit/QComboBox 未聚焦边框在深色主题下自动提亮（VS Code `#5A5A62`、Raycast `#6B6B73`，对比度提升 30%）
+- 🎯 **默认主题改为 Business**：首次启动默认使用商务沉稳主题，后续启动恢复用户上次选择
+
+### Changed
+- 修复导航栏主题切换不刷新问题：导航栏控件（nav_bar/logo_label/account_btn/about_btn）保存为实例变量，`_refresh_nav_style()` 直接引用刷新，消除不可靠的 `find_children` 查找
+- 修复配置选择栏背景不刷新问题：`_refresh_config_bar_style()` 新增 `self._config_top_bar` 背景色刷新
+- 全局 QSS 中 QLineEdit/QComboBox 边框改用 `input_border`，27 个 UI 文件局部 QSS 同步更新
+- 新增规则文件 `.claude/rules/12-qss-theme-signal-spec.md` 坑 5（导航栏控件必须保存实例变量）和坑 6（Windows 标题栏深色模式）
+
+### Packaging
+- 用户端 EXE 重新打包（48.7MB）
+
+---
+
+## [V0.3.5] - 2026-05-25
+
+### Added
+- 🎨 **三主题切换系统**：
+  - 新增 `src/core/theme_engine.py` — 主题引擎（单例模式），管理三套完整配色方案（每套60+颜色变量），支持 `theme_changed` 信号广播、QSS动态生成、配置持久化（`config/theme_config.json`）
+  - 新增 `src/ui/theme_switcher_page.py` — 主题切换面板，三个主题预览卡片（QPainter自定义绘制），点击即时切换全局主题
+  - 三套主题：**VSCode**（深蓝黑/直角/技术感）、**Raycast**（紫橙渐变/毛玻璃/大圆角）、**Business**（浅灰白/品牌蓝/政企风）
+  - 主题配置自动持久化，重启后恢复上次选择
+
+### Changed
+- 全局重构：所有UI页面（main_window/login_dialog/activation_dialog/account_manager_dialog/batch_cmd_generator_page）的硬编码QSS色值全部替换为 `ThemeEngine` 动态颜色引用
+- `NetworkConfigGenerator.spec` 新增 `theme_engine` / `theme_switcher_page` hiddenimports，输出文件名改为 `NetOps.exe`
+- EXE输出文件名从 `NetworkConfigGenerator.exe` 统一改为 `NetOps.exe`
+
+### Packaging
+- 用户端EXE重命名为 `dist/NetOps.exe`（48.6MB）
+
+---
+
 ## [V0.3.3] - 2026-05-22
 
 ### Added

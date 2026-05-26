@@ -26,6 +26,7 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 from src.utils.resource_path import get_config_path, get_app_dir, resource_path
 from src.core.logger import netops_logger
+from src.core.theme_engine import ThemeEngine
 from src.core.local_audit_engine import LocalAuditEngine, AuditResult, Severity
 from src.core.local_diagnostic_engine import LocalDiagnosticEngine, DiagResult, DiagSeverity
 from src.utils.validators import ProjectValidator
@@ -54,70 +55,79 @@ TAB_REPORT = 1
 TAB_DIAGNOSIS = 2
 TAB_COMPLIANCE = 3
 
-BTN_STYLE = """
-    QPushButton {
-        background-color: #F2F3F5;
-        color: #4E5969;
-        border: 1px solid #E5E6EB;
-        border-radius: 4px;
-        font-size: 9pt;
-        padding: 5px 12px;
-    }
-    QPushButton:hover { background-color: #E5E6EB; border-color: #C9CDD4; }
-"""
+def _btn_style(t: dict) -> str:
+    return f"""
+        QPushButton {{
+            background-color: {t['page_bg']};
+            color: {t['text_secondary']};
+            border: 1px solid {t['border']};
+            border-radius: 4px;
+            font-size: 9pt;
+            padding: 5px 12px;
+        }}
+        QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
+    """
 
-AI_BTN_STYLE = """
-    QPushButton {
-        background-color: #E8F3FF;
-        color: #165DFF;
-        border: 1px solid #165DFF;
-        border-radius: 4px;
-        font-size: 10pt;
-        font-weight: bold;
-        padding: 8px 16px;
-    }
-    QPushButton:hover { background-color: #D6E8FF; }
-    QPushButton:disabled { background-color: #F2F3F5; color: #C9CDD4; border-color: #E5E6EB; }
-"""
 
-PRIMARY_BTN_STYLE = """
-    QPushButton {
-        background-color: #165DFF;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 10pt;
-        font-weight: bold;
-        padding: 6px 16px;
-    }
-    QPushButton:hover { background-color: #0E42D2; }
-    QPushButton:disabled { background-color: #C9CDD4; }
-"""
+def _ai_btn_style(t: dict) -> str:
+    return f"""
+        QPushButton {{
+            background-color: {t['selection_bg']};
+            color: {t['primary']};
+            border: 1px solid {t['primary']};
+            border-radius: 4px;
+            font-size: 10pt;
+            font-weight: bold;
+            padding: 8px 16px;
+        }}
+        QPushButton:hover {{ background-color: {t['primary_light']}; }}
+        QPushButton:disabled {{ background-color: {t['page_bg']}; color: {t['border_deep']}; border-color: {t['border']}; }}
+    """
 
-LIST_STYLE = """
-    QListWidget {
-        border: 1px solid #E5E6EB;
-        border-radius: 4px;
-        background-color: #FFFFFF;
-        font-size: 10pt;
-        outline: none;
-    }
-    QListWidget::item { padding: 5px 8px; }
-    QListWidget::item:selected { background-color: #E8F3FF; color: #1D2129; }
-    QListWidget::item:hover { background-color: #F5F7FA; }
-"""
 
-PREVIEW_STYLE = """
-    QTextEdit {
-        border: 1px solid #E5E6EB;
-        border-radius: 4px;
-        padding: 8px;
-        font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 9pt;
-        background-color: #F7F8FA;
-        color: #4E5969;
-    }
-"""
+def _primary_btn_style(t: dict) -> str:
+    return f"""
+        QPushButton {{
+            background-color: {t['primary']};
+            color: {t['text_primary']};
+            border: none;
+            border-radius: 4px;
+            font-size: 10pt;
+            font-weight: bold;
+            padding: 6px 16px;
+        }}
+        QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+        QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+    """
+
+
+def _list_style(t: dict) -> str:
+    return f"""
+        QListWidget {{
+            border: 1px solid {t['border']};
+            border-radius: 4px;
+            background-color: {t['card_bg']};
+            font-size: 10pt;
+            outline: none;
+        }}
+        QListWidget::item {{ padding: 5px 8px; }}
+        QListWidget::item:selected {{ background-color: {t['selection_bg']}; color: {t['text_main']}; }}
+        QListWidget::item:hover {{ background-color: {t['page_bg']}; }}
+    """
+
+
+def _preview_style(t: dict) -> str:
+    return f"""
+        QTextEdit {{
+            border: 1px solid {t['border']};
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 9pt;
+            background-color: {t['hover_bg']};
+            color: {t['text_secondary']};
+        }}
+    """
 
 
 class OpsWorkerThread(QThread):
@@ -562,24 +572,9 @@ class TaskCard(QGroupBox):
         self.worker = None
         self._running = False
         self._last_run_time = ""
+        self._theme_engine = ThemeEngine.get()
 
-        self.setStyleSheet("""
-            QGroupBox {
-                font-size: 10pt;
-                font-weight: bold;
-                color: #1D2129;
-                border: 1px solid #E5E6EB;
-                border-radius: 8px;
-                margin-top: 10px;
-                padding: 14px 12px 10px 12px;
-                background-color: #FFFFFF;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 12px;
-                padding: 0 6px;
-            }
-        """)
+        self.setStyleSheet(self._card_style())
         self.setMinimumWidth(280)
 
         layout = QVBoxLayout()
@@ -587,30 +582,18 @@ class TaskCard(QGroupBox):
         layout.setContentsMargins(8, 16, 8, 8)
 
         self.status_label = QLabel("就绪")
-        self.status_label.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: normal;")
+        self.status_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_tertiary']}; font-weight: normal;")
         layout.addWidget(self.status_label)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setFixedHeight(14)
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                border: 1px solid #E5E6EB;
-                border-radius: 2px;
-                text-align: center;
-                background-color: #F5F7FA;
-                font-size: 10px;
-            }
-            QProgressBar::chunk {
-                background-color: #165DFF;
-                border-radius: 2px;
-            }
-        """)
+        self.progress_bar.setStyleSheet(self._progress_style())
         layout.addWidget(self.progress_bar)
 
         btn_row = QHBoxLayout()
         self.run_btn = QPushButton("▶ 执行")
         self.run_btn.setFixedHeight(32)
-        self.run_btn.setStyleSheet(PRIMARY_BTN_STYLE)
+        self.run_btn.setStyleSheet(_primary_btn_style(self._theme_engine.current_theme))
         self.run_btn.clicked.connect(self._run_task)
         btn_row.addWidget(self.run_btn)
         btn_row.addStretch()
@@ -632,7 +615,7 @@ class TaskCard(QGroupBox):
         self.run_btn.setEnabled(False)
         self.progress_bar.setValue(0)
         self.status_label.setText("正在执行...")
-        self.status_label.setStyleSheet("font-size: 9pt; color: #165DFF; font-weight: normal;")
+        self.status_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['primary']}; font-weight: normal;")
 
         self.worker = OpsWorkerThread(self.task_type, project_dir)
         self.worker.progress_signal.connect(self._on_progress)
@@ -651,15 +634,51 @@ class TaskCard(QGroupBox):
         self.progress_bar.setValue(self.progress_bar.maximum())
         self._last_run_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.status_label.setText(f"完成 ✅ {self._last_run_time}")
-        self.status_label.setStyleSheet("font-size: 9pt; color: #00B42A; font-weight: normal;")
+        self.status_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['success']}; font-weight: normal;")
         self.parent_page._on_task_completed(self.task_type)
 
     def _on_error(self, error_msg):
         self._running = False
         self.run_btn.setEnabled(True)
         self.status_label.setText("执行出错 ❌")
-        self.status_label.setStyleSheet("font-size: 9pt; color: #F53F3F; font-weight: normal;")
+        self.status_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['danger']}; font-weight: normal;")
         QMessageBox.critical(self, "任务执行失败", f"执行过程中出现错误：\n\n{error_msg}")
+
+    def _card_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QGroupBox {{
+                font-size: 10pt;
+                font-weight: bold;
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: 8px;
+                margin-top: 10px;
+                padding: 14px 12px 10px 12px;
+                background-color: {t['card_bg']};
+            }}
+            QGroupBox::title {{
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 6px;
+            }}
+        """
+
+    def _progress_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QProgressBar {{
+                border: 1px solid {t['border']};
+                border-radius: 2px;
+                text-align: center;
+                background-color: {t['page_bg']};
+                font-size: 10px;
+            }}
+            QProgressBar::chunk {{
+                background-color: {t['primary']};
+                border-radius: 2px;
+            }}
+        """
 
 
 class FileResultTab(QWidget):
@@ -668,6 +687,7 @@ class FileResultTab(QWidget):
         self.tab_name = tab_name
         self.scan_dir_key = scan_dir_key
         self.parent_page = parent_page
+        self._theme_engine = ThemeEngine.get()
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -682,23 +702,24 @@ class FileResultTab(QWidget):
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(4)
+        t = self._theme_engine.current_theme
         self.refresh_btn = QPushButton("🔄 刷新")
-        self.refresh_btn.setStyleSheet(BTN_STYLE)
+        self.refresh_btn.setStyleSheet(_btn_style(t))
         self.refresh_btn.clicked.connect(self._refresh_list)
         btn_row.addWidget(self.refresh_btn)
         self.open_btn = QPushButton("📂 打开")
-        self.open_btn.setStyleSheet(BTN_STYLE)
+        self.open_btn.setStyleSheet(_btn_style(t))
         self.open_btn.clicked.connect(self._open_file)
         btn_row.addWidget(self.open_btn)
         self.del_btn = QPushButton("🗑 删除")
-        self.del_btn.setStyleSheet(BTN_STYLE)
+        self.del_btn.setStyleSheet(_btn_style(t))
         self.del_btn.clicked.connect(self._delete_file)
         btn_row.addWidget(self.del_btn)
         btn_row.addStretch()
         left_layout.addLayout(btn_row)
 
         self.file_list = QListWidget()
-        self.file_list.setStyleSheet(LIST_STYLE)
+        self.file_list.setStyleSheet(_list_style(t))
         self.file_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.file_list.currentItemChanged.connect(self._on_file_selected)
         self.file_list.setMinimumWidth(200)
@@ -712,7 +733,7 @@ class FileResultTab(QWidget):
 
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
-        self.preview_text.setStyleSheet(PREVIEW_STYLE)
+        self.preview_text.setStyleSheet(_preview_style(t))
         self.preview_text.setPlaceholderText("选择左侧文件查看内容")
         right_layout.addWidget(self.preview_text)
 
@@ -722,19 +743,19 @@ class FileResultTab(QWidget):
 
         if tab_name in ("💾备份文件",):
             self.compliance_btn = QPushButton("🔍 AI合规巡检")
-            self.compliance_btn.setStyleSheet(AI_BTN_STYLE)
+            self.compliance_btn.setStyleSheet(_ai_btn_style(t))
             self.compliance_btn.clicked.connect(self._run_compliance_check)
             self.ai_btn_layout.addWidget(self.compliance_btn)
 
         if tab_name in ("📊巡检报告", "🩺诊断报告"):
             self.diagnose_btn = QPushButton("🩺 AI故障诊断")
-            self.diagnose_btn.setStyleSheet(AI_BTN_STYLE)
+            self.diagnose_btn.setStyleSheet(_ai_btn_style(t))
             self.diagnose_btn.clicked.connect(self._run_diagnose)
             self.ai_btn_layout.addWidget(self.diagnose_btn)
 
         if tab_name in ("🔍合规审计",):
             self.deep_audit_btn = QPushButton("🩺 AI精审")
-            self.deep_audit_btn.setStyleSheet(AI_BTN_STYLE)
+            self.deep_audit_btn.setStyleSheet(_ai_btn_style(t))
             self.deep_audit_btn.clicked.connect(self._run_deep_audit)
             self.ai_btn_layout.addWidget(self.deep_audit_btn)
 
@@ -948,7 +969,10 @@ class OpsToolboxPage(QWidget):
         self.parent = parent
         self._ai_compliance_thread = None
         self._ai_diagnostic_thread = None
+        self._theme_engine = ThemeEngine.get()
         self.init_ui()
+        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        self._apply_theme_style()
 
     def init_ui(self):
         layout = QVBoxLayout()
@@ -957,33 +981,22 @@ class OpsToolboxPage(QWidget):
 
         header_layout = QHBoxLayout()
         title_label = QLabel("项目运维")
-        title_label.setStyleSheet("font-size: 15pt; font-weight: bold; color: #1D2129; text-decoration: none;")
+        title_label.setStyleSheet(f"font-size: 15pt; font-weight: bold; color: {self._theme_engine.current_theme['text_main']}; text-decoration: none;")
         header_layout.addWidget(title_label)
         header_layout.addStretch()
 
         proj_label = QLabel("项目：")
-        proj_label.setStyleSheet("font-size: 10pt; color: #4E5969; font-weight: normal;")
+        proj_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
         header_layout.addWidget(proj_label)
 
         self.project_combo = QComboBox()
         self.project_combo.setMinimumWidth(280)
-        self.project_combo.setStyleSheet("""
-            QComboBox {
-                border: 1px solid #E5E6EB; border-radius: 4px;
-                padding: 5px 8px; font-size: 10pt; background-color: #FFFFFF;
-            }
-            QComboBox:hover { border: 1px solid #165DFF; }
-            QComboBox::drop-down { border: none; width: 20px; }
-            QComboBox QAbstractItemView {
-                border: 1px solid #E5E6EB; selection-background-color: #E8F3FF;
-                outline: none;
-            }
-        """)
+        self.project_combo.setStyleSheet(self._combo_style())
         header_layout.addWidget(self.project_combo)
 
         refresh_btn = QPushButton("🔄 刷新项目")
         refresh_btn.setFixedSize(100, 32)
-        refresh_btn.setStyleSheet(BTN_STYLE)
+        refresh_btn.setStyleSheet(_btn_style(self._theme_engine.current_theme))
         refresh_btn.clicked.connect(self._refresh_projects)
         header_layout.addWidget(refresh_btn)
         layout.addLayout(header_layout)
@@ -1000,27 +1013,7 @@ class OpsToolboxPage(QWidget):
         layout.addLayout(cards_layout)
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid #E5E6EB;
-                border-radius: 4px;
-                background-color: #FFFFFF;
-            }
-            QTabBar::tab {
-                border: 1px solid #E5E6EB;
-                padding: 8px 20px;
-                font-size: 10pt;
-                background-color: #F5F7FA;
-                margin-right: 2px;
-            }
-            QTabBar::tab:selected {
-                background-color: #FFFFFF;
-                border-bottom-color: #FFFFFF;
-                font-weight: bold;
-                color: #165DFF;
-            }
-            QTabBar::tab:hover { background-color: #E8F3FF; }
-        """)
+        self.tab_widget.setStyleSheet(self._tab_style())
 
         self.backup_tab = FileResultTab("💾备份文件", "backup", self)
         self.report_tab = FileResultTab("📊巡检报告", "report", self)
@@ -1036,10 +1029,64 @@ class OpsToolboxPage(QWidget):
 
         desc_label = QLabel("三个运维任务独立运行，所有操作仅执行只读指令。AI分析结果自动归档到项目 report/ 目录。")
         desc_label.setWordWrap(True)
-        desc_label.setStyleSheet("font-size: 9pt; color: #86909C; padding: 2px 0;")
+        desc_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_tertiary']}; padding: 2px 0;")
         layout.addWidget(desc_label)
 
         self.setLayout(layout)
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._apply_theme_style()
+
+    def _apply_theme_style(self) -> None:
+        t = self._theme_engine.current_theme
+        self.setStyleSheet(f"""
+            OpsToolboxPage {{
+                background-color: {t['page_bg']};
+            }}
+        """)
+        if hasattr(self, 'project_combo'):
+            self.project_combo.setStyleSheet(self._combo_style())
+        if hasattr(self, 'tab_widget'):
+            self.tab_widget.setStyleSheet(self._tab_style())
+
+    def _combo_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QComboBox {{
+                border: 1px solid {t['input_border']}; border-radius: 4px;
+                padding: 5px 8px; font-size: 10pt; background-color: {t['card_bg']};
+            }}
+            QComboBox:hover {{ border: 1px solid {t['primary']}; }}
+            QComboBox::drop-down {{ border: none; width: 20px; }}
+            QComboBox QAbstractItemView {{
+                border: 1px solid {t['border']}; selection-background-color: {t['selection_bg']};
+                outline: none;
+            }}
+        """
+
+    def _tab_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QTabWidget::pane {{
+                border: 1px solid {t['border']};
+                border-radius: 4px;
+                background-color: {t['card_bg']};
+            }}
+            QTabBar::tab {{
+                border: 1px solid {t['border']};
+                padding: 8px 20px;
+                font-size: 10pt;
+                background-color: {t['page_bg']};
+                margin-right: 2px;
+            }}
+            QTabBar::tab:selected {{
+                background-color: {t['card_bg']};
+                border-bottom-color: {t['card_bg']};
+                font-weight: bold;
+                color: {t['primary']};
+            }}
+            QTabBar::tab:hover {{ background-color: {t['selection_bg']}; }}
+        """
 
     def _refresh_projects(self):
         current = self.project_combo.currentText()

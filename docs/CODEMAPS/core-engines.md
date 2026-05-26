@@ -1,6 +1,6 @@
 # 核心引擎代码地图
 
-**最后更新：** 2026-05-22
+**最后更新：** 2026-05-26
 
 ---
 
@@ -18,7 +18,8 @@ src/core/
 ├── local_diagnostic_engine.py   # 本地运行时诊断引擎
 ├── activation_engine.py         # 激活核心引擎 ⭐V0.3.0新增
 ├── admin_keygen.py              # 管理员制码核心 ⭐V0.3.0新增
-└── account_manager.py           # 账户管理核心 ⭐V0.3.3新增
+├── account_manager.py           # 账户管理核心 ⭐V0.3.3新增
+└── theme_engine.py              # 主题引擎 ⭐V0.3.5新增
 ```
 
 ---
@@ -287,6 +288,53 @@ AuditResult: findings[], audit_time_ms
 ### 损坏恢复
 - JSON解析失败 → 自动重置为默认账户 admin/admin
 - 非字典JSON → 自动重置为默认账户 admin/admin
+
+---
+
+## theme_engine.py — 主题引擎（V0.3.5新增，V0.3.6增强）
+
+**职责：** 管理三套完整配色方案，提供全局QSS动态生成、信号广播、配置持久化。
+
+### 核心数据结构
+```python
+Theme: Dict[str, str]  # 60+颜色变量，如 primary, nav_bg, text_main 等
+ThemeEngine: 单例类，_theme_id + _current_theme + _THEMES + theme_changed信号
+```
+
+### 三套主题（每套60+颜色变量）
+| 主题ID | 名称 | 风格特征 |
+|--------|------|---------|
+| `vscode` | VSCode Dark | 深蓝黑底，直角，技术感，`#1E1E1E`/`#007ACC` |
+| `raycast` | Raycast | 紫橙渐变，毛玻璃，大圆角，`#1A1025`/`#FF6363` |
+| `business` | Business | 浅灰白底，品牌蓝，政企风，`#F5F6FA`/`#1565C0` |
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `get()` | 获取单例实例（自动初始化默认主题） |
+| `apply(app, theme_id)` | 应用全局QSS样式表 |
+| `qss(component)` | 返回指定组件类型的QSS片段 |
+| `status_color(status)` | 返回状态灯颜色（success/warning/danger） |
+
+### 颜色变量体系（部分）
+| 变量类别 | 示例变量 |
+|---------|---------|
+| 品牌色 | `primary`, `primary_light`, `primary_hover`, `primary_pressed` |
+| 背景色 | `bg_main`, `card_bg`, `nav_bg`, `input_bg`, `code_bg`, `hover_bg` |
+| 文字色 | `text_main`, `text_primary`, `text_secondary`, `text_tertiary` |
+| 边框/分割 | `border`, `input_border`（V0.3.6新增，输入框专用，比普通border更亮）, `border_deep`, `border_deepest` |
+| 状态色 | `success`, `warning`, `danger`, `info` + 各状态 bg/hover 变体 |
+| 圆角 | `radius_sm`, `radius_md`, `radius_lg` |
+
+### 配置持久化
+- 存储路径：`config/theme_config.json`
+- 格式：`{"theme_id": "business"}`（V0.3.6起默认主题为 business）
+- 切换主题时自动保存，启动时自动加载
+
+### V0.3.6 新增颜色变量
+| 变量 | 说明 | VS Code | Raycast | Business |
+|------|------|---------|---------|----------|
+| `input_border` | QLineEdit/QComboBox 未聚焦边框 | `#5A5A62` | `#6B6B73` | `#B0B0B8` |
 
 ---
 

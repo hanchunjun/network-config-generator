@@ -2,6 +2,7 @@
                                QLineEdit, QCheckBox, QComboBox, QFrame, QTabWidget, QScrollArea, QRadioButton, QPushButton)
 from PyQt5.QtCore import Qt
 from src.ui.config_pages.base_config_page import BaseConfigPage
+from src.core.theme_engine import ThemeEngine
 
 class HuaweiACConfig(BaseConfigPage):
     def __init__(self, parent):
@@ -18,26 +19,26 @@ class HuaweiACConfig(BaseConfigPage):
         tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: none;
-                background-color: #F2F3F5;
+                background-color: {t['hover_bg']};
             }
             QTabBar::tab {
-                background-color: #FFFFFF;
-                border: 1px solid #E5E6EB;
+                background-color: {t['card_bg']};
+                border: 1px solid {t['border']};
                 border-bottom: none;
                 padding: 10px 24px;
                 margin-right: 4px;
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
                 font-size: 10pt;
-                color: #4E5969;
+                color: {t['text_secondary']};
             }
             QTabBar::tab:selected {
-                background-color: #165DFF;
-                color: #FFFFFF;
+                background-color: {t['primary']};
+                color: {t['card_bg']};
                 font-weight: bold;
             }
             QTabBar::tab:hover:!selected {
-                background-color: #F7F8FA;
+                background-color: {t['hover_bg']};
             }
         """)
         
@@ -72,18 +73,18 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel('登录方式:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         login_mode_layout.addWidget(label)
         
         # 仅配置密码登录
         pwd_only_radio = QRadioButton('仅配置密码登录')
         pwd_only_radio.setChecked(True)
-        pwd_only_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
+        pwd_only_radio.setStyleSheet(self._get_radio_style())
         login_mode_layout.addWidget(pwd_only_radio)
         
         # 配置用户名+密码
         user_pwd_radio = QRadioButton('配置用户名+密码')
-        user_pwd_radio.setStyleSheet('font-size: 10pt; color: #4E5969;')
+        user_pwd_radio.setStyleSheet(self._get_radio_style())
         login_mode_layout.addWidget(user_pwd_radio)
         
         login_mode_layout.addStretch()
@@ -95,7 +96,7 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel('console密码:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         pwd_layout.addWidget(label)
         
         console_pwd_input = QLineEdit()
@@ -103,14 +104,14 @@ class HuaweiACConfig(BaseConfigPage):
         console_pwd_input.setPlaceholderText('请输入密码')
         console_pwd_input.setStyleSheet("""
             QLineEdit {
-                border: 1px solid #E5E6EB;
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 8px 12px;
                 font-size: 10pt;
-                background-color: #FFFFFF;
+                background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid #165DFF;
+                border: 1px solid {t['primary']};
             }
         """)
         pwd_layout.addWidget(console_pwd_input)
@@ -125,21 +126,21 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel('用户名:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_input = QLineEdit()
         user_input.setPlaceholderText('请输入用户名')
         user_input.setStyleSheet("""
             QLineEdit {
-                border: 1px solid #E5E6EB;
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 8px 12px;
                 font-size: 10pt;
-                background-color: #FFFFFF;
+                background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid #165DFF;
+                border: 1px solid {t['primary']};
             }
         """)
         user_pwd_layout.addWidget(user_input)
@@ -147,7 +148,7 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel('密码:')
         label.setFixedWidth(80)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_pwd_input = QLineEdit()
@@ -155,14 +156,14 @@ class HuaweiACConfig(BaseConfigPage):
         user_pwd_input.setPlaceholderText('请输入密码')
         user_pwd_input.setStyleSheet("""
             QLineEdit {
-                border: 1px solid #E5E6EB;
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 8px 12px;
                 font-size: 10pt;
-                background-color: #FFFFFF;
+                background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid #165DFF;
+                border: 1px solid {t['primary']};
             }
         """)
         user_pwd_layout.addWidget(user_pwd_input)
@@ -279,16 +280,32 @@ class HuaweiACConfig(BaseConfigPage):
         
         # 将TabWidget添加到左侧布局
         self.config_layout.addWidget(tab_widget)
-        
+        # 初始加载时刷新子控件样式
+        self._refresh_child_styles()
+
+    def _refresh_child_styles(self) -> None:
+        """刷新所有子控件的样式"""
+        for child in self.findChildren(QLineEdit):
+            child.setStyleSheet(self._get_input_style())
+        for child in self.findChildren(QPushButton):
+            text = child.text() or ''
+            if text in ('返回上一级', '返回首页', '复制脚本', '导出配置', '重置'):
+                child.setStyleSheet(self._get_secondary_button_style())
+            else:
+                child.setStyleSheet(self._get_primary_button_style())
+        for child in self.findChildren(QComboBox):
+            child.setStyleSheet(self._get_combo_style())
+
+
     def create_tab_content(self):
         """创建Tab页内容容器，带滚动区域"""
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet('border: none; background-color: #F2F3F5;')
+        scroll_area.setStyleSheet(self._get_scroll_area_style())
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         
         container = QWidget()
-        container.setStyleSheet('background-color: #F2F3F5;')
+        container.setStyleSheet(self._get_container_style())
         layout = QVBoxLayout()
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(16)
@@ -310,13 +327,7 @@ class HuaweiACConfig(BaseConfigPage):
     def create_card(self, title, icon, description=''):
         """创建卡片，带功能描述"""
         card = QWidget()
-        card.setStyleSheet("""
-            QWidget {
-                background-color: #FFFFFF;
-                border: 1px solid #E5E6EB;
-                border-radius: 8px;
-            }
-        """)
+        card.setStyleSheet(self._get_card_style())
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(16)
@@ -330,13 +341,13 @@ class HuaweiACConfig(BaseConfigPage):
         title_layout.addWidget(checkbox)
         
         title_label = QLabel(f'{icon} {title}')
-        title_label.setStyleSheet('font-size: 12pt; font-weight: bold; color: #1D2129;')
+        title_label.setStyleSheet(self._get_tab_content_title_style())
         title_layout.addWidget(title_label)
         
         # 功能描述（如果有）
         if description:
             desc_label = QLabel(description)
-            desc_label.setStyleSheet('font-size: 9pt; color: #86909C;')
+            desc_label.setStyleSheet(self._get_tab_content_desc_style())
             title_layout.addWidget(desc_label)
         
         title_layout.addStretch()
@@ -346,7 +357,7 @@ class HuaweiACConfig(BaseConfigPage):
         # 分隔线
         divider = QFrame()
         divider.setFrameShape(QFrame.HLine)
-        divider.setStyleSheet('background-color: #E5E6EB;')
+        divider.setStyleSheet(f'background-color: {self._theme_engine.current_theme["border"]};')
         divider.setFixedHeight(1)
         layout.addWidget(divider)
         
@@ -363,13 +374,13 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
         if is_label:
             # 标签模式（不可编辑）
             value_label = QLabel(default_value)
-            value_label.setStyleSheet('color: #1D2129; font-size: 10pt;')
+            value_label.setStyleSheet(f"color: {self._theme_engine.current_theme['text_main']}; font-size: 10pt;")
             item_layout.addWidget(value_label)
         else:
             # 输入框模式
@@ -377,14 +388,14 @@ class HuaweiACConfig(BaseConfigPage):
             input_field.setFixedHeight(32)
             input_field.setStyleSheet("""
                 QLineEdit {
-                    border: 1px solid #E5E6EB;
+                    border: 1px solid {t['input_border']};
                     border-radius: 4px;
                     padding: 0 12px;
                     font-size: 10pt;
-                    color: #1D2129;
+                    color: {t['text_main']};
                 }
                 QLineEdit:focus {
-                    border-color: #165DFF;
+                    border-color: {t['primary']};
                     outline: none;
                 }
             """)
@@ -427,7 +438,7 @@ class HuaweiACConfig(BaseConfigPage):
         
         label = QLabel(f'{label_text}:')
         label.setFixedWidth(160)
-        label.setStyleSheet('color: #4E5969; font-size: 10pt;')
+        label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
         combo = QComboBox()
@@ -435,14 +446,14 @@ class HuaweiACConfig(BaseConfigPage):
         combo.setFixedHeight(32)
         combo.setStyleSheet("""
             QComboBox {
-                border: 1px solid #E5E6EB;
+                border: 1px solid {t['input_border']};
                 border-radius: 4px;
                 padding: 0 12px;
                 font-size: 10pt;
-                color: #1D2129;
+                color: {t['text_main']};
             }
             QComboBox:focus {
-                border-color: #165DFF;
+                border-color: {t['primary']};
                 outline: none;
             }
         """)

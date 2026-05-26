@@ -1,7 +1,7 @@
 # NetOps 代码地图索引
 
-**最后更新：** 2026-05-22
-**项目版本：** V0.3.3 登录认证版
+**最后更新：** 2026-05-26
+**项目版本：** V0.3.6 主题增强版
 **技术栈：** Python 3.11 + PyQt5 + AES-GCM
 
 ---
@@ -36,19 +36,19 @@
 ┌─────────────────────────────────────────────────────────┐
 │                    src/core/ (业务逻辑层)                  │
 │  local_audit_engine │ local_diagnostic_engine │ activation_engine │
-│  admin_keygen │ account_manager │ key_mgr │ secure_config │ crypto_utils │ device_manager │ logger │
+│  admin_keygen │ account_manager │ key_mgr │ secure_config │ crypto_utils │ device_manager │ logger │ theme_engine │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
 │                    src/utils/ (工具层)                     │
-│       resource_path │ validators │ file_operators         │
+│       resource_path │ validators │ file_operators │ theme_engine │
 └─────────────────────────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
 │              打包配置 & 平台适配                          │
-│  app.manifest (DPI unaware) │ NetworkConfigGenerator.spec │
+│  app.manifest (DPI unaware) │ NetworkConfigGenerator.spec → NetOps.exe │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -104,3 +104,7 @@
 5. **安全红线**：自动化仅允许只读指令，绝不修改设备配置
 6. **双EXE隔离**：用户端与管理员工具独立打包，管理员工具严禁外发
 7. **登录认证**：V0.3.3新增，程序启动在激活校验通过后执行登录认证，登录成功才加载主窗口；账户数据存于 `config/account.json`（用户名明文+密码AES-GCM密文）
+8. **三主题系统**：V0.3.5新增，ThemeEngine单例引擎管理三套配色（VSCode/Raycast/Business），所有UI页面动态引用 `t['xxx']` 色值，主题切换即时生效并持久化至 `config/theme_config.json`
+9. **Windows标题栏深色模式**：V0.3.6新增，通过 `DwmSetWindowAttribute(hwnd, 20, ...)` API 实现 VS Code/Raycast 主题下标题栏自动变深色
+10. **输入框边框色**：V0.3.6新增 `input_border` 颜色键，QLineEdit/QComboBox 未聚焦边框使用 `t['input_border']`（比普通 `border` 更亮，深色主题对比度 +30%）
+11. **导航栏主题刷新**：V0.3.6修复，导航栏控件必须保存为实例变量（`self._nav_bar`/`self._logo_label` 等），禁止在 `_refresh_xxx_style()` 中使用 `findChildren` 查找

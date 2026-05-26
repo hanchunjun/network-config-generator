@@ -22,6 +22,7 @@ from PyQt5.QtGui import QFont, QColor
 
 from src.utils.resource_path import get_config_path
 from src.utils.file_operators import JSONFileManager
+from src.core.theme_engine import ThemeEngine
 
 
 # ─────────────────────────────────────────────
@@ -180,13 +181,15 @@ class ParamGroupWidget(QGroupBox):
     def __init__(self, label: str, param_char: str, parent=None):
         super().__init__(f"参数{label}:", parent)
         self.param_char = param_char
+        self._theme = ThemeEngine.get().current_theme
+        t = self._theme
         self.setStyleSheet(
-            "QGroupBox {"
-            "  font-size: 9pt; font-weight: bold; color: #1D2129;"
-            "  border: 1px solid #E5E6EB; border-radius: 6px;"
-            "  margin-top: 8px; padding-top: 10px;"
-            "}"
-            "QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 6px; }"
+            f"QGroupBox {{"
+            f"  font-size: 9pt; font-weight: bold; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']}; border-radius: {t['radius_lg']}px;"
+            f"  margin-top: 8px; padding-top: 10px;"
+            f"}}"
+            f"QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 6px; }}"
         )
         layout = QGridLayout(self)
         layout.setContentsMargins(10, 10, 10, 8)
@@ -261,6 +264,7 @@ class BatchCmdGeneratorPage(QWidget):
         super().__init__(parent)
         self.parent_page = parent
         self._param_widgets: List[ParamGroupWidget] = []
+        self._theme = ThemeEngine.get().current_theme
 
         # 模板数据
         self._template_file: str = get_config_path("config/cmd_templates.json")
@@ -273,6 +277,8 @@ class BatchCmdGeneratorPage(QWidget):
         self._init_template_data()
         self._refresh_template_combo()
         self._bind_events()
+
+        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
 
     # ─── 模板数据管理 ───
 
@@ -314,7 +320,7 @@ class BatchCmdGeneratorPage(QWidget):
                 self.template_combo.addItem(t["name"])
                 self.template_combo.setItemData(idx, t)
                 self.template_combo.setItemData(
-                    idx, QColor("#86909C"), Qt.ForegroundRole
+                    idx, QColor(self._theme["text_tertiary"]), Qt.ForegroundRole
                 )
 
         # 用户模板
@@ -521,12 +527,15 @@ class BatchCmdGeneratorPage(QWidget):
 
         self.template_combo = QComboBox()
         self.template_combo.setMinimumWidth(260)
+        t = self._theme
+        r = t["radius_md"]
         self.template_combo.setStyleSheet(
-            "QComboBox {"
-            "  border: 1px solid #E5E6EB; border-radius: 4px;"
-            "  padding: 4px 8px; font-size: 9pt; background: white;"
-            "}"
-            "QComboBox:hover { border-color: #165DFF; }"
+            f"QComboBox {{"
+            f"  border: 1px solid {t['input_border']}; border-radius: {r}px;"
+            f"  padding: 4px 8px; font-size: 9pt; background: {t['input_bg']};"
+            f"  color: {t['text_main']};"
+            "}}"
+            f"QComboBox:hover {{ border-color: {t['primary']}; }}"
             "QComboBox::drop-down { border: none; width: 24px; }"
         )
         self.template_combo.currentIndexChanged.connect(self._on_template_selected)
@@ -564,7 +573,7 @@ class BatchCmdGeneratorPage(QWidget):
         template_layout.addLayout(template_bar)
 
         hint_lbl = QLabel("请输入命令模板，参数格式为：%a ~ %f")
-        hint_lbl.setStyleSheet("font-size: 9pt; color: #86909C;")
+        hint_lbl.setStyleSheet(f"font-size: 9pt; color: {self._theme['text_tertiary']};")
         template_layout.addWidget(hint_lbl)
 
         self.template_edit = QTextEdit()
@@ -636,7 +645,7 @@ class BatchCmdGeneratorPage(QWidget):
 
         self.mode_hint_label = QLabel()
         self.mode_hint_label.setStyleSheet(
-            "color: #86909C; font-size: 8pt; padding: 0 4px;"
+            f"color: {self._theme['text_tertiary']}; font-size: 8pt; padding: 0 4px;"
         )
         self.mode_hint_label.setText("📌 当前模式：固定重复")
         action_row.addWidget(self.mode_hint_label)
@@ -678,21 +687,23 @@ class BatchCmdGeneratorPage(QWidget):
         main_layout.addWidget(self.output_edit)
 
         # 状态栏
+        t = self._theme
         status_bar = QLabel("  0 %")
         status_bar.setAlignment(Qt.AlignCenter)
         status_bar.setStyleSheet(
-            "background-color: #F2F3F5; color: #86909C; font-size: 9pt;"
-            "border: 1px solid #E5E6EB; padding: 3px;"
+            f"background-color: {t['hover_bg']}; color: {t['text_tertiary']}; font-size: 9pt;"
+            f"border: 1px solid {t['border']}; padding: 3px;"
         )
         status_bar.setMinimumHeight(24)
         main_layout.addWidget(status_bar)
         self._status_label = status_bar
 
     def _group_style(self) -> str:
+        t = self._theme
         return (
             "QGroupBox {"
-            "  font-size: 10pt; font-weight: bold; color: #1D2129;"
-            "  border: 1px solid #E5E6EB; border-radius: 6px;"
+            f"  font-size: 10pt; font-weight: bold; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']}; border-radius: {t['radius_lg']}px;"
             "  margin-top: 8px; padding-top: 8px;"
             "}"
             "QGroupBox::title {"
@@ -701,65 +712,95 @@ class BatchCmdGeneratorPage(QWidget):
         )
 
     def _apply_style(self) -> None:
+        t = self._theme
+        r = t["radius_md"]
         self.setStyleSheet(
             "QTextEdit {"
-            "  border: 1px solid #E5E6EB; border-radius: 4px; padding: 6px;"
-            "  background: white; font-size: 10pt;"
+            f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
+            f"  background: {t['input_bg']}; font-size: 10pt; color: {t['text_main']};"
             "}"
-            "QTextEdit:focus { border-color: #165DFF; }"
+            f"QTextEdit:focus {{ border-color: {t['primary']}; }}"
             "QSpinBox {"
-            "  border: 1px solid #E5E6EB; border-radius: 4px; padding: 2px 6px;"
-            "  background: white;"
+            f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 2px 6px;"
+            f"  background: {t['input_bg']}; color: {t['text_main']};"
             "}"
-            "QSpinBox:focus { border-color: #165DFF; }"
-            "QPushButton#genBtn {"
-            "  background-color: #165DFF; color: white; border: none;"
-            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
-            "}"
-            "QPushButton#genBtn:hover { background-color: #0E42D2; }"
-            "QPushButton#saveBtn {"
-            "  background-color: #43A047; color: white; border: none;"
-            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
-            "}"
-            "QPushButton#saveBtn:hover { background-color: #2E7D32; }"
-            "QPushButton#copyBtn {"
-            "  background-color: #FAAD14; color: white; border: none;"
-            "  border-radius: 4px; font-size: 10pt; font-weight: bold;"
-            "}"
-            "QPushButton#copyBtn:hover { background-color: #D48806; }"
-            "QPushButton#tplAddBtn {"
-            "  background-color: #165DFF; color: white; border: none;"
-            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
-            "}"
-            "QPushButton#tplAddBtn:hover { background-color: #0E42D2; }"
-            "QPushButton#tplRenameBtn {"
-            "  background-color: #FAAD14; color: white; border: none;"
-            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
-            "}"
-            "QPushButton#tplRenameBtn:hover { background-color: #D48806; }"
-            "QPushButton#tplSaveBtn {"
-            "  background-color: #43A047; color: white; border: none;"
-            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
-            "}"
-            "QPushButton#tplSaveBtn:hover { background-color: #2E7D32; }"
-            "QPushButton#tplDeleteBtn {"
-            "  background-color: #F53F3F; color: white; border: none;"
-            "  border-radius: 4px; font-size: 9pt; font-weight: bold;"
-            "}"
-            "QPushButton#tplDeleteBtn:hover { background-color: #D9363E; }"
+            f"QSpinBox:focus {{ border-color: {t['primary']}; }}"
+            f"QPushButton#genBtn {{"
+            f"  background-color: {t['primary']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#genBtn:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton#saveBtn {{"
+            f"  background-color: {t['success']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#saveBtn:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton#copyBtn {{"
+            f"  background-color: {t['warning']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#copyBtn:hover {{ background-color: {t['warning_hover']}; }}"
+            f"QPushButton#tplAddBtn {{"
+            f"  background-color: {t['primary']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#tplAddBtn:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton#tplRenameBtn {{"
+            f"  background-color: {t['warning']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#tplRenameBtn:hover {{ background-color: {t['warning_hover']}; }}"
+            f"QPushButton#tplSaveBtn {{"
+            f"  background-color: {t['success']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#tplSaveBtn:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton#tplDeleteBtn {{"
+            f"  background-color: {t['danger']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            "}}"
+            f"QPushButton#tplDeleteBtn:hover {{ background-color: {t['danger_hover']}; }}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
             ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn) {"
-            "  background-color: #F2F3F5; color: #4E5969; border: 1px solid #C9CDD4;"
-            "  border-radius: 4px; font-size: 10pt;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_secondary']};"
+            f"  border: 1px solid {t['border']}; border-radius: {r}px; font-size: 10pt;"
             "}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
             ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn):hover {"
-            "  background-color: #E5E6EB; border-color: #86909C;"
+            f"  background-color: {t['border']}; border-color: {t['text_tertiary']};"
             "}"
             "QCheckBox { spacing: 4px; }"
-            "QCheckBox::indicator { width: 15px; height: 15px; border-radius: 3px; border: 1px solid #C9CDD4; }"
-            "QCheckBox::indicator:checked { background-color: #165DFF; border-color: #165DFF; }"
+            "QCheckBox::indicator { width: 15px; height: 15px; border-radius: 3px;"
+            f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
+            f"QCheckBox::indicator:checked {{ background-color: {t['primary']}; border-color: {t['primary']}; }}"
         )
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """主题切换时刷新样式。"""
+        self._theme = ThemeEngine.get().current_theme
+        self._apply_style()
+        # 刷新 ParamGroupWidget 样式
+        for pw in self._param_widgets:
+            pw.setStyleSheet(
+                f"QGroupBox {{"
+                f"  font-size: 9pt; font-weight: bold; color: {self._theme['text_main']};"
+                f"  border: 1px solid {self._theme['border']}; border-radius: {self._theme['radius_lg']}px;"
+                f"  margin-top: 8px; padding-top: 10px;"
+                f"}}"
+                f"QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 6px; }}"
+            )
+        # 刷新模板选择栏和状态栏
+        hint_color = self._theme['text_tertiary']
+        for lbl in self.findChildren(QLabel):
+            if lbl.text() and "%a" in lbl.text():
+                lbl.setStyleSheet(f"font-size: 9pt; color: {hint_color};")
+        if hasattr(self, '_status_label') and self._status_label:
+            t = self._theme
+            self._status_label.setStyleSheet(
+                f"background-color: {t['hover_bg']}; color: {t['text_tertiary']};"
+                f"font-size: 9pt; border: 1px solid {t['border']}; padding: 3px;"
+            )
+        self.update()
 
     def _bind_events(self) -> None:
         for btn in self.findChildren(QPushButton):

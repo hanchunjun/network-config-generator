@@ -1,7 +1,7 @@
 # 架构代码地图
 
-**最后更新：** 2026-05-22
-**项目版本：** V0.3.3
+**最后更新：** 2026-05-26
+**项目版本：** V0.3.6
 
 ---
 
@@ -47,6 +47,7 @@
 | `local_audit_engine.py` | 本地合规规则引擎（双层审计预检层） | `ops_toolbox_page`, `single_device_page`, `ai_analysis_page` |
 | `local_diagnostic_engine.py` | 本地运行时诊断引擎（异常提取+精准上下文） | `ops_toolbox_page`, `single_device_page`, `ai_analysis_page` |
 | `account_manager.py` | 账户管理核心（读写/校验/加密/复杂度校验） ★V0.3.3新增 | `login_dialog`, `account_manager_dialog` |
+| `theme_engine.py` | 主题引擎（单例/三主题/60+色彩/QSS/持久化） ★V0.3.5新增 | `main_window`, `login_dialog`, `activation_dialog`, `account_manager_dialog`, `batch_cmd_generator_page` |
 
 ### UI页面层（src/ui/）— 依赖 core/ 和 utils/
 
@@ -68,6 +69,7 @@
 | `account_manager_dialog.py` | 账户管理弹窗（修改用户名/密码） ★V0.3.3新增 | 对话框 |
 | `subnet_calculator_page.py` | 子网掩码计算器 ★V0.3.1新增 | 🔢 子网计算（试用模式开放） |
 | `batch_cmd_generator_page.py` | 批量命令生成器 ★V0.3.1新增 | 📜 命令生成（试用模式开放） |
+| `theme_switcher_page.py` | 主题切换面板（QPainter预览卡片） ★V0.3.5新增 | 🎨 主题切换 |
 
 ### 业务脚本层（scripts/）— 相对独立
 
@@ -89,7 +91,7 @@
 | 模块 | 职责 |
 |------|------|
 | `app.manifest` | Windows DPI清单（dpiAwareness:unaware），通过 spec 内嵌EXE |
-| `NetworkConfigGenerator.spec` | 用户端PyInstaller打包规格 |
+| `NetworkConfigGenerator.spec` | 用户端PyInstaller打包规格（输出 `NetOps.exe`） |
 | `admin_tool.spec` | 管理员工具PyInstaller打包规格 |
 
 ---
@@ -102,7 +104,8 @@ main.py → SetProcessDpiAwareness(0) [DPI Unaware声明]
   → QApplication.setAttribute(AA_UseHighDpiPixmaps)
   → _check_activation() [激活校验]
   → LoginDialog [登录认证，V0.3.3新增]
-  → QApplication → MainWindow.__init__()
+  → QApplication → ThemeEngine.get() [主题引擎初始化，V0.3.5新增]
+  → MainWindow.__init__()
   → ensure_dirs() [创建目录结构]
   → _load_current_project() [加载当前项目]
   → 初始化7个UI页面
@@ -162,3 +165,4 @@ main.py → SetProcessDpiAwareness(0) [DPI Unaware声明]
 | `resource_path.get_single_dir()` | single_device_page, ai_analysis_page | 中 |
 | `local_audit_engine` | ops_toolbox_page, single_device_page, ai_analysis_page | ⚠️ 高 |
 | `local_diagnostic_engine` | ops_toolbox_page, single_device_page, ai_analysis_page | ⚠️ 高 |
+| `theme_engine` | main_window, login_dialog, activation_dialog, account_manager_dialog, batch_cmd_generator_page | ⚠️ 高 |

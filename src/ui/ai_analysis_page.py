@@ -26,6 +26,7 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from src.utils.resource_path import get_config_path, get_app_dir, get_single_dir
 from src.core.local_audit_engine import LocalAuditEngine, AuditResult, Severity
 from src.core.local_diagnostic_engine import LocalDiagnosticEngine, DiagResult, DiagSeverity
+from src.core.theme_engine import ThemeEngine
 from src.ui.system_settings_page import get_active_ai_config
 
 PROJECTS_CONFIG: str = get_config_path("config/projects_config.json")
@@ -33,59 +34,6 @@ RECENT_FILES_PATH: str = get_config_path("config/ai_recent_files.json")
 
 AI_API_TIMEOUT = 120
 MAX_CONTENT_LENGTH = 10000
-
-BTN_STYLE = """
-    QPushButton {
-        background-color: #F2F3F5;
-        color: #4E5969;
-        border: 1px solid #E5E6EB;
-        border-radius: 4px;
-        font-size: 9pt;
-        padding: 5px 12px;
-    }
-    QPushButton:hover { background-color: #E5E6EB; border-color: #C9CDD4; }
-"""
-
-AI_BTN_STYLE = """
-    QPushButton {
-        background-color: #E8F3FF;
-        color: #165DFF;
-        border: 1px solid #165DFF;
-        border-radius: 4px;
-        font-size: 10pt;
-        font-weight: bold;
-        padding: 8px 16px;
-    }
-    QPushButton:hover { background-color: #D6E8FF; }
-    QPushButton:disabled { background-color: #F2F3F5; color: #C9CDD4; border-color: #E5E6EB; }
-"""
-
-PRIMARY_BTN_STYLE = """
-    QPushButton {
-        background-color: #165DFF;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 10pt;
-        font-weight: bold;
-        padding: 8px 20px;
-    }
-    QPushButton:hover { background-color: #0E42D2; }
-    QPushButton:disabled { background-color: #C9CDD4; }
-"""
-
-LIST_STYLE = """
-    QListWidget {
-        border: 1px solid #E5E6EB;
-        border-radius: 4px;
-        background-color: #FFFFFF;
-        font-size: 10pt;
-        outline: none;
-    }
-    QListWidget::item { padding: 5px 8px; }
-    QListWidget::item:selected { background-color: #E8F3FF; color: #1D2129; }
-    QListWidget::item:hover { background-color: #F5F7FA; }
-"""
 
 
 class DropTextEdit(QTextEdit):
@@ -293,7 +241,10 @@ class AIAnalysisPage(QWidget):
         self.last_result = ""
         self.recent_files = self._load_recent_files()
         self.multi_files = []
+        self._theme_engine = ThemeEngine.get()
         self.init_ui()
+        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        self._apply_theme_style()
 
     def _load_recent_files(self):
         try:
@@ -304,6 +255,67 @@ class AIAnalysisPage(QWidget):
         except Exception:
             pass
         return []
+
+    def _btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['hover_bg']};
+                color: {t['text_secondary']};
+                border: 1px solid {t['border']};
+                border-radius: 4px;
+                font-size: 9pt;
+                padding: 5px 12px;
+            }}
+            QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
+        """
+
+    def _ai_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['ai_bg']};
+                color: {t['ai_text']};
+                border: 1px solid {t['ai_border']};
+                border-radius: 4px;
+                font-size: 10pt;
+                font-weight: bold;
+                padding: 8px 16px;
+            }}
+            QPushButton:hover {{ background-color: {t['selection_bg']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; color: {t['text_disabled']}; border-color: {t['border']}; }}
+        """
+
+    def _primary_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['primary']};
+                color: {t['text_primary']};
+                border: none;
+                border-radius: 4px;
+                font-size: 10pt;
+                font-weight: bold;
+                padding: 8px 20px;
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+        """
+
+    def _list_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QListWidget {{
+                border: 1px solid {t['border']};
+                border-radius: 4px;
+                background-color: {t['card_bg']};
+                font-size: 10pt;
+                outline: none;
+            }}
+            QListWidget::item {{ padding: 5px 8px; }}
+            QListWidget::item:selected {{ background-color: {t['ai_bg']}; color: {t['text_main']}; }}
+            QListWidget::item:hover {{ background-color: {t['hover_bg']}; }}
+        """
 
     def _save_recent_files(self):
         try:
@@ -345,12 +357,10 @@ class AIAnalysisPage(QWidget):
         layout.setSpacing(8)
 
         title = QLabel("AI专家工作站")
-        title.setStyleSheet("font-size: 15pt; font-weight: bold; color: #1D2129; text-decoration: none;")
         layout.addWidget(title)
 
         desc = QLabel("深度分析、多文件对比、自定义指令、多轮对话。一键式分析请使用单点巡检或运维任务中心。")
         desc.setWordWrap(True)
-        desc.setStyleSheet("font-size: 9pt; color: #86909C;")
         layout.addWidget(desc)
 
         input_group = QGroupBox("📂 输入文件")
@@ -360,24 +370,24 @@ class AIAnalysisPage(QWidget):
 
         add_row = QHBoxLayout()
         self.add_file_btn = QPushButton("选择文件")
-        self.add_file_btn.setStyleSheet(BTN_STYLE)
+        self.add_file_btn.setStyleSheet(self._btn_style())
         self.add_file_btn.clicked.connect(self._browse_files)
         add_row.addWidget(self.add_file_btn)
 
         self.add_multi_btn = QPushButton("批量选择")
-        self.add_multi_btn.setStyleSheet(BTN_STYLE)
+        self.add_multi_btn.setStyleSheet(self._btn_style())
         self.add_multi_btn.clicked.connect(self._browse_multi_files)
         add_row.addWidget(self.add_multi_btn)
 
         self.clear_files_btn = QPushButton("清空")
-        self.clear_files_btn.setStyleSheet(BTN_STYLE)
+        self.clear_files_btn.setStyleSheet(self._btn_style())
         self.clear_files_btn.clicked.connect(self._clear_input_files)
         add_row.addWidget(self.clear_files_btn)
         add_row.addStretch()
         input_layout.addLayout(add_row)
 
         self.input_file_list = QListWidget()
-        self.input_file_list.setStyleSheet(LIST_STYLE)
+        self.input_file_list.setStyleSheet(self._list_style())
         self.input_file_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.input_file_list.setMaximumHeight(100)
         self.input_file_list.setAcceptDrops(True)
@@ -391,7 +401,7 @@ class AIAnalysisPage(QWidget):
         recent_layout = QVBoxLayout()
         recent_layout.setSpacing(2)
         self.recent_list = QListWidget()
-        self.recent_list.setStyleSheet(LIST_STYLE)
+        self.recent_list.setStyleSheet(self._list_style())
         self.recent_list.setMaximumHeight(100)
         self.recent_list.itemDoubleClicked.connect(self._on_recent_double_clicked)
         recent_layout.addWidget(self.recent_list)
@@ -405,22 +415,22 @@ class AIAnalysisPage(QWidget):
 
         hbtn_row = QHBoxLayout()
         self.h_refresh_btn = QPushButton("🔄 刷新")
-        self.h_refresh_btn.setStyleSheet(BTN_STYLE)
+        self.h_refresh_btn.setStyleSheet(self._btn_style())
         self.h_refresh_btn.clicked.connect(self._refresh_history)
         hbtn_row.addWidget(self.h_refresh_btn)
         self.h_open_btn = QPushButton("📂 打开")
-        self.h_open_btn.setStyleSheet(BTN_STYLE)
+        self.h_open_btn.setStyleSheet(self._btn_style())
         self.h_open_btn.clicked.connect(self._open_history_file)
         hbtn_row.addWidget(self.h_open_btn)
         self.h_del_btn = QPushButton("🗑 删除")
-        self.h_del_btn.setStyleSheet(BTN_STYLE)
+        self.h_del_btn.setStyleSheet(self._btn_style())
         self.h_del_btn.clicked.connect(self._delete_history_file)
         hbtn_row.addWidget(self.h_del_btn)
         hbtn_row.addStretch()
         history_layout.addLayout(hbtn_row)
 
         self.history_list = QListWidget()
-        self.history_list.setStyleSheet(LIST_STYLE)
+        self.history_list.setStyleSheet(self._list_style())
         self.history_list.setMaximumHeight(100)
         self.history_list.itemDoubleClicked.connect(self._on_history_double_clicked)
         history_layout.addWidget(self.history_list)
@@ -441,15 +451,14 @@ class AIAnalysisPage(QWidget):
         agent_row = QHBoxLayout()
         agent_row.setSpacing(8)
         agent_label = QLabel("Agent快捷指令：")
-        agent_label.setStyleSheet("font-size: 10pt; color: #4E5969; font-weight: bold;")
         agent_row.addWidget(agent_label)
         self.agent_compliance_btn = QPushButton("🔍 一键合规巡检")
-        self.agent_compliance_btn.setStyleSheet(AI_BTN_STYLE)
+        self.agent_compliance_btn.setStyleSheet(self._ai_btn_style())
         self.agent_compliance_btn.setToolTip("加载合规审计Agent + 已选文件 → 预填Prompt → 可编辑后发送")
         self.agent_compliance_btn.clicked.connect(self._agent_compliance)
         agent_row.addWidget(self.agent_compliance_btn)
         self.agent_diagnose_btn = QPushButton("🩺 一键故障诊断")
-        self.agent_diagnose_btn.setStyleSheet(AI_BTN_STYLE)
+        self.agent_diagnose_btn.setStyleSheet(self._ai_btn_style())
         self.agent_diagnose_btn.setToolTip("加载故障诊断Agent + 已选文件 → 预填Prompt → 可编辑后发送")
         self.agent_diagnose_btn.clicked.connect(self._agent_diagnose)
         agent_row.addWidget(self.agent_diagnose_btn)
@@ -457,27 +466,6 @@ class AIAnalysisPage(QWidget):
         layout.addLayout(agent_row)
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid #E5E6EB;
-                border-radius: 4px;
-                background-color: #FFFFFF;
-            }
-            QTabBar::tab {
-                border: 1px solid #E5E6EB;
-                padding: 8px 20px;
-                font-size: 10pt;
-                background-color: #F5F7FA;
-                margin-right: 2px;
-            }
-            QTabBar::tab:selected {
-                background-color: #FFFFFF;
-                border-bottom-color: #FFFFFF;
-                font-weight: bold;
-                color: #165DFF;
-            }
-            QTabBar::tab:hover { background-color: #E8F3FF; }
-        """)
 
         self.chat_tab = self._create_analysis_tab("💬 自由对话", "free")
         self.compliance_tab = self._create_analysis_tab("📋 合规审计", "compliance")
@@ -498,7 +486,6 @@ class AIAnalysisPage(QWidget):
         layout.setSpacing(6)
 
         prompt_label = QLabel("Prompt编辑区（可直接修改后发送）：")
-        prompt_label.setStyleSheet("font-size: 9pt; color: #86909C; font-weight: bold;")
         layout.addWidget(prompt_label)
 
         prompt_edit = QTextEdit()
@@ -508,17 +495,6 @@ class AIAnalysisPage(QWidget):
             "也可自由输入任意问题。"
         )
         prompt_edit.setMinimumHeight(150)
-        prompt_edit.setStyleSheet("""
-            QTextEdit {
-                border: 1px solid #165DFF;
-                border-radius: 4px;
-                padding: 10px;
-                font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 10pt;
-                background-color: #F7F8FA;
-            }
-            QTextEdit:focus { border: 1px solid #165DFF; }
-        """)
 
         if tab_key == "free":
             prompt_edit.setPlainText("你是资深网络运维专家，请用中文回答以下问题：\n\n")
@@ -533,7 +509,7 @@ class AIAnalysisPage(QWidget):
         send_row = QHBoxLayout()
         send_row.setSpacing(8)
         send_btn = QPushButton("▶ 发送分析")
-        send_btn.setStyleSheet(PRIMARY_BTN_STYLE)
+        send_btn.setStyleSheet(self._primary_btn_style())
         send_btn.clicked.connect(lambda: self._run_expert_analysis(tab_key))
         send_row.addWidget(send_btn)
         send_row.addStretch()
@@ -542,12 +518,12 @@ class AIAnalysisPage(QWidget):
         self.send_btns[tab_key] = send_btn
 
         save_btn = QPushButton("💾 保存报告")
-        save_btn.setStyleSheet(BTN_STYLE)
+        save_btn.setStyleSheet(self._btn_style())
         save_btn.clicked.connect(self._save_report)
         send_row.addWidget(save_btn)
 
         export_btn = QPushButton("📤 导出TXT")
-        export_btn.setStyleSheet(BTN_STYLE)
+        export_btn.setStyleSheet(self._btn_style())
         export_btn.clicked.connect(self._export_report)
         send_row.addWidget(export_btn)
         layout.addLayout(send_row)
@@ -555,36 +531,16 @@ class AIAnalysisPage(QWidget):
         self.progress_bar = QProgressBar()
         self.progress_bar.setFixedHeight(16)
         self.progress_bar.setRange(0, 0)
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                border: 1px solid #E5E6EB;
-                border-radius: 2px;
-                text-align: center;
-                background-color: #F5F7FA;
-                font-size: 10px;
-            }
-            QProgressBar::chunk { background-color: #165DFF; border-radius: 2px; }
-        """)
         self.progress_bar.hide()
         layout.addWidget(self.progress_bar)
 
         self.status_label = QLabel("就绪，等待输入...")
-        self.status_label.setStyleSheet("font-size: 9pt; color: #86909C;")
         layout.addWidget(self.status_label)
 
         result_edit = QTextEdit()
         result_edit.setReadOnly(True)
         result_edit.setPlaceholderText("AI分析结果将在此显示...")
         result_edit.setMinimumHeight(200)
-        result_edit.setStyleSheet("""
-            QTextEdit {
-                border: 1px solid #E5E6EB;
-                border-radius: 4px;
-                padding: 10px;
-                font-size: 10pt;
-                background-color: #FFFFFF;
-            }
-        """)
         setattr(self, f"result_edit_{tab_key}", result_edit)
         layout.addWidget(result_edit)
 
@@ -592,22 +548,23 @@ class AIAnalysisPage(QWidget):
         return widget
 
     def _group_style(self):
-        return """
-            QGroupBox {
+        t = self._theme_engine.current_theme
+        return f"""
+            QGroupBox {{
                 font-size: 10pt;
                 font-weight: bold;
-                color: #1D2129;
-                border: 1px solid #E5E6EB;
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding: 12px;
-                background-color: #FFFFFF;
-            }
-            QGroupBox::title {
+                background-color: {t['card_bg']};
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 12px;
                 padding: 0 6px;
-            }
+            }}
         """
 
     def _browse_files(self):
@@ -870,6 +827,124 @@ class AIAnalysisPage(QWidget):
                 QMessageBox.information(self, "导出成功", f"报告已导出至：{file_path}")
             except Exception as e:
                 QMessageBox.critical(self, "导出失败", str(e))
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._apply_theme_style()
+
+    def _apply_theme_style(self) -> None:
+        t = self._theme_engine.current_theme
+        # 页面级背景（只设置背景色和字体，不设置 color 属性）
+        self.setStyleSheet(f"""
+            AIAnalysisPage {{
+                background-color: {t['page_bg']};
+                font-family: {t['font_ui']};
+            }}
+        """)
+
+        # 左侧面板标题和描述
+        left_panel = self.layout().itemAt(0).widget()
+        if left_panel:
+            splitter = left_panel
+            # 通过 findChildren 查找标题和描述标签
+            for title_label in self.findChildren(QLabel):
+                if title_label.text() == "AI专家工作站":
+                    title_label.setStyleSheet(f"font-size: 15pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
+                elif title_label.text().startswith("深度分析、多文件对比"):
+                    title_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+
+        # Agent快捷指令标签
+        for agent_label in self.findChildren(QLabel):
+            if agent_label.text() == "Agent快捷指令：":
+                agent_label.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: bold;")
+
+        # 所有 Prompt编辑区标签
+        for prompt_label in self.findChildren(QLabel):
+            if prompt_label.text() == "Prompt编辑区（可直接修改后发送）：":
+                prompt_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+
+        # 状态标签
+        self.status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+
+        # 刷新 QGroupBox 样式（标题颜色）
+        for group_box in self.findChildren(QGroupBox):
+            group_box.setStyleSheet(self._group_style())
+
+        # 刷新 TabWidget 样式
+        self.tab_widget.setStyleSheet(f"""
+            QTabWidget::pane {{
+                border: 1px solid {t['border']};
+                border-radius: 4px;
+                background-color: {t['card_bg']};
+            }}
+            QTabBar::tab {{
+                border: 1px solid {t['border']};
+                padding: 8px 20px;
+                font-size: 10pt;
+                background-color: {t['card_bg']};
+                margin-right: 2px;
+            }}
+            QTabBar::tab:selected {{
+                background-color: {t['card_bg']};
+                border-bottom-color: {t['card_bg']};
+                font-weight: bold;
+                color: {t['accent']};
+            }}
+            QTabBar::tab:hover {{ background-color: {t['hover_bg']}; }}
+        """)
+
+        # 刷新 QTextEdit 样式（Prompt编辑区和结果区）
+        for text_edit in self.findChildren(QTextEdit):
+            if text_edit.isReadOnly():
+                # 结果区
+                text_edit.setStyleSheet(f"""
+                    QTextEdit {{
+                        border: 1px solid {t['border']};
+                        border-radius: 4px;
+                        padding: 10px;
+                        font-size: 10pt;
+                        background-color: {t['card_bg']};
+                    }}
+                """)
+            else:
+                # Prompt编辑区
+                text_edit.setStyleSheet(f"""
+                    QTextEdit {{
+                        border: 1px solid {t['accent']};
+                        border-radius: 4px;
+                        padding: 10px;
+                        font-family: 'Consolas', 'Courier New', monospace;
+                        font-size: 10pt;
+                        background-color: {t['card_bg']};
+                    }}
+                    QTextEdit:focus {{ border: 1px solid {t['accent']}; }}
+                """)
+
+        # 刷新 QListWidget 样式
+        for list_widget in self.findChildren(QListWidget):
+            list_widget.setStyleSheet(f"""
+                QListWidget {{
+                    border: 1px solid {t['border']};
+                    border-radius: 4px;
+                    background-color: {t['card_bg']};
+                    font-size: 10pt;
+                    outline: none;
+                }}
+                QListWidget::item {{ padding: 5px 8px; }}
+                QListWidget::item:selected {{ background-color: {t['accent']}; color: {t['text_primary']}; }}
+                QListWidget::item:hover {{ background-color: {t['hover_bg']}; }}
+            """)
+
+        # 刷新进度条样式
+        self.progress_bar.setStyleSheet(f"""
+            QProgressBar {{
+                border: 1px solid {t['border']};
+                border-radius: 2px;
+                text-align: center;
+                background-color: {t['card_bg']};
+                font-size: 10px;
+            }}
+            QProgressBar::chunk {{ background-color: {t['accent']}; border-radius: 2px; }}
+        """)
 
     def showEvent(self, event):
         super().showEvent(event)

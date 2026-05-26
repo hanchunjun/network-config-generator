@@ -11,7 +11,7 @@
 
 基于 PyQt5 网络设备配置生成器深度扩建的政企级全流程闭环网络自动化运维桌面工具。以四厂商配置脚本生成为基础，叠加多项目标准化管理、全网批量自动化运维、单点设备专项排查、AI智能故障诊断、配置合规审计五大核心能力；兼容锐捷、华为、H3C、思科全系列网络设备，采用公共脚本复用+多项目物理隔离架构，**免环境安装、双击直跑、整体拷贝即用**。
 
-**项目状态：V0.3.3 登录认证版（2026年5月22日）· 持续迭代中**
+**项目状态：V0.3.6 主题增强版（2026年5月26日）· 持续迭代中**
 
 ## 基础技术栈
 
@@ -19,7 +19,7 @@
 - 加密算法：AES-GCM (V0.2版本) · 打包部署：PyInstaller 单EXE封装（48.6MB）
 - AI能力：三层架构（嵌入式按钮 → Agent快捷指令 → 自由对话）+ 双层分析（本地预检 + AI精审）
 
-## 顶部固定主菜单（V0.3.3）
+## 顶部固定主菜单（V0.3.5）
 
 快捷键：`Ctrl+1` ~ `Ctrl+7` 切换对应页面
 
@@ -61,6 +61,7 @@
 7. **原子文件操作**：防止数据损坏
 8. **操作日志**：所有关键操作写入 `logs/netops_YYYYMMDD.log`
 9. **登录认证**：程序启动在激活校验通过后执行登录认证，登录成功才加载主窗口；账户数据存储于 `config/account.json`（用户名明文+密码AES-GCM密文）
+10. **主题引擎**：所有UI页面初始化时捕获 `ThemeEngine.get().current_theme`，连接 `theme_changed` 信号动态刷新样式；新增UI组件必须使用 `t['xxx']` 动态颜色，禁止硬编码色值
 
 ## 关键源码文件速查
 
@@ -92,12 +93,14 @@
 | 合规审计Agent | [agents/network-config-reviewer.md](agents/network-config-reviewer.md) | 配置合规审计系统提示词 |
 | 故障诊断Agent | [agents/network-troubleshooter.md](agents/network-troubleshooter.md) | OSI分层故障诊断系统提示词 |
 | 打包辅助 | [app.manifest](app.manifest) | DPI清单（dpiAwareness:unaware） + [NetworkConfigGenerator.spec](NetworkConfigGenerator.spec) |
+| 主题引擎 | [src/core/theme_engine.py](src/core/theme_engine.py) | 三主题引擎（单例/信号/60+色彩/QSS生成/配置持久化） |
+| 主题切换页 | [src/ui/theme_switcher_page.py](src/ui/theme_switcher_page.py) | 主题切换面板（预览卡片/QPainter绘制/即时切换） |
 
 ## 项目交付物
 
 | EXE | 位置 | 大小 | 用途 |
 |-----|------|------|------|
-| 用户端主程序 | `dist/NetworkConfigGenerator.exe` | 48.6MB | 用户日常使用，含激活校验+登录认证 |
+| 用户端主程序 | `dist/NetOps.exe` | 48.7MB | 用户日常使用，含激活校验+登录认证+三主题+标题栏深色模式 |
 | 管理员制码工具 | `dist/AdminKeyGenTool.exe` | 41.3MB | 管理员专用，生成激活码/管理黑名单 |
 
 > **重要：** 两个EXE独立打包、独立运行。管理员制码工具严禁外发给用户。
@@ -116,8 +119,9 @@
 | [.claude/rules/07-v2-architecture-plan.md](.claude/rules/07-v2-architecture-plan.md) | V0.2架构升级方案 `[归档]` |
 | [.claude/rules/08-activation-plan.md](.claude/rules/08-activation-plan.md) | 软件激活三套方案完整技术规范（V0.3.0） |
 | [.claude/rules/09-engineering-workflow.md](.claude/rules/09-engineering-workflow.md) | 工程化规范全流程（编码/提交/打包/复杂度/依赖） |
-| [.claude/rules/10-version-history.md](.claude/rules/10-version-history.md) | 版本更新历史（V0.0.9 ~ V0.3.3） |
+| [.claude/rules/10-version-history.md](.claude/rules/10-version-history.md) | 版本更新历史（V0.0.9 ~ V0.3.5） |
 | [.claude/rules/11-user-guide.md](.claude/rules/11-user-guide.md) | 使用建议 & 故障排查 |
+| [.claude/rules/12-qss-theme-signal-spec.md](.claude/rules/12-qss-theme-signal-spec.md) | QSS主题系统 + 信号联动开发规范（V0.3.5教训） |
 
 ## 代码地图索引
 

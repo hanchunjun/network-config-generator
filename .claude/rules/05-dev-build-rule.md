@@ -1,6 +1,21 @@
-# 开发实施步骤 & 打包规范（V0.3.3）
+# 开发实施步骤 & 打包规范（V0.3.6）
 
 ## 开发实施步骤
+
+### V0.3.6 主题增强（2026年5月26日）
+
+1. **Windows 原生标题栏深色模式**：`main_window.py` 新增 `_update_native_title_bar()`，通过 `DwmSetWindowAttribute(hwnd, 20, ...)` API 设置 VS Code/Raycast 主题为深色标题栏，Business 主题为浅色标题栏
+2. **导航栏主题切换刷新修复**：将导航栏控件保存为实例变量（`self._nav_bar`/`self._logo_label`/`self._account_btn`/`self._about_btn`），`_refresh_nav_style()` 直接引用刷新
+3. **配置选择栏背景刷新**：`_refresh_config_bar_style()` 新增 `self._config_top_bar` 背景色刷新
+4. **输入框边框色优化**：主题引擎新增 `input_border` 颜色键，全局 QSS 和 27 个 UI 文件局部 QSS 中 QLineEdit/QComboBox 边框从 `t['border']` 改为 `t['input_border']`，VS Code 主题对比度提升 30%
+5. **默认主题改为 Business**：`theme_engine.py` 中 `Theme.BUSINESS` 作为首次启动默认主题
+
+### V0.3.5 三主题切换系统（2026年5月25日）
+
+1. **主题引擎核心**：新增 `src/core/theme_engine.py` — 单例模式，管理三套完整配色方案（VSCode/Raycast/Business，每套60+颜色变量），`theme_changed` 信号广播，`apply()` 全局QSS设置，`qss()` 组件级QSS生成，配置持久化至 `config/theme_config.json`
+2. **主题切换面板**：新增 `src/ui/theme_switcher_page.py` — 三个 `_PreviewCard`（QPainter自定义绘制主题预览），点击即时切换，调用 `ThemeEngine.apply()`
+3. **全局UI重构**：main_window/login_dialog/activation_dialog/account_manager_dialog/batch_cmd_generator_page 全部硬编码QSS色值替换为 `t['xxx']` 动态引用，连接 `theme_changed` 信号刷新
+4. **spec更新**：新增 `theme_engine`/`theme_switcher_page` hiddenimports，输出文件名改为 `NetOps.exe`
 
 ### V0.3.3 登录认证 + 账户管理（2026年5月22日）
 
@@ -94,7 +109,7 @@ thread.start()
 ## 打包工具
 
 - **工具：** PyInstaller 6.0.0
-- **用户端规格文件：** `NetworkConfigGenerator.spec`
+- **用户端规格文件：** `NetworkConfigGenerator.spec`（输出名 `NetOps.exe`）
 - **管理员工具规格文件：** `admin_tool.spec`
 - **优化参数：** 包含所有依赖，单文件输出
 
@@ -112,7 +127,7 @@ thread.start()
 
 | EXE | 位置 | 大小 | 用途 |
 |-----|------|------|------|
-| 用户端主程序 | `dist/NetworkConfigGenerator.exe` | 47.1MB | 用户日常使用，含激活校验 |
+| 用户端主程序 | `dist/NetOps.exe` | 48.6MB | 用户日常使用，含激活校验+登录认证+三主题 |
 | 管理员制码工具 | `dist/AdminKeyGenTool.exe` | 41.2MB | 管理员专用，生成激活码/管理黑名单 |
 
 ## 运行环境
@@ -165,7 +180,7 @@ pyinstaller admin_tool.spec --noconfirm
 
 ## 版本信息
 
-- **版本：** NetOps V0.3.3（登录认证版）
-- **日期：** 2026年5月22日
-- **升级：** 软件登录认证 + 账户管理 + AES-GCM密码加密存储 + 密码复杂度校验 + 341测试用例
+- **版本：** NetOps V0.3.6（主题增强版）
+- **日期：** 2026年5月26日
+- **升级：** Windows 原生标题栏深色模式 + 导航栏主题刷新修复 + 输入框边框色优化（input_border）+ 默认主题改为 Business
 - **状态：** 已完成，可商用交付

@@ -19,12 +19,16 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QIcon
 
+from src.core.theme_engine import ThemeEngine
+
 
 class CardFrame(QFrame):
     def __init__(self, label_text="", value_text="", highlight=False, parent=None):
         super().__init__(parent)
         self.highlight = highlight
+        self._theme_engine = ThemeEngine.get()
         self._setup_ui(label_text, value_text)
+        self._apply_style()
 
     def _setup_ui(self, label_text, value_text):
         layout = QVBoxLayout(self)
@@ -32,39 +36,42 @@ class CardFrame(QFrame):
         layout.setSpacing(4)
 
         self.label = QLabel(label_text)
-        self.label.setStyleSheet("font-size: 11px; color: #86909C; font-weight: normal;")
         self.value = QLabel(value_text or "--")
         self.value.setTextFormat(Qt.PlainText)
-
-        if self.highlight:
-            self.setStyleSheet(
-                "CardFrame {"
-                "  background: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
-                "  stop:0 #E8F3FF, stop:1 #F0F7FF);"
-                "  border: 1px solid #B3D4FC; border-radius: 6px;"
-                "}"
-            )
-            self.label.setStyleSheet("font-size: 11px; color: #86909C; font-weight: bold;")
-            self.value.setStyleSheet(
-                "font-size: 14px; color: #165DFF; font-weight: bold; "
-                "font-family: Consolas, monospace;"
-            )
-        else:
-            self.setStyleSheet(
-                "CardFrame {"
-                "  background-color: #F7F8FA; border: 1px solid #E5E6EB; border-radius: 6px;"
-                "}"
-            )
-            self.value.setStyleSheet(
-                "font-size: 15px; color: #1D2129; font-weight: bold; "
-                "font-family: Consolas, monospace;"
-            )
 
         layout.addWidget(self.label)
         layout.addWidget(self.value)
 
+    def _apply_style(self):
+        t = self._theme_engine.current_theme
+        self.label.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']}; font-weight: bold;")
+        if self.highlight:
+            self.setStyleSheet(
+                f"CardFrame {{"
+                f"  background: {t['ai_bg']};"
+                f"  border: 1px solid {t['ai_border']}; border-radius: 6px;"
+                f"}}"
+            )
+            self.value.setStyleSheet(
+                f"font-size: 14px; color: {t['primary']}; font-weight: bold; "
+                f"font-family: Consolas, monospace;"
+            )
+        else:
+            self.setStyleSheet(
+                f"CardFrame {{"
+                f"  background-color: {t['hover_bg']}; border: 1px solid {t['border']}; border-radius: 6px;"
+                f"}}"
+            )
+            self.value.setStyleSheet(
+                f"font-size: 15px; color: {t['text_main']}; font-weight: bold; "
+                f"font-family: Consolas, monospace;"
+            )
+
     def set_value(self, text):
         self.value.setText(text)
+
+    def refresh_theme(self):
+        self._apply_style()
 
 
 class SubnetCalculatorPage(QWidget):
@@ -72,9 +79,11 @@ class SubnetCalculatorPage(QWidget):
         super().__init__(parent)
         self.parent_page = parent
         self._binary_expanded = False
+        self._theme_engine = ThemeEngine.get()
         self._setup_ui()
         self._apply_style()
         self._bind_events()
+        self._theme_engine.theme_changed.connect(self._on_theme_changed)
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
@@ -83,19 +92,11 @@ class SubnetCalculatorPage(QWidget):
 
         input_frame = QFrame()
         input_frame.setObjectName("inputArea")
-        input_frame.setStyleSheet(
-            "#inputArea {"
-            "  background-color: #FAFBFC; border: 1px solid #E5E6EB; border-radius: 6px;"
-            "}"
-        )
         input_layout = QHBoxLayout(input_frame)
         input_layout.setContentsMargins(18, 14, 18, 14)
         input_layout.setSpacing(16)
 
         ip_label = QLabel("IP 地址:")
-        ip_label.setStyleSheet(
-            "font-size: 13px; color: #4E5969; font-weight: 600;"
-        )
         input_layout.addWidget(ip_label)
 
         ip_container = QHBoxLayout()
@@ -113,15 +114,11 @@ class SubnetCalculatorPage(QWidget):
             if i < 3:
                 dot = QLabel(".")
                 dot.setFont(QFont("Consolas", 14, QFont.Bold))
-                dot.setStyleSheet("color: #86909C;")
                 ip_container.addWidget(dot)
 
         input_layout.addLayout(ip_container)
 
         mask_label = QLabel("掩码位:")
-        mask_label.setStyleSheet(
-            "font-size: 13px; color: #4E5969; font-weight: 600;"
-        )
         input_layout.addWidget(mask_label)
 
         self.mask_spin = QSpinBox()
@@ -150,10 +147,6 @@ class SubnetCalculatorPage(QWidget):
         result_outer.setSpacing(0)
 
         section_title = QLabel("计算结果")
-        section_title.setStyleSheet(
-            "font-size: 13px; font-weight: bold; color: #1D2129; padding-left: 4px;"
-            "border-left: 3px solid #165DFF; padding-left: 8px; margin-bottom: 10px;"
-        )
         result_outer.addWidget(section_title)
 
         card_row_1 = QHBoxLayout()
@@ -206,25 +199,23 @@ class SubnetCalculatorPage(QWidget):
         headers = ["", "第1段", "第2段", "第3段", "第4段"]
         row_names = ["十进制", "主机IP", "子网掩码", "网络地址", "广播地址"]
         self.binary_cells = {}
+        self._binary_header_labels = []
+        self._binary_row_labels = []
         for c, h in enumerate(headers):
             lbl = QLabel(h)
             lbl.setAlignment(Qt.AlignCenter)
-            lbl.setStyleSheet("font-size: 11px; color: #86909C; font-weight: bold;")
+            self._binary_header_labels.append(lbl)
             bl.addWidget(lbl, 0, c)
         for r, name in enumerate(row_names, start=1):
             lbl = QLabel(name)
             lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            lbl.setStyleSheet("font-size: 11px; color: #4E5969; font-weight: bold;")
+            self._binary_row_labels.append(lbl)
             bl.addWidget(lbl, r, 0)
             for c in range(4):
                 cell = QLabel("")
                 cell.setAlignment(Qt.AlignCenter)
                 cell.setFont(QFont("Consolas", 10))
                 cell.setMinimumHeight(22)
-                cell.setStyleSheet(
-                    "color: #1D2129; background-color: #F2F3F5; "
-                    "border: 1px solid #E5E6EB; border-radius: 3px;"
-                )
                 bl.addWidget(cell, r, c + 1)
                 self.binary_cells[(r - 1, c)] = cell
 
@@ -239,19 +230,12 @@ class SubnetCalculatorPage(QWidget):
         divide_outer.setSpacing(0)
 
         divide_title = QLabel("子网划分")
-        divide_title.setStyleSheet(
-            "font-size: 13px; font-weight: bold; color: #1D2129; padding-left: 4px;"
-            "border-left: 3px solid #165DFF; padding-left: 8px; margin-bottom: 10px;"
-        )
         divide_outer.addWidget(divide_title)
 
         top_row = QHBoxLayout()
         top_row.setSpacing(12)
 
         divide_label = QLabel("需要划分数:")
-        divide_label.setStyleSheet(
-            "font-size: 13px; color: #4E5969; font-weight: 600;"
-        )
         top_row.addWidget(divide_label)
 
         self.divide_spin = QSpinBox()
@@ -300,56 +284,93 @@ class SubnetCalculatorPage(QWidget):
         layout.addStretch()
 
     def _group_style(self):
+        t = self._theme_engine.current_theme
         return (
-            "QGroupBox {"
-            "  font-size: 14px; font-weight: bold; color: #1D2129;"
-            "  border: 1px solid #E5E6EB; border-radius: 6px;"
-            "  margin-top: 8px; padding-top: 8px;"
-            "}"
-            "QGroupBox::title {"
-            "  subcontrol-origin: margin; left: 12px; padding: 0 6px;"
-            "}"
+            f"QGroupBox {{"
+            f"  font-size: 14px; font-weight: bold; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']}; border-radius: 6px;"
+            f"  margin-top: 8px; padding-top: 8px;"
+            f"}}"
+            f"QGroupBox::title {{"
+            f"  subcontrol-origin: margin; left: 12px; padding: 0 6px;"
+            f"}}"
         )
 
     def _apply_style(self):
+        t = self._theme_engine.current_theme
         self.setStyleSheet(
-            "QLineEdit {"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; padding: 2px 6px;"
-            "  font-size: 13px; background: white;"
-            "}"
-            "QLineEdit:focus { border-color: #165DFF; }"
-            "QSpinBox {"
-            "  border: 1px solid #C9CDD4; border-radius: 4px; padding: 2px 6px;"
-            "  font-size: 13px; background: white;"
-            "}"
-            "QSpinBox:focus { border-color: #165DFF; }"
-            "QPushButton[objectName=\"calcBtn\"] {"
-            "  background-color: #165DFF; color: white; border: none;"
-            "  border-radius: 4px; font-size: 13px; font-weight: bold;"
-            "}"
-            "QPushButton[objectName=\"calcBtn\"]:hover { background-color: #0E42D2; }"
-            "QPushButton[objectName=\"divideBtn\"] {"
-            "  background-color: #43A047; color: white; border: none;"
-            "  border-radius: 4px; font-size: 13px; font-weight: bold;"
-            "}"
-            "QPushButton[objectName=\"divideBtn\"]:hover { background-color: #2E7D32; }"
-            "QPushButton[objectName=\"copyAllBtn\"] {"
-            "  background-color: white; color: #4E5969; border: 1px solid #C9CDD4;"
-            "  border-radius: 4px; font-size: 12px;"
-            "}"
-            "QPushButton[objectName=\"copyAllBtn\"]:hover {"
-            "  background-color: #F7F8FA; border-color: #A9AEB8;"
-            "}"
-            "QTableWidget {"
-            "  gridline-color: #E5E6EB; border: 1px solid #E5E6EB; border-radius: 4px;"
-            "  font-size: 12px;"
-            "}"
-            "QTableWidget::item { padding: 4px; }"
-            "QHeaderView::section {"
-            "  background-color: #F2F3F5; color: #4E5969; font-weight: bold;"
-            "  border: none; border-bottom: 1px solid #E5E6EB; padding: 6px;"
-            "}"
+            f"QLineEdit {{"
+            f"  border: 1px solid {t['border']}; border-radius: 4px; padding: 2px 6px;"
+            f"  font-size: 13px; background: {t['card_bg']};"
+            f"}}"
+            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QSpinBox {{"
+            f"  border: 1px solid {t['border']}; border-radius: 4px; padding: 2px 6px;"
+            f"  font-size: 13px; background: {t['card_bg']};"
+            f"}}"
+            f"QSpinBox:focus {{ border-color: {t['primary']}; }}"
+            f"QPushButton[objectName=\"calcBtn\"] {{"
+            f"  background-color: {t['primary']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: 4px; font-size: 13px; font-weight: bold;"
+            f"}}"
+            f"QPushButton[objectName=\"calcBtn\"]:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton[objectName=\"divideBtn\"] {{"
+            f"  background-color: {t['success']}; color: {t['text_primary']}; border: none;"
+            f"  border-radius: 4px; font-size: 13px; font-weight: bold;"
+            f"}}"
+            f"QPushButton[objectName=\"divideBtn\"]:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton[objectName=\"copyAllBtn\"] {{"
+            f"  background-color: {t['card_bg']}; color: {t['text_secondary']}; border: 1px solid {t['border']};"
+            f"  border-radius: 4px; font-size: 12px;"
+            f"}}"
+            f"QPushButton[objectName=\"copyAllBtn\"]:hover {{"
+            f"  background-color: {t['hover_bg']}; border-color: {t['border_deep']};"
+            f"}}"
+            f"QTableWidget {{"
+            f"  gridline-color: {t['border']}; border: 1px solid {t['border']}; border-radius: 4px;"
+            f"  font-size: 12px;"
+            f"}}"
+            f"QTableWidget::item {{ padding: 4px; }}"
+            f"QHeaderView::section {{"
+            f"  background-color: {t['hover_bg']}; color: {t['text_secondary']}; font-weight: bold;"
+            f"  border: none; border-bottom: 1px solid {t['border']}; padding: 6px;"
+            f"}}"
         )
+        # 输入区域样式
+        input_frame = self.findChild(QFrame, "inputArea")
+        if input_frame:
+            input_frame.setStyleSheet(
+                f"#inputArea {{"
+                f"  background-color: {t['input_bg']}; border: 1px solid {t['border']}; border-radius: 6px;"
+                f"}}"
+            )
+        # 标题样式
+        for lbl in self.findChildren(QLabel):
+            if lbl.text() in ("IP 地址:", "掩码位:", "需要划分数:"):
+                lbl.setStyleSheet(f"font-size: 13px; color: {t['text_secondary']}; font-weight: 600;")
+            elif lbl.text() == ".":
+                lbl.setStyleSheet(f"color: {t['text_tertiary']};")
+            elif lbl.text() in ("计算结果", "子网划分"):
+                lbl.setStyleSheet(
+                    f"font-size: 13px; font-weight: bold; color: {t['text_main']}; padding-left: 4px;"
+                    f"border-left: 3px solid {t['primary']}; padding-left: 8px; margin-bottom: 10px;"
+                )
+        # 二进制表格样式
+        for cell in self.binary_cells.values():
+            cell.setStyleSheet(
+                f"color: {t['text_main']}; background-color: {t['hover_bg']}; "
+                f"border: 1px solid {t['border']}; border-radius: 3px;"
+            )
+        for lbl in self._binary_header_labels:
+            lbl.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']}; font-weight: bold;")
+        for lbl in self._binary_row_labels:
+            lbl.setStyleSheet(f"font-size: 11px; color: {t['text_secondary']}; font-weight: bold;")
+        # 刷新所有卡片
+        for card in self.findChildren(CardFrame):
+            card.refresh_theme()
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._apply_style()
 
     def _bind_events(self):
         for inp in self.ip_inputs:
@@ -456,13 +477,14 @@ class SubnetCalculatorPage(QWidget):
         if is_private:
             ip_class_info += " (私有地址段)"
 
+        t = self._theme_engine.current_theme
         info_html = (
             f"<div style='display:flex;flex-direction:column;gap:4px;margin-top:4px;'>"
-            f"<div style='font-size:12px;'><b style='color:#86909C;'>反掩码:</b> "
+            f"<div style='font-size:12px;'><b style='color:{t['text_tertiary']};'>反掩码:</b> "
             f"<span style='font-family:Consolas;'>{self._int_to_ip(wildcard_int)}</span></div>"
-            f"<div style='font-size:12px;'><b style='color:#86909C;'>前缀法:</b> "
+            f"<div style='font-size:12px;'><b style='color:{t['text_tertiary']};'>前缀法:</b> "
             f"<span style='font-family:Consolas;'>/{prefix}</span></div>"
-            f"<div style='font-size:12px;'><b style='color:#86909C;'>IP类别:</b> "
+            f"<div style='font-size:12px;'><b style='color:{t['text_tertiary']};'>IP类别:</b> "
             f"<span>{ip_class_info}</span></div>"
             f"</div>"
         )
@@ -483,51 +505,52 @@ class SubnetCalculatorPage(QWidget):
                 cell = self.binary_cells.get((r_idx, c))
                 if cell:
                     cell.setText(segment)
+                    t = self._theme_engine.current_theme
                     if r_idx == 1:
                         ones = segment.count('1')
                         if ones == 8:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #FFFFFF; "
-                                f"background-color: #165DFF; border: 1px solid #0E42D2; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['text_primary']}; "
+                                f"background-color: {t['primary']}; border: 1px solid {t['primary_hover']}; "
+                                f"border-radius: 3px;"
                             )
                         elif ones > 0:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #FFFFFF; "
-                                f"background-color: #597AE8; border: 1px solid #4566CC; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['text_primary']}; "
+                                f"background-color: {t['primary_light']}; border: 1px solid {t['primary_hover']}; "
+                                f"border-radius: 3px;"
                             )
                         else:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #F53F3F; "
-                                "background-color: #FFECE8; border: 1px solid #FCDCDA; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['danger']}; "
+                                f"background-color: {t['danger_bg']}; border: 1px solid {t['danger_hover']}; "
+                                f"border-radius: 3px;"
                             )
                     elif r_idx == 3:
                         zeros = segment.count('0')
                         if zeros == 8:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #FFFFFF; "
-                                "background-color: #FAAD14; border: 1px solid #D48806; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['text_primary']}; "
+                                f"background-color: {t['warning']}; border: 1px solid {t['warning_hover']}; "
+                                f"border-radius: 3px;"
                             )
                         elif zeros > 0:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #86909C; "
-                                "background-color: #FFF7E6; border: 1px solid #FFD591; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['text_tertiary']}; "
+                                f"background-color: {t['warning_bg']}; border: 1px solid {t['warning_hover']}; "
+                                f"border-radius: 3px;"
                             )
                         else:
                             cell.setStyleSheet(
-                                "font-family: Consolas; font-size: 11px; color: #1D2129; "
-                                "background-color: #F2F3F5; border: 1px solid #E5E6EB; "
-                                "border-radius: 3px;"
+                                f"font-family: Consolas; font-size: 11px; color: {t['text_main']}; "
+                                f"background-color: {t['hover_bg']}; border: 1px solid {t['border']}; "
+                                f"border-radius: 3px;"
                             )
                     else:
                         cell.setStyleSheet(
-                            "font-family: Consolas; font-size: 11px; color: #1D2129; "
-                            "background-color: #F2F3F5; border: 1px solid #E5E6EB; "
-                            "border-radius: 3px;"
+                            f"font-family: Consolas; font-size: 11px; color: {t['text_main']}; "
+                            f"background-color: {t['hover_bg']}; border: 1px solid {t['border']}; "
+                            f"border-radius: 3px;"
                         )
 
     def _calculate_division(self):

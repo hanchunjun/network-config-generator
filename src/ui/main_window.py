@@ -6,6 +6,9 @@ NetOps网络自动化运维工具主窗口
 
 import json
 import os
+import sys
+import ctypes
+import ctypes.wintypes
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 
@@ -20,6 +23,7 @@ from src.ui.project_manager_page import ProjectManagerPage
 from src.ui.ops_toolbox_page import OpsToolboxPage
 from src.ui.single_device_page import SingleDevicePage
 from src.ui.ai_analysis_page import AIAnalysisPage
+from src.ui.theme_switcher_page import ThemeSwitcherPage
 
 # 配置页面导入（按厂商分组）
 from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
@@ -30,6 +34,7 @@ from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchCo
 from src.utils.resource_path import get_config_path, ensure_dirs
 from src.core.logger import netops_logger
 from src.core.activation_engine import check_activation
+from src.core.theme_engine import ThemeEngine, Theme
 from src.utils.validators import ProjectValidator
 from src.utils.file_operators import JSONFileManager
 
@@ -43,6 +48,7 @@ MODULES: List[Tuple[str, str, str]] = [
     ("ai", "专家工作站", "🤖"),
     ("batchcmd", "命令生成", "📜"),
     ("system", "模型设置", "⚙"),
+    ("theme", "主题切换", "🎨"),
 ]
 
 # 厂商配置映射
@@ -78,6 +84,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         ensure_dirs()
+
+        # 初始化主题引擎并应用已保存的主题
+        self._theme_engine = ThemeEngine.get()
+        app = QApplication.instance()
+        if app is not None:
+            self._theme_engine.apply(app, self._theme_engine.current_theme_id)
+
         # 激活状态检测
         is_active, act_status, act_info = check_activation()
         self._trial_mode: bool = not is_active
@@ -96,14 +109,11 @@ class MainWindow(QMainWindow):
         self.selected_vendor: Optional[str] = None
         self.selected_device: Optional[str] = None
         self.config_pages: Dict[str, QWidget] = {}
-
-        # 试用模式检测：未激活时为True，仅开放锐捷接入交换机配置和批量命令生成
-        self._trial_mode: bool = not check_activation()[0]
-        if self._trial_mode:
-            netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
-
-        # 设置全局样式
-        self.setup_global_style()
+        self._config_top_bar: Optional[QWidget] = None
+        self._nav_bar: Optional[QWidget] = None
+        self._logo_label: Optional[QLabel] = None
+        self._account_btn: Optional[QPushButton] = None
+        self._about_btn: Optional[QPushButton] = None
 
         # 创建主布局和导航
         main_widget = self._create_main_layout()
@@ -123,8 +133,8 @@ class MainWindow(QMainWindow):
         # 加载项目配置（必须在UI创建之后）
         self._load_current_project()
 
-        # 加载项目配置（必须在UI创建之后）
-        self._load_current_project()
+        # 监听主题变化，动态更新硬编码样式的组件
+        self._theme_engine.theme_changed.connect(self._on_theme_changed)
 
     def _init_window_geometry(self, screen):
         """初始化窗口几何尺寸
@@ -198,6 +208,7 @@ class MainWindow(QMainWindow):
         self.ai_page = AIAnalysisPage(self)
         from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
         self.batchcmd_page = BatchCmdGeneratorPage(self)
+        self.theme_page = ThemeSwitcherPage(self)
         self.config_container = QWidget()
 
         # 添加到堆栈
@@ -207,21 +218,23 @@ class MainWindow(QMainWindow):
         self.module_stack.addWidget(self.single_page)
         self.module_stack.addWidget(self.ai_page)
         self.module_stack.addWidget(self.batchcmd_page)
+        self.module_stack.addWidget(self.theme_page)
         self.module_stack.addWidget(self.config_container)
 
     def _create_status_bar(self):
+        t = self._theme_engine.current_theme
         self.status_bar = QStatusBar()
-        self.status_bar.setStyleSheet("""
-            QStatusBar {
-                background-color: #FFFFFF;
-                border-top: 1px solid #E5E6EB;
+        self.status_bar.setStyleSheet(f"""
+            QStatusBar {{
+                background-color: {t['toolbar_bg']};
+                border-top: 1px solid {t['border_deep']};
                 font-size: 9pt;
-                color: #86909C;
+                color: {t['text_tertiary']};
                 padding: 2px 12px;
-            }
+            }}
         """)
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("就绪 | Ctrl+1~7 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 专家工作站 · Ctrl+6 命令生成 · Ctrl+7 模型设置")
+        self.status_bar.showMessage("就绪 | Ctrl+1~8 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 专家工作站 · Ctrl+6 命令生成 · Ctrl+7 模型设置 · Ctrl+8 主题切换")
 
     def keyPressEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:
@@ -234,6 +247,7 @@ class MainWindow(QMainWindow):
                 Qt.Key_5: "ai",
                 Qt.Key_6: "batchcmd",
                 Qt.Key_7: "system",
+                Qt.Key_8: "theme",
             }
             if key in shortcuts:
                 if self._trial_mode and shortcuts[key] not in ("config", "batchcmd"):
@@ -243,7 +257,7 @@ class MainWindow(QMainWindow):
                 module_names = {
                     "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
                     "single": "单点巡检", "ai": "专家工作站", "config": "设备配置",
-                    "batchcmd": "命令生成",
+                    "batchcmd": "命令生成", "theme": "主题切换",
                 }
                 self.status_bar.showMessage(f"已切换到：{module_names[shortcuts[key]]} | Ctrl+1~7 切换模块", 3000)
                 return
@@ -297,12 +311,13 @@ class MainWindow(QMainWindow):
             logger.error(f"加载项目配置失败: {e}")
 
     def _update_project_status_label(self, project_name=None):
+        t = self._theme_engine.current_theme
         if project_name:
             self.project_status_label.setText(f"当前项目：{project_name}")
-            self.project_status_label.setStyleSheet("font-size: 9pt; color: #00B42A; padding-right: 12px; font-weight: bold;")
+            self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['success']}; padding-right: 12px; font-weight: bold;")
         else:
             self.project_status_label.setText("未选择项目")
-            self.project_status_label.setStyleSheet("font-size: 9pt; color: #86909C; padding-right: 12px;")
+            self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding-right: 12px;")
 
     def refresh_project_status(self):
         try:
@@ -328,58 +343,196 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-    def setup_global_style(self):
-        font = QFont("Microsoft YaHei", 9)
-        self.setFont(font)
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #F5F7FA;
-            }
-            QWidget {
-                font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-                font-size: 10pt;
-                color: #1D2129;
-            }
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """主题切换后更新硬编码样式的组件。"""
+        t = self._theme_engine.current_theme
+        # 更新状态栏样式
+        self.status_bar.setStyleSheet(f"""
+            QStatusBar {{
+                background-color: {t['toolbar_bg']};
+                border-top: 1px solid {t['border_deep']};
+                font-size: 9pt;
+                color: {t['text_tertiary']};
+                padding: 2px 12px;
+            }}
         """)
+        # 刷新导航栏
+        self._refresh_nav_style()
+        # 刷新配置选择栏
+        self._refresh_config_bar_style()
+        # 刷新激活按钮
+        self._update_activation_btn_style()
+        # 刷新项目状态标签
+        if self.current_project:
+            name = self.current_project.get("name", "")
+            self._update_project_status_label(name)
+        else:
+            self._update_project_status_label(None)
+        # 刷新 Windows 原生标题栏颜色
+        self._update_native_title_bar()
+
+    def _refresh_nav_style(self) -> None:
+        """刷新导航栏按钮样式（主题切换时调用）。"""
+        t = self._theme_engine.current_theme
+        # 导航栏背景
+        if self._nav_bar is not None:
+            self._nav_bar.setStyleSheet(f"""
+                background-color: {t['nav_bg']};
+                border-bottom: 1px solid {t['border']};
+            """)
+        # Logo
+        if self._logo_label is not None:
+            self._logo_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['primary_light']}; padding-right: 20px;")
+        # 导航按钮
+        for mid, btn in self.nav_buttons.items():
+            is_active = btn.property("active") == "true"
+            if is_active:
+                btn.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['selection_bg']};
+                        border: none;
+                        border-radius: {t['radius_md']}px;
+                        padding: 6px 16px;
+                        font-size: 10pt;
+                        color: {t['primary_light']};
+                        font-weight: bold;
+                    }}
+                """)
+            else:
+                btn.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: transparent;
+                        border: none;
+                        border-radius: {t['radius_md']}px;
+                        padding: 6px 16px;
+                        font-size: 10pt;
+                        color: {t['text_secondary']};
+                    }}
+                    QPushButton:hover {{
+                        background-color: {t['hover_bg']};
+                        color: {t['text_main']};
+                    }}
+                """)
+        # 账户管理和关于按钮
+        toolbar_btn_qss = self._theme_engine.qss("toolbar_btn")
+        if self._account_btn is not None:
+            self._account_btn.setStyleSheet(toolbar_btn_qss)
+        if self._about_btn is not None:
+            self._about_btn.setStyleSheet(toolbar_btn_qss)
+
+    def _refresh_config_bar_style(self) -> None:
+        """刷新配置选择栏样式（主题切换时调用）。"""
+        t = self._theme_engine.current_theme
+        r = t['radius_md']
+        # 刷新配置选择栏背景
+        if self._config_top_bar is not None:
+            self._config_top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; padding: 10px; border-bottom: 1px solid {t["border"]};')
+        # 刷新厂家选择按钮
+        for vid, button in self.vendor_buttons.items():
+            if vid == self.selected_vendor:
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['primary']};
+                        color: {t['text_primary']};
+                        border: 1px solid {t['primary']};
+                        border-radius: {r}px;
+                        font-size: 10pt;
+                    }}
+                """)
+            else:
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['hover_bg']};
+                        border: 1px solid {t['border']};
+                        border-radius: {r}px;
+                        font-size: 10pt;
+                        color: {t['text_secondary']};
+                    }}
+                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                """)
+        # 刷新设备类型按钮
+        for did, button in self.device_buttons.items():
+            if did == self.selected_device:
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['primary']};
+                        color: {t['text_primary']};
+                        border: 1px solid {t['primary']};
+                        border-radius: {r}px;
+                        font-size: 10pt;
+                    }}
+                """)
+            else:
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['hover_bg']};
+                        border: 1px solid {t['border']};
+                        border-radius: {r}px;
+                        font-size: 10pt;
+                        color: {t['text_secondary']};
+                    }}
+                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                """)
+        # 刷新配置选择栏背景
+        if self._config_top_bar is not None:
+            self._config_top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; padding: 10px; border-bottom: 1px solid {t["border"]};')
+
+    def _update_native_title_bar(self) -> None:
+        """更新 Windows 原生标题栏颜色（Windows 10/11）。"""
+        if sys.platform != "win32":
+            return
+        try:
+            # DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+            # 值 1 = 深色标题栏, 0 = 浅色标题栏
+            is_dark = self._theme_engine.current_theme_id in ("vscode", "raycast")
+            value = ctypes.c_int(1 if is_dark else 0)
+            hwnd = int(self.winId())
+            ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                hwnd, 20, ctypes.byref(value), ctypes.sizeof(value)
+            )
+        except Exception:
+            pass
 
     def create_top_nav_bar(self, main_layout):
-        nav_bar = QWidget()
-        nav_bar.setFixedHeight(56)
-        nav_bar.setStyleSheet("""
-            background-color: #FFFFFF;
-            border-bottom: 1px solid #E5E6EB;
+        t = self._theme_engine.current_theme
+
+        self._nav_bar = QWidget()
+        self._nav_bar.setFixedHeight(56)
+        self._nav_bar.setStyleSheet(f"""
+            background-color: {t['nav_bg']};
+            border-bottom: 1px solid {t['border']};
         """)
         nav_layout = QHBoxLayout()
         nav_layout.setContentsMargins(16, 0, 16, 0)
         nav_layout.setSpacing(4)
-        nav_bar.setLayout(nav_layout)
+        self._nav_bar.setLayout(nav_layout)
 
-        logo_label = QLabel("  NetOps")
-        logo_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: #165DFF; padding-right: 20px;")
-        nav_layout.addWidget(logo_label)
+        self._logo_label = QLabel("  NetOps")
+        self._logo_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['primary_light']}; padding-right: 20px;")
+        nav_layout.addWidget(self._logo_label)
 
         self.nav_buttons = {}
         for module_id, module_name, icon in MODULES:
             btn = QPushButton(f" {icon}  {module_name}")
             btn.setFixedHeight(40)
-            btn.setStyleSheet("""
-                QPushButton {
+            btn.setStyleSheet(f"""
+                QPushButton {{
                     background-color: transparent;
                     border: none;
-                    border-radius: 6px;
+                    border-radius: {t['radius_md']}px;
                     padding: 6px 16px;
                     font-size: 10pt;
-                    color: #4E5969;
-                }
-                QPushButton:hover {
-                    background-color: #F2F3F5;
-                    color: #1D2129;
-                }
-                QPushButton[active="true"] {
-                    background-color: #E8F3FF;
-                    color: #165DFF;
+                    color: {t['text_secondary']};
+                }}
+                QPushButton:hover {{
+                    background-color: {t['hover_bg']};
+                    color: {t['text_main']};
+                }}
+                QPushButton[active="true"] {{
+                    background-color: {t['selection_bg']};
+                    color: {t['primary_light']};
                     font-weight: bold;
-                }
+                }}
             """)
             btn.clicked.connect(lambda checked, mid=module_id: self.switch_module(mid))
             self.nav_buttons[module_id] = btn
@@ -388,10 +541,14 @@ class MainWindow(QMainWindow):
         nav_layout.addStretch()
 
         self.project_status_label = QLabel("未选择项目")
-        self.project_status_label.setStyleSheet("font-size: 9pt; color: #86909C; padding-right: 12px;")
+        self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding-right: 12px;")
         nav_layout.addWidget(self.project_status_label)
 
-        # 激活状态按钮（未激活红色提示，已激活绿色勾选）
+        # 保存账户管理和关于按钮引用，主题切换时刷新
+        self._account_btn = None
+        self._about_btn = None
+
+        # 激活状态按钮
         self._activation_btn = QPushButton()
         self._activation_btn.setFixedSize(90, 32)
         self._activation_btn.setCursor(Qt.PointingHandCursor)
@@ -400,35 +557,19 @@ class MainWindow(QMainWindow):
         nav_layout.addWidget(self._activation_btn)
 
         # 账户管理按钮
-        account_btn = QPushButton("账户管理")
-        account_btn.setFixedSize(80, 32)
-        account_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA;
-                border: 1px solid #E5E6EB;
-                border-radius: 4pt;
-                font-size: 10pt;
-            }
-            QPushButton:hover { border: 1px solid #165DFF; }
-        """)
-        account_btn.clicked.connect(self._show_account_dialog)
-        nav_layout.addWidget(account_btn)
+        self._account_btn = QPushButton("账户管理")
+        self._account_btn.setFixedSize(80, 32)
+        self._account_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
+        self._account_btn.clicked.connect(self._show_account_dialog)
+        nav_layout.addWidget(self._account_btn)
 
-        about_btn = QPushButton("关于")
-        about_btn.setFixedSize(60, 32)
-        about_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA;
-                border: 1px solid #E5E6EB;
-                border-radius: 4pt;
-                font-size: 10pt;
-            }
-            QPushButton:hover { border: 1px solid #165DFF; }
-        """)
-        about_btn.clicked.connect(self.show_about_dialog)
-        nav_layout.addWidget(about_btn)
+        self._about_btn = QPushButton("关于")
+        self._about_btn.setFixedSize(60, 32)
+        self._about_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
+        self._about_btn.clicked.connect(self.show_about_dialog)
+        nav_layout.addWidget(self._about_btn)
 
-        main_layout.addWidget(nav_bar)
+        main_layout.addWidget(self._nav_bar)
 
     def switch_module(self, module_id):
         if self._trial_mode and module_id not in ("config", "batchcmd"):
@@ -442,6 +583,7 @@ class MainWindow(QMainWindow):
             "single": self.single_page,
             "ai": self.ai_page,
             "batchcmd": self.batchcmd_page,
+            "theme": self.theme_page,
             "config": self.config_container,
         }
         if module_id in page_map:
@@ -453,9 +595,9 @@ class MainWindow(QMainWindow):
             module_names = {
                 "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
                 "single": "单点巡检", "ai": "AI分析", "config": "设备配置",
-                "batchcmd": "命令生成",
+                "batchcmd": "命令生成", "theme": "主题切换",
             }
-            self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~7 切换模块")
+            self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~8 切换模块")
 
     def _update_nav_buttons(self, active_id):
         for mid, btn in self.nav_buttons.items():
@@ -482,19 +624,21 @@ class MainWindow(QMainWindow):
         default_page.setLayout(default_layout)
         label = QLabel('请选择厂家和设备类型')
         label.setAlignment(Qt.AlignCenter)
-        label.setStyleSheet('font-size: 18pt; color: #86909C;')
+        label.setStyleSheet(f"font-size: 18pt; color: {self._theme_engine.current_theme['text_tertiary']};")
         default_layout.addWidget(label)
         self.config_stack.addWidget(default_page)
 
     def create_config_selection_bar(self, parent_layout):
+        t = self._theme_engine.current_theme
         top_bar = QWidget()
+        self._config_top_bar = top_bar
         top_layout = QHBoxLayout()
         top_bar.setLayout(top_layout)
-        top_bar.setStyleSheet('background-color: white; padding: 10px; border-bottom: 1px solid #E5E6EB;')
+        top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; padding: 10px; border-bottom: 1px solid {t["border"]};')
 
         vendor_layout = QHBoxLayout()
         vendor_label = QPushButton('厂家选择:')
-        vendor_label.setStyleSheet('font-weight: bold; border: none; background: none;')
+        vendor_label.setStyleSheet(f'font-weight: bold; border: none; background: none; color: {t["text_main"]};')
         vendor_layout.addWidget(vendor_label)
 
         self.vendor_buttons = {}
@@ -504,14 +648,15 @@ class MainWindow(QMainWindow):
         for name, vendor_id in zip(vendors, vendor_ids):
             button = QPushButton(name)
             button.setFixedSize(100, 40)
-            button.setStyleSheet("""
-                QPushButton {
-                    background-color: #F5F7FA;
-                    border: 1px solid #E5E6EB;
-                    border-radius: 4px;
+            button.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {t['hover_bg']};
+                    border: 1px solid {t['border']};
+                    border-radius: {t['radius_md']}px;
                     font-size: 10pt;
-                }
-                QPushButton:hover { border: 1px solid #165DFF; }
+                    color: {t['text_secondary']};
+                }}
+                QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
             """)
             button.clicked.connect(lambda checked, vid=vendor_id: self.on_vendor_clicked(vid))
             self.vendor_buttons[vendor_id] = button
@@ -519,7 +664,7 @@ class MainWindow(QMainWindow):
 
         device_layout = QHBoxLayout()
         device_label = QPushButton('设备类型:')
-        device_label.setStyleSheet('font-weight: bold; border: none; background: none;')
+        device_label.setStyleSheet(f'font-weight: bold; border: none; background: none; color: {t["text_main"]};')
         device_layout.addWidget(device_label)
 
         self.device_buttons = {}
@@ -529,14 +674,15 @@ class MainWindow(QMainWindow):
         for name, device_id in zip(devices, device_ids):
             button = QPushButton(name)
             button.setFixedSize(120, 40)
-            button.setStyleSheet("""
-                QPushButton {
-                    background-color: #F5F7FA;
-                    border: 1px solid #E5E6EB;
-                    border-radius: 4px;
+            button.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {t['hover_bg']};
+                    border: 1px solid {t['border']};
+                    border-radius: {t['radius_md']}px;
                     font-size: 10pt;
-                }
-                QPushButton:hover { border: 1px solid #165DFF; }
+                    color: {t['text_secondary']};
+                }}
+                QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
             """)
             button.clicked.connect(lambda checked, did=device_id: self.on_device_clicked(did))
             self.device_buttons[device_id] = button
@@ -549,61 +695,61 @@ class MainWindow(QMainWindow):
         parent_layout.addWidget(top_bar)
 
     def on_vendor_clicked(self, vendor):
-        # 试用模式：仅允许选择锐捷
         if self._trial_mode and vendor != "ruijie":
             self._show_trial_prompt()
             return
-
+        t = self._theme_engine.current_theme
         for vid, button in self.vendor_buttons.items():
             if vid == vendor:
-                button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #165DFF;
-                        color: white;
-                        border: 1px solid #165DFF;
-                        border-radius: 4px;
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['primary']};
+                        color: {t['text_primary']};
+                        border: 1px solid {t['primary']};
+                        border-radius: {t['radius_md']}px;
                         font-size: 10pt;
-                    }
+                    }}
                 """)
             else:
-                button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #F5F7FA;
-                        border: 1px solid #E5E6EB;
-                        border-radius: 4px;
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['hover_bg']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px;
                         font-size: 10pt;
-                    }
-                    QPushButton:hover { border: 1px solid #165DFF; }
+                        color: {t['text_secondary']};
+                    }}
+                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
         self.selected_vendor = vendor
         self.try_show_config_page()
 
     def on_device_clicked(self, device_type):
-        # 试用模式：仅允许选择接入交换机
         if self._trial_mode and device_type != "access_switch":
             self._show_trial_prompt()
             return
-
+        t = self._theme_engine.current_theme
         for did, button in self.device_buttons.items():
             if did == device_type:
-                button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #165DFF;
-                        color: white;
-                        border: 1px solid #165DFF;
-                        border-radius: 4px;
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['primary']};
+                        color: {t['text_primary']};
+                        border: 1px solid {t['primary']};
+                        border-radius: {t['radius_md']}px;
                         font-size: 10pt;
-                    }
+                    }}
                 """)
             else:
-                button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #F5F7FA;
-                        border: 1px solid #E5E6EB;
-                        border-radius: 4px;
+                button.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['hover_bg']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px;
                         font-size: 10pt;
-                    }
-                    QPushButton:hover { border: 1px solid #165DFF; }
+                        color: {t['text_secondary']};
+                    }}
+                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
         self.selected_device = device_type
         self.try_show_config_page()
@@ -694,59 +840,59 @@ class MainWindow(QMainWindow):
 
     def _update_activation_btn_style(self) -> None:
         """更新导航栏激活状态按钮的样式和文字。"""
+        t = self._theme_engine.current_theme
+        r = t["radius_md"]
+
         if self._trial_mode:
             self._activation_btn.setText("🔓 未激活")
-            self._activation_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #FFF2F0;
-                    border: 1px solid #FF7875;
-                    border-radius: 4px;
+            self._activation_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {t['danger_bg']};
+                    border: 1px solid {t['danger']};
+                    border-radius: {r}px;
                     font-size: 9pt;
-                    color: #F5222D;
+                    color: {t['danger']};
                     font-weight: bold;
-                }
-                QPushButton:hover {
-                    background-color: #FFE7E7;
-                    border-color: #FF4D4F;
-                }
+                }}
+                QPushButton:hover {{
+                    background-color: {t['danger_bg']};
+                    border-color: {t['danger']};
+                }}
             """)
         else:
-            # 根据剩余天数选择颜色：永久/充足=绿色，少于30天=橙色警告
             info = getattr(self, '_activation_info', {})
             days_remaining = info.get("days_remaining", -1)
             is_permanent = info.get("is_permanent", True)
 
             if not is_permanent and days_remaining <= 30 and days_remaining > 0:
-                # 即将过期：橙色警告
-                self._activation_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #FFF7E6;
-                        border: 1px solid #FFA940;
-                        border-radius: 4px;
+                self._activation_btn.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['warning_bg']};
+                        border: 1px solid {t['warning']};
+                        border-radius: {r}px;
                         font-size: 9pt;
-                        color: #FA8C16;
+                        color: {t['warning']};
                         font-weight: bold;
-                    }
-                    QPushButton:hover {
-                        background-color: #FFE7BA;
-                        border-color: #FA8C16;
-                    }
+                    }}
+                    QPushButton:hover {{
+                        background-color: {t['warning_bg']};
+                        border-color: {t['warning']};
+                    }}
                 """)
             else:
-                # 永久或充足：绿色
-                self._activation_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #F6FFED;
-                        border: 1px solid #73D13D;
-                        border-radius: 4px;
+                self._activation_btn.setStyleSheet(f"""
+                    QPushButton {{
+                        background-color: {t['success_bg']};
+                        border: 1px solid {t['success']};
+                        border-radius: {r}px;
                         font-size: 9pt;
-                        color: #52C41A;
+                        color: {t['success']};
                         font-weight: bold;
-                    }
-                    QPushButton:hover {
-                        background-color: #D9F7BE;
-                        border-color: #52C41A;
-                    }
+                    }}
+                    QPushButton:hover {{
+                        background-color: {t['success_bg']};
+                        border-color: {t['success']};
+                    }}
                 """)
 
         self._activation_btn.setText(self._get_activation_display_text())
@@ -795,10 +941,12 @@ class MainWindow(QMainWindow):
             self._show_info(f"激活成功！\n激活时间：{activated_at}")
 
     def show_about_dialog(self):
+        t = self._theme_engine.current_theme
         dialog = QDialog(self)
         dialog.setWindowTitle('关于')
         dialog.setFixedSize(500, 340)
         dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.setStyleSheet(f"QDialog {{ background-color: {t['card_bg']}; }}")
 
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 15, 20, 15)
@@ -807,63 +955,61 @@ class MainWindow(QMainWindow):
         version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
         title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
-        title_label.setStyleSheet('font-size: 12pt; font-weight: bold;')
+        title_label.setStyleSheet(f'font-size: 12pt; font-weight: bold; color: {t["text_main"]};')
         layout.addWidget(title_label)
 
         desc1 = QLabel('面向网络工程师的多厂商网络设备配置脚本生成与自动化运维工具，支持锐捷、华为、华三、思科等设备。\n开源项目地址: https://github.com/hanchunjun/network-config-generator')
         desc1.setAlignment(Qt.AlignLeft)
-        desc1.setStyleSheet('font-size: 10pt;')
+        desc1.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
         desc1.setWordWrap(True)
         layout.addWidget(desc1)
 
         copyright_label = QLabel('Copyright @ 2026 laohan')
         copyright_label.setAlignment(Qt.AlignLeft)
-        copyright_label.setStyleSheet('font-size: 10pt;')
+        copyright_label.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
         layout.addWidget(copyright_label)
 
         license_label = QLabel('Released under the MIT License')
         license_label.setAlignment(Qt.AlignLeft)
-        license_label.setStyleSheet('font-size: 10pt;')
+        license_label.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
         layout.addWidget(license_label)
 
         disclaimer = QLabel('本软件源码基于 MIT License 开源发布，可自由获取与修改。软件全功能使用需授权激活，不代表任何厂商官方立场，无任何官方认证。')
         disclaimer.setAlignment(Qt.AlignLeft)
-        disclaimer.setStyleSheet('font-size: 10pt;')
+        disclaimer.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
         disclaimer.setWordWrap(True)
         layout.addWidget(disclaimer)
 
-        # 按钮区域
         button_layout = QHBoxLayout()
         button_layout.setSpacing(12)
 
-        # 试用模式下显示「软件激活」按钮
         if self._trial_mode:
             activate_btn = QPushButton('🔓 软件激活')
             activate_btn.setFixedSize(120, 40)
-            activate_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #43A047;
-                    color: white;
+            activate_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {t['success']};
+                    color: {t['text_primary']};
                     border: none;
-                    border-radius: 4px;
+                    border-radius: {t['radius_md']}px;
                     font-size: 10pt;
-                }
-                QPushButton:hover { background-color: #2E7D32; }
+                }}
+                QPushButton:hover {{ background-color: {t['success_hover']}; }}
             """)
             activate_btn.clicked.connect(lambda: (dialog.close(), self._open_activation_dialog()))
             button_layout.addWidget(activate_btn)
 
         close_button = QPushButton('关闭')
         close_button.setFixedSize(100, 40)
-        close_button.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF;
-                color: white;
+        close_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['primary']};
+                color: {t['text_primary']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 font-size: 10pt;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
         """)
         close_button.clicked.connect(dialog.close)
         button_layout.addWidget(close_button)

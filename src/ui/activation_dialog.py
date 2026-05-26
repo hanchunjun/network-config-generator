@@ -27,6 +27,7 @@ from src.core.activation_engine import (
     decode_activation_code,
 )
 from src.core.logger import netops_logger
+from src.core.theme_engine import ThemeEngine
 
 
 class ActivationDialog(QDialog):
@@ -44,12 +45,13 @@ class ActivationDialog(QDialog):
         self._activated: bool = False
         self._trial_mode: bool = trial_mode
         self._machine_code: str = get_machine_code()
+        self._theme = ThemeEngine.get().current_theme
         self._setup_ui()
         self._apply_style()
+        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
 
     def _setup_ui(self) -> None:
         """构建弹窗UI"""
-        # 窗口属性：无关闭按钮、固定大小
         self.setWindowFlags(
             Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint |
             Qt.MSWindowsFixedSizeDialogHint
@@ -61,6 +63,9 @@ class ActivationDialog(QDialog):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setModal(True)
 
+        t = self._theme
+        r = t["radius_md"]
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 25, 30, 25)
         layout.setSpacing(16)
@@ -69,13 +74,13 @@ class ActivationDialog(QDialog):
         title_label = QLabel("⚠️  软件未激活")
         title_label.setFont(QFont("Microsoft YaHei", 16, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("color: #E53935;")
+        title_label.setStyleSheet(f"color: {t['danger']};")
         layout.addWidget(title_label)
 
         # ── 分隔线 ──
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
-        line.setStyleSheet("background-color: #E0E0E0;")
+        line.setStyleSheet(f"background-color: {t['border']};")
         line.setFixedHeight(1)
         layout.addWidget(line)
 
@@ -87,13 +92,13 @@ class ActivationDialog(QDialog):
         )
         desc_label.setFont(QFont("Microsoft YaHei", 10))
         desc_label.setWordWrap(True)
-        desc_label.setStyleSheet("color: #333333;")
+        desc_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(desc_label)
 
         # ── 机器码区域 ──
         machine_label = QLabel("【本机设备唯一机器码】")
         machine_label.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
-        machine_label.setStyleSheet("color: #1565C0; margin-top: 8px;")
+        machine_label.setStyleSheet(f"color: {t['primary_light']}; margin-top: 8px;")
         layout.addWidget(machine_label)
 
         # 机器码展示 + 复制按钮
@@ -106,13 +111,13 @@ class ActivationDialog(QDialog):
         self._code_display.setAlignment(Qt.AlignCenter)
         self._code_display.setMinimumHeight(38)
         self._code_display.setStyleSheet(
-            "QLineEdit {"
-            "  background-color: #F5F5F5;"
-            "  border: 1px solid #BDBDBD;"
-            "  border-radius: 4px;"
-            "  padding: 4px 8px;"
-            "  color: #212121;"
-            "}"
+            f"QLineEdit {{"
+            f"  background-color: {t['code_bg']};"
+            f"  border: 1px solid {t['input_border']};"
+            f"  border-radius: {r}px;"
+            f"  padding: 4px 8px;"
+            f"  color: {t['primary_light']};"
+            f"}}"
         )
         code_layout.addWidget(self._code_display, stretch=1)
 
@@ -122,14 +127,14 @@ class ActivationDialog(QDialog):
         copy_btn.setCursor(Qt.PointingHandCursor)
         copy_btn.clicked.connect(self._copy_machine_code)
         copy_btn.setStyleSheet(
-            "QPushButton {"
-            "  background-color: #1565C0;"
-            "  color: white;"
-            "  border: none;"
-            "  border-radius: 4px;"
-            "}"
-            "QPushButton:hover { background-color: #0D47A1; }"
-            "QPushButton:pressed { background-color: #0A3680; }"
+            f"QPushButton {{"
+            f"  background-color: {t['primary']};"
+            f"  color: {t['text_primary']};"
+            f"  border: none;"
+            f"  border-radius: {r}px;"
+            f"}}"
+            f"QPushButton:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}"
         )
         code_layout.addWidget(copy_btn)
         layout.addLayout(code_layout)
@@ -141,13 +146,13 @@ class ActivationDialog(QDialog):
         )
         guide_label.setFont(QFont("Microsoft YaHei", 9))
         guide_label.setWordWrap(True)
-        guide_label.setStyleSheet("color: #555555; margin-top: 4px;")
+        guide_label.setStyleSheet(f"color: {t['text_tertiary']}; margin-top: 4px;")
         layout.addWidget(guide_label)
 
         # ── 激活码输入 ──
         act_label = QLabel("激活码：")
         act_label.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
-        act_label.setStyleSheet("color: #333333; margin-top: 8px;")
+        act_label.setStyleSheet(f"color: {t['text_main']}; margin-top: 8px;")
         layout.addWidget(act_label)
 
         self._activation_input = QLineEdit()
@@ -157,13 +162,14 @@ class ActivationDialog(QDialog):
         self._activation_input.setMinimumHeight(40)
         self._activation_input.setMaxLength(18)
         self._activation_input.setStyleSheet(
-            "QLineEdit {"
-            "  border: 2px solid #BDBDBD;"
-            "  border-radius: 4px;"
-            "  padding: 4px 12px;"
-            "  color: #212121;"
-            "}"
-            "QLineEdit:focus { border-color: #1565C0; }"
+            f"QLineEdit {{"
+            f"  border: 2px solid {t['input_border']};"
+            f"  border-radius: {r}px;"
+            f"  padding: 4px 12px;"
+            f"  background-color: {t['input_bg']};"
+            f"  color: {t['text_main']};"
+            f"}}"
+            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
         )
         layout.addWidget(self._activation_input)
 
@@ -174,14 +180,14 @@ class ActivationDialog(QDialog):
         activate_btn.setCursor(Qt.PointingHandCursor)
         activate_btn.clicked.connect(self._on_activate)
         activate_btn.setStyleSheet(
-            "QPushButton {"
-            "  background-color: #43A047;"
-            "  color: white;"
-            "  border: none;"
-            "  border-radius: 4px;"
-            "}"
-            "QPushButton:hover { background-color: #2E7D32; }"
-            "QPushButton:pressed { background-color: #1B5E20; }"
+            f"QPushButton {{"
+            f"  background-color: {t['success']};"
+            f"  color: {t['text_primary']};"
+            f"  border: none;"
+            f"  border-radius: {r}px;"
+            f"}}"
+            f"QPushButton:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton:pressed {{ background-color: {t['success_hover']}; }}"
         )
         layout.addWidget(activate_btn)
 
@@ -193,18 +199,18 @@ class ActivationDialog(QDialog):
             later_btn.setCursor(Qt.PointingHandCursor)
             later_btn.clicked.connect(self._on_later)
             later_btn.setStyleSheet(
-                "QPushButton {"
-                "  background-color: #FFF7E6;"
-                "  color: #D46B08;"
-                "  border: 1px solid #FFD591;"
-                "  border-radius: 4px;"
-                "  font-weight: bold;"
-                "}"
-                "QPushButton:hover {"
-                "  background-color: #FFE7BA;"
-                "  color: #AD4E00;"
-                "  border-color: #FFBB96;"
-                "}"
+                f"QPushButton {{"
+                f"  background-color: {t['warning_bg']};"
+                f"  color: {t['warning']};"
+                f"  border: 1px solid {t['warning']};"
+                f"  border-radius: {r}px;"
+                f"  font-weight: bold;"
+                f"}}"
+                f"QPushButton:hover {{"
+                f"  background-color: {t['warning_bg']};"
+                f"  color: {t['warning_hover']};"
+                f"  border-color: {t['warning']};"
+                f"}}"
             )
             layout.addWidget(later_btn)
 
@@ -214,16 +220,23 @@ class ActivationDialog(QDialog):
         )
         note_label.setFont(QFont("Microsoft YaHei", 8))
         note_label.setWordWrap(True)
-        note_label.setStyleSheet("color: #9E9E9E; margin-top: 4px;")
+        note_label.setStyleSheet(f"color: {t['text_tertiary']}; margin-top: 4px;")
         layout.addWidget(note_label)
 
     def _apply_style(self) -> None:
         """应用全局样式"""
+        t = self._theme
         self.setStyleSheet(
-            "QDialog {"
-            "  background-color: #FFFFFF;"
-            "}"
+            f"QDialog {{"
+            f"  background-color: {t['card_bg']};"
+            f"}}"
         )
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """主题切换时刷新样式。"""
+        self._theme = ThemeEngine.get().current_theme
+        self._apply_style()
+        self.update()
 
     def _copy_machine_code(self) -> None:
         """一键复制机器码到剪贴板"""

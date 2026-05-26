@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushBut
                                QCheckBox, QTextEdit, QMessageBox)
 from PyQt5.QtCore import Qt
 
+from src.core.theme_engine import ThemeEngine
+
+
 class ExportWarningDialog(QDialog):
     """导出安全警告对话框"""
 
@@ -9,9 +12,11 @@ class ExportWarningDialog(QDialog):
         super().__init__(parent)
         self.export_type = export_type
         self.device_count = device_count
+        self._theme_engine = ThemeEngine.get()
         self.init_ui()
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         self.setWindowTitle("安全警告")
         self.setModal(True)
         self.setMinimumWidth(550)
@@ -23,7 +28,7 @@ class ExportWarningDialog(QDialog):
 
         # 警告图标和标题
         title_label = QLabel("⚠️ 导出操作将包含敏感信息")
-        title_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #F53F3F;")
+        title_label.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {t['danger']};")
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
 
@@ -39,22 +44,22 @@ class ExportWarningDialog(QDialog):
             f"包含信息：设备IP、厂商、类型、用户名、密码、特权密码、分组、标签"
         )
         risk_text.setWordWrap(True)
-        risk_text.setStyleSheet("font-size: 13px; line-height: 1.6; color: #1D2129;")
+        risk_text.setStyleSheet(f"font-size: 13px; line-height: 1.6; color: {t['text_main']};")
         layout.addWidget(risk_text)
 
         # 安全提醒
         reminder_box = QTextEdit()
         reminder_box.setReadOnly(True)
         reminder_box.setMaximumHeight(80)
-        reminder_box.setStyleSheet("""
-            QTextEdit {
-                background-color: #FFF7E6;
-                border: 1px solid #FFA500;
+        reminder_box.setStyleSheet(f"""
+            QTextEdit {{
+                background-color: {t['warning_bg']};
+                border: 1px solid {t['warning']};
                 border-radius: 4px;
                 padding: 8px;
                 font-size: 12px;
-                color: #8B4513;
-            }
+                color: {t['warning']};
+            }}
         """)
         reminder_box.setText(
             "🔐 安全提醒：\n"
@@ -66,7 +71,7 @@ class ExportWarningDialog(QDialog):
 
         # 安全确认复选框
         self.confirm_checkbox = QCheckBox("我已了解上述安全风险，确认继续导出")
-        self.confirm_checkbox.setStyleSheet("font-size: 14px; color: #165DFF;")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮布局
@@ -75,17 +80,17 @@ class ExportWarningDialog(QDialog):
 
         confirm_btn = QPushButton("确认导出")
         confirm_btn.setFixedSize(120, 36)
-        confirm_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF;
-                color: white;
+        confirm_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['primary']};
+                color: {t['text_primary']};
                 border: none;
                 border-radius: 4px;
                 font-size: 14px;
                 font-weight: bold;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
-            QPushButton:disabled { background-color: #C9CDD4; }
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -96,15 +101,15 @@ class ExportWarningDialog(QDialog):
 
         cancel_btn = QPushButton("取消导出")
         cancel_btn.setFixedSize(120, 36)
-        cancel_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA;
-                border: 1px solid #E5E6EB;
+        cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']};
+                border: 1px solid {t['border']};
                 border-radius: 4px;
                 font-size: 14px;
                 font-weight: bold;
-            }
-            QPushButton:hover { border-color: #165DFF; }
+            }}
+            QPushButton:hover {{ border-color: {t['primary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
 
@@ -127,9 +132,11 @@ class PasswordVisibilityDialog(QDialog):
     def __init__(self, parent=None, device_ip=""):
         super().__init__(parent)
         self.device_ip = device_ip
+        self._theme_engine = ThemeEngine.get()
         self.init_ui()
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         self.setWindowTitle("查看密码确认")
         self.setModal(True)
         self.setMinimumWidth(450)
@@ -145,12 +152,12 @@ class PasswordVisibilityDialog(QDialog):
             "请确保当前环境安全，防止他人窥屏。"
         )
         warning_label.setWordWrap(True)
-        warning_label.setStyleSheet("font-size: 13px; color: #1D2129;")
+        warning_label.setStyleSheet(f"font-size: 13px; color: {t['text_main']};")
         layout.addWidget(warning_label)
 
         # 确认复选框
         self.confirm_checkbox = QCheckBox("当前环境安全，确认查看密码")
-        self.confirm_checkbox.setStyleSheet("font-size: 14px; color: #165DFF;")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮
@@ -159,16 +166,16 @@ class PasswordVisibilityDialog(QDialog):
 
         confirm_btn = QPushButton("确认查看")
         confirm_btn.setFixedSize(100, 32)
-        confirm_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF;
-                color: white;
+        confirm_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['primary']};
+                color: {t['text_primary']};
                 border: none;
                 border-radius: 4px;
                 font-size: 14px;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
-            QPushButton:disabled { background-color: #C9CDD4; }
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -179,14 +186,14 @@ class PasswordVisibilityDialog(QDialog):
 
         cancel_btn = QPushButton("取消")
         cancel_btn.setFixedSize(100, 32)
-        cancel_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA;
-                border: 1px solid #E5E6EB;
+        cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']};
+                border: 1px solid {t['border']};
                 border-radius: 4px;
                 font-size: 14px;
-            }
-            QPushButton:hover { border-color: #165DFF; }
+            }}
+            QPushButton:hover {{ border-color: {t['primary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
 
@@ -210,9 +217,11 @@ class DeleteDeviceDialog(QDialog):
         super().__init__(parent)
         self.device_ip = device_ip
         self.device_name = device_name
+        self._theme_engine = ThemeEngine.get()
         self.init_ui()
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         self.setWindowTitle("确认删除")
         self.setModal(True)
         self.setMinimumWidth(450)
@@ -229,17 +238,17 @@ class DeleteDeviceDialog(QDialog):
             "此操作将永久删除设备信息，无法恢复。"
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet("font-size: 13px; color: #1D2129;")
+        info_label.setStyleSheet(f"font-size: 13px; color: {t['text_main']};")
         layout.addWidget(info_label)
 
         # 风险提醒
         risk_label = QLabel("⚠️ 删除后相关配置和历史记录也将被清除")
-        risk_label.setStyleSheet("font-size: 12px; color: #F53F3F;")
+        risk_label.setStyleSheet(f"font-size: 12px; color: {t['danger']};")
         layout.addWidget(risk_label)
 
         # 确认复选框
         self.confirm_checkbox = QCheckBox("确认删除此设备")
-        self.confirm_checkbox.setStyleSheet("font-size: 14px; color: #165DFF;")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮
@@ -248,16 +257,16 @@ class DeleteDeviceDialog(QDialog):
 
         confirm_btn = QPushButton("确认删除")
         confirm_btn.setFixedSize(100, 32)
-        confirm_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F53F3F;
-                color: white;
+        confirm_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['danger']};
+                color: {t['text_primary']};
                 border: none;
                 border-radius: 4px;
                 font-size: 14px;
-            }
-            QPushButton:hover { background-color: #D9363E; }
-            QPushButton:disabled { background-color: #C9CDD4; }
+            }}
+            QPushButton:hover {{ background-color: {t['danger_hover']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -268,14 +277,14 @@ class DeleteDeviceDialog(QDialog):
 
         cancel_btn = QPushButton("取消")
         cancel_btn.setFixedSize(100, 32)
-        cancel_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA;
-                border: 1px solid #E5E6EB;
+        cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']};
+                border: 1px solid {t['border']};
                 border-radius: 4px;
                 font-size: 14px;
-            }
-            QPushButton:hover { border-color: #165DFF; }
+            }}
+            QPushButton:hover {{ border-color: {t['primary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
 

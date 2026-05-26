@@ -1,7 +1,26 @@
-# 版本更新历史（V0.0.9 ~ V0.3.3）
+# 版本更新历史（V0.0.9 ~ V0.3.6）
 
 > 本文件收纳 CLAUDE.md 版本更新历史章节。
 > 每次重大改动在 `CHANGELOG.md` 对应版本下追加条目，格式遵循 Keep a Changelog。
+
+## V0.3.6 主题增强版（2026-05-26）
+
+- ✅ **Windows 原生标题栏深色模式**：通过 `DwmSetWindowAttribute` API 实现 VS Code/Raycast 主题下标题栏自动变深色，Business 主题恢复浅色
+- ✅ **导航栏主题切换刷新修复**：将导航栏控件（Logo、按钮、账户管理/关于）保存为实例变量，`_refresh_nav_style()` 直接引用刷新，消除不可靠的 `findChildren` 查找
+- ✅ **配置选择栏背景刷新**：`_refresh_config_bar_style()` 新增 `self._config_top_bar` 背景色刷新
+- ✅ **输入框边框色优化**：新增 `input_border` 颜色键，VS Code 主题下未聚焦输入框边框从 `#3E3E42` 提升至 `#5A5A62`（对比度 +30%），Raycast 从 `#52525B` 提升至 `#6B6B73`
+- ✅ **默认主题改为 Business**：首次启动默认使用商务沉稳主题，后续启动恢复用户上次选择
+- ✅ 全局 QSS 输入框边框改用 `input_border`，27 个 UI 文件局部 QSS 同步更新
+- ✅ 全量 362 个测试用例通过，EXE 重新打包（48.7MB）
+
+## V0.3.5 三主题版（2026-05-25）
+
+- ✅ **三主题切换系统**：新增 `src/core/theme_engine.py`（主题引擎单例）+ `src/ui/theme_switcher_page.py`（主题切换面板）
+- ✅ **三套主题**：VSCode（深蓝黑/直角/技术感）、Raycast（紫橙渐变/毛玻璃/大圆角）、Business（浅灰白/品牌蓝/政企风）
+- ✅ **全局动态主题**：所有UI页面硬编码色值全部替换为 ThemeEngine 动态引用，主题切换即时生效
+- ✅ **主题配置持久化**：自动保存至 `config/theme_config.json`，重启后恢复
+- ✅ **EXE重命名**：输出文件名从 `NetworkConfigGenerator.exe` 改为 `NetOps.exe`
+- ✅ 新增 `theme_engine` / `theme_switcher_page` hiddenimports
 
 ## V0.3.3 登录认证版（2026-05-22）
 

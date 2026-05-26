@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 from src.core.device_manager import VENDORS, DEVICE_TYPES, PROTOCOLS
 from src.core.logger import netops_logger
+from src.core.theme_engine import ThemeEngine
 from src.utils.validators import DeviceValidator
 
 
@@ -14,50 +15,47 @@ class DeviceFormDialog(QDialog):
         super().__init__(parent)
         self.device = device
         self.existing_ips = existing_ips or []
+        self._theme_engine = ThemeEngine.get()
         self.setWindowTitle("编辑设备" if device else "新增设备")
         self.setMinimumWidth(480)
-        self.setStyleSheet("""
-            QDialog {
-                background-color: #FFFFFF;
-            }
-        """)
         self.init_ui()
         if device:
             self._load_device(device)
 
     def init_ui(self):
+        t = self._theme_engine.current_theme
         layout = QVBoxLayout()
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
         title = QLabel("新增设备" if not self.device else "编辑设备")
-        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #1D2129;")
+        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         form_group = QGroupBox("设备信息")
-        form_group.setStyleSheet("""
-            QGroupBox {
-                font-size: 14px; font-weight: bold; color: #1D2129;
-                border: 1px solid #E5E6EB; border-radius: 6px;
-                margin-top: 8px; padding: 16px; background-color: #FAFBFC;
-            }
-            QGroupBox::title {
+        form_group.setStyleSheet(f"""
+            QGroupBox {{
+                font-size: 14px; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: 6px;
+                margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin; left: 12px; padding: 0 6px;
-            }
+            }}
         """)
         form_layout = QFormLayout()
         form_layout.setSpacing(12)
         form_layout.setLabelAlignment(Qt.AlignRight)
 
-        input_style = """
-            QLineEdit, QComboBox {
-                border: 1px solid #E5E6EB; border-radius: 4px;
-                padding: 8px 12px; font-size: 14px; background-color: #FFFFFF;
-            }
-            QLineEdit:focus, QComboBox:focus {
-                border: 1px solid #165DFF;
-            }
-            QComboBox::drop-down { border: none; }
+        input_style = f"""
+            QLineEdit, QComboBox {{
+                border: 1px solid {t['input_border']}; border-radius: 4px;
+                padding: 8px 12px; font-size: 14px; background-color: {t['card_bg']};
+            }}
+            QLineEdit:focus, QComboBox:focus {{
+                border: 1px solid {t['primary']};
+            }}
+            QComboBox::drop-down {{ border: none; }}
         """
 
         self.ip_input = QLineEdit()
@@ -117,24 +115,24 @@ class DeviceFormDialog(QDialog):
 
         cancel_btn = QPushButton("取消")
         cancel_btn.setFixedSize(100, 38)
-        cancel_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #F5F7FA; border: 1px solid #E5E6EB;
-                border-radius: 4px; font-size: 14px; color: #4E5969;
-            }
-            QPushButton:hover { border: 1px solid #165DFF; color: #165DFF; }
+        cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['card_bg']}; border: 1px solid {t['border']};
+                border-radius: 4px; font-size: 14px; color: {t['text_secondary']};
+            }}
+            QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['primary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
 
         save_btn = QPushButton("保存")
         save_btn.setFixedSize(100, 38)
-        save_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #165DFF; color: white; border: none;
+        save_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
                 border-radius: 4px; font-size: 14px;
-            }
-            QPushButton:hover { background-color: #0E42D2; }
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
         """)
         save_btn.clicked.connect(self._validate_and_accept)
         btn_layout.addWidget(save_btn)

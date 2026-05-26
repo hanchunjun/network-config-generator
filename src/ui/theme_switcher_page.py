@@ -20,8 +20,19 @@ from PyQt5.QtWidgets import (
 from src.core.theme_engine import ThemeEngine, Theme
 
 
-class _PreviewCard(QFrame):
-    """主题预览卡片 — 绘制小型主题预览图。"""
+class _PreviewCard(QWidget):
+    """主题预览卡片 — 绘制小型主题预览图。
+
+    设计约定（防死锁）：
+    - 不连接 theme_changed 信号，避免与 clicked 信号嵌套导致事件循环死锁
+    - paintEvent 内实时从引擎获取配色数据，不使用构造时快照
+    - 卡片刷新由父组件 ThemeSwitcherPage._on_theme_changed 集中调用 card.update()
+
+    注意：继承 QWidget 而非 QFrame，因为 QFrame 默认不处理鼠标事件，
+    导致 mousePressEvent 不会被调用，clicked 信号无法发射。
+    """
+
+    clicked = pyqtSignal()
 
     def __init__(self, theme_id: str, engine: ThemeEngine, parent=None) -> None:
         super().__init__(parent)
@@ -31,9 +42,6 @@ class _PreviewCard(QFrame):
         self.setFixedSize(220, 160)
         self.setCursor(Qt.PointingHandCursor)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        # 注意：不连接 theme_changed 信号，避免 clicked.emit() →
-        # engine.apply() → theme_changed.emit() → self.update() 导致事件循环死锁。
-        # 卡片刷新由父组件 ThemeSwitcherPage._on_theme_changed 集中调用。
 
     def set_selected(self, selected: bool) -> None:
         self._selected = selected
@@ -42,8 +50,6 @@ class _PreviewCard(QFrame):
     def mousePressEvent(self, event) -> None:
         self.clicked.emit()
         super().mousePressEvent(event)
-
-    clicked = pyqtSignal()
 
     def paintEvent(self, event) -> None:
         p = QPainter(self)
@@ -69,7 +75,7 @@ class _PreviewCard(QFrame):
         nav_h = 22
         p.setPen(Qt.NoPen)
         p.setBrush(QColor(t["nav_bg"]))
-        p.drawRoundedRect(inner.x(), inner.y(), inner.width(), nav_h), 4, 4
+        p.drawRoundedRect(inner.x(), inner.y(), inner.width(), nav_h, 4, 4)
 
         # 导航按钮点
         dot_colors = [QColor(t["primary_light"]), QColor(t["text_tertiary"]),
@@ -101,17 +107,14 @@ class _PreviewCard(QFrame):
         btn_y = content_y + content_h - btn_h - 10
         if t.get("gradient_primary") and self._theme_id == "raycast":
             grad = QLinearGradient(btn_x, btn_y, btn_x + btn_w, btn_y + btn_h)
-            grad.setColorAt(0, QColor("#A855F7"))
-            grad.setColorAt(1, QColor("#F97316"))
+            grad.setColorAt(0, QColor(t["primary"]))
+            grad.setColorAt(1, QColor(t["accent"]))
             p.setBrush(grad)
         else:
             p.setBrush(QColor(t["primary"]))
         p.drawRoundedRect(btn_x, btn_y, btn_w, btn_h, 4, 4)
 
-        # 底部主题名称
         p.end()
-
-        # 用 QLabel 方式在底部叠加文字（通过布局已在外部处理）
 
 
 class ThemeSwitcherPage(QWidget):
@@ -130,9 +133,10 @@ class ThemeSwitcherPage(QWidget):
         self._engine = ThemeEngine.get()
         self._cards: dict = {}
         self._setup_ui()
-        self._apply_theme_style()
 
-        # 监听主题变化，同步更新本页面样式
+        # 连接 theme_changed 信号，集中刷新页面样式和卡片选中状态。
+        # 注意：槽函数内只操作本页面控件和卡片，不调用 app.setStyleSheet()
+        # （全局 QSS 由 ThemeEngine.apply() 负责），避免事件循环嵌套死锁。
         self._engine.theme_changed.connect(self._on_theme_changed)
 
     def _setup_ui(self) -> None:
@@ -168,7 +172,7 @@ class ThemeSwitcherPage(QWidget):
             card_container.setSpacing(8)
 
             card = _PreviewCard(tid, self._engine)
-            card.clicked.connect(lambda checked, t=tid: self._switch_theme(t))
+            card.clicked.connect(lambda t=tid: self._switch_theme(t))
             self._cards[tid] = card
             card_container.addWidget(card, alignment=Qt.AlignCenter)
 
@@ -216,10 +220,16 @@ class ThemeSwitcherPage(QWidget):
         self.theme_switched.emit(theme_id)
 
     def _on_theme_changed(self, theme_id: str) -> None:
-        """主题变化后更新本页面样式。"""
+        """主题变化后集中刷新页面样式和卡片状态。
+
+        设计约定（防死锁）：
+        - 不调用 app.setStyleSheet()（全局样式由 engine.apply() 负责）
+        - 直接操作本页面控件和卡片，调用 card.update() 触发重绘
+        - 子组件 _PreviewCard 不连接 theme_changed 信号
+        """
         self._apply_theme_style()
         self._update_card_selection()
-        # 集中刷新所有预览卡片（替代各卡片单独连接 theme_changed 信号）
+        # 集中刷新所有预览卡片（paintEvent 实时获取配色）
         for card in self._cards.values():
             card.update()
 

@@ -1,7 +1,7 @@
 # 构建与部署代码地图
 
-**最后更新：** 2026-05-22
-**项目版本：** V0.3.3 登录认证版
+**最后更新：** 2026-05-26
+**项目版本：** V0.3.6 主题增强版
 
 ---
 
@@ -79,7 +79,7 @@ py -3.11 -m radon cc src/ -a -nc
 
 ```bash
 # 删除旧EXE（如果被占用需先关闭运行的实例）
-del dist\NetworkConfigGenerator.exe
+del dist\NetOps.exe
 del dist\AdminKeyGenTool.exe
 
 # 打包用户端EXE
@@ -98,7 +98,7 @@ pyinstaller admin_tool.spec --noconfirm
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
 | 入口文件 | `main.py` | 程序入口 |
-| 输出文件 | `dist/NetworkConfigGenerator.exe` | 单文件EXE |
+| 输出文件 | `dist/NetOps.exe` | 单文件EXE |
 | 大小 | ~47MB | PyInstaller单文件封装 |
 | 控制台 | `console=False` | 无命令行窗口 |
 | 数据文件 | `scripts/`, `agents/` | 打包内嵌 |
@@ -136,6 +136,8 @@ src.core.local_diagnostic_engine # 本地运行时诊断引擎
 src.core.account_manager         # 账户管理核心 ★V0.3.3新增
 src.ui.login_dialog              # 登录弹窗 ★V0.3.3新增
 src.ui.account_manager_dialog    # 账户管理弹窗 ★V0.3.3新增
+src.core.theme_engine            # 主题引擎 ★V0.3.5新增
+src.ui.theme_switcher_page       # 主题切换面板 ★V0.3.5新增
 cryptography.hazmat.primitives.ciphers.aead
 cryptography.hazmat.primitives.kdf.pbkdf2
 certifi
@@ -157,7 +159,7 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 | 文件 | 位置 | 大小 | 用途 |
 |------|------|------|------|
-| `NetworkConfigGenerator.exe` | `dist/` | 48.6MB | 用户端主程序 |
+| `NetOps.exe` | `dist/` | 48.6MB | 用户端主程序（含三主题） |
 | `AdminKeyGenTool.exe` | `dist/` | 41.2MB | 管理员制码工具 |
 | 构建日志 | `build/` | — | 分产品目录存储 |
 | 警告日志 | `build/*/warn-*.txt` | — | — |
@@ -169,13 +171,13 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 ### 方式1：直接运行
 ```
-dist\NetworkConfigGenerator.exe
+dist\NetOps.exe
 ```
 
 ### 方式2：拷贝到任意位置
 ```
 xcopy dist\ D:\网络工具\ /E /I /H
-D:\网络工具\NetworkConfigGenerator.exe
+D:\网络工具\NetOps.exe
 ```
 
 ### 方式3：U盘携带
@@ -203,6 +205,8 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
+| V0.3.6 主题增强版 | 2026-05-26 | Windows标题栏深色模式 + 导航栏刷新修复 + input_border输入框边框 + 默认主题Business |
+| V0.3.5 三主题版 | 2026-05-25 | 三主题切换系统 + ThemeEngine + 全局动态QSS + EXE重命名 NetOps.exe |
 | V0.3.3 登录认证版 | 2026-05-22 | 软件登录认证 + 账户管理 + AES-GCM密码加密 + 341测试用例 |
 | V0.3.2 DPI适配版 | 2026-05-22 | DPI全方案修复 + 批量命令生成器重构 + 模板管理4按钮 + 激活弹窗文案优化 |
 | V0.3.1 工具增强版 | 2026-05-22 | 子网计算器 + 批量命令生成器 + 7模块导航 + chardet修复 |
