@@ -921,22 +921,20 @@ class BatchCmdGeneratorPage(QWidget):
                 expanded.extend([v] * repeat)
             param_values[char] = expanded
 
+        # 优化：使用 re.sub 一次性替换所有占位符，每 100 次迭代更新一次 UI
+        _pattern = re.compile(r'%([a-f])')
         lines: List[str] = []
         for i in range(loop_count):
             current_values: Dict[str, int] = {}
             for char in used_params:
                 vals = param_values[char]
-                if vals:
-                    current_values[char] = vals[i % len(vals)]
-                else:
-                    current_values[char] = 0
-            rendered = template
-            for char, val in current_values.items():
-                rendered = rendered.replace(f"%{char}", str(val))
+                current_values[char] = vals[i % len(vals)] if vals else 0
+            rendered = _pattern.sub(lambda m: str(current_values.get(m.group(1), 0)), template)
             lines.append(rendered)
-            pct = min(int((i + 1) / loop_count * 100), 100)
-            self._status_label.setText(f"  {pct} %")
-            QApplication.processEvents()
+            if i % 100 == 0:
+                pct = min(int((i + 1) / loop_count * 100), 100)
+                self._status_label.setText(f"  {pct} %")
+                QApplication.processEvents()
         result_text = "\n".join(lines)
         self.output_edit.setPlainText(result_text)
         self._status_label.setText("  100 %")

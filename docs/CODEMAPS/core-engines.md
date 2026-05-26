@@ -291,7 +291,7 @@ AuditResult: findings[], audit_time_ms
 
 ---
 
-## theme_engine.py — 主题引擎（V0.3.5新增，V0.3.6增强）
+## theme_engine.py — 主题引擎（V0.3.5新增，V0.3.6增强，V0.3.7缓存优化）
 
 **职责：** 管理三套完整配色方案，提供全局QSS动态生成、信号广播、配置持久化。
 
@@ -335,6 +335,11 @@ ThemeEngine: 单例类，_theme_id + _current_theme + _THEMES + theme_changed信
 | 变量 | 说明 | VS Code | Raycast | Business |
 |------|------|---------|---------|----------|
 | `input_border` | QLineEdit/QComboBox 未聚焦边框 | `#5A5A62` | `#6B6B73` | `#B0B0B8` |
+
+### V0.3.7 缓存优化
+- `_global_qss_cache: Dict[str, str]` — 全局 QSS 缓存，键为 `theme_id`
+- `_component_qss_cache: Dict[str, str]` — 组件 QSS 缓存，键为 `component@theme_id`
+- `apply()` 切换主题时自动清空缓存，避免旧样式残留
 
 ---
 

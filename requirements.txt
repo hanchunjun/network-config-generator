@@ -1,14 +1,14 @@
-# NetOps V0.2.1 运行时依赖（Python 3.11）
+# NetOps V0.3.5 运行时依赖（Python 3.11）
 # 安装：pip install -r requirements.txt
+# 注意：PyQt5 >= 5.15.11 修复了 app.setStyleSheet() 在自定义 paintEvent 子控件存在时的事件循环死锁 Bug
 
 # 核心框架
-PyQt5==5.15.10
-PyQt5-Qt5==5.15.2
-PyQt5_sip==12.18.0
+PyQt5>=5.15.11
+PyQt5-Qt5>=5.15.2
+PyQt5_sip>=12.18.0
 
 # 加密
 cryptography==46.0.6
-bcrypt==5.0.0
 
 # 网络连接
 netmiko==4.7.0
@@ -22,5 +22,5 @@ certifi==2026.2.25
 # 数据解析
 PyYAML==6.0.3
 
-# 文件处理（可选：Excel导入导出）
-openpyxl==3.1.5
+# 文件处理（可选：Excel导入导出，软依赖，不安装不影响核心功能）
+# openpyxl==3.1.5  # 如需Excel功能请手动安装

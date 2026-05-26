@@ -10,6 +10,7 @@ import os
 import socket
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
@@ -204,19 +205,51 @@ def _log_error(message: str):
     except Exception:
         pass  # 日志写入失败不影响主流程
 
-def run_backup(project_dir: str, progress_callback=None) -> List[str]:
+def run_backup(project_dir: str, progress_callback=None, max_workers: int = 5) -> List[str]:
+    """批量备份（并发模式）。
+
+    Args:
+        project_dir: 项目目录路径
+        progress_callback: 进度回调函数 (completed, total, message)
+        max_workers: 最大并发线程数（默认 5，单台设备不影响）
+    """
     _resolve_paths(project_dir)
     init_folder()
     dev_list = load_device_list()
     if not dev_list:
         return ["未读取到项目设备清单"]
+
     total = len(dev_list)
-    results: List[str] = []
-    for idx, dev in enumerate(dev_list):
+    if total <= 1 or max_workers <= 1:
+        # 单设备或显式指定单线程时，保持串行行为
+        results: List[str] = []
+        for idx, dev in enumerate(dev_list):
+            if progress_callback:
+                progress_callback(idx + 1, total, f"正在备份 {dev[0]} ...")
+            results.append(backup_one_device(dev))
         if progress_callback:
-            progress_callback(idx + 1, total, f"正在备份 {dev[0]} ...")
-        result = backup_one_device(dev)
-        results.append(result)
+            progress_callback(total, total, "全网配置备份完成")
+        return results
+
+    # 多设备并发备份
+    results: List[str] = [""] * total  # 预分配，保持顺序
+    completed = 0
+    with ThreadPoolExecutor(max_workers=min(max_workers, total)) as executor:
+        future_to_idx = {
+            executor.submit(backup_one_device, dev): idx
+            for idx, dev in enumerate(dev_list)
+        }
+        for future in as_completed(future_to_idx):
+            idx = future_to_idx[future]
+            try:
+                results[idx] = future.result()
+            except Exception as e:
+                dev_ip = dev_list[idx][0] if idx < len(dev_list) else "未知"
+                results[idx] = f"【{dev_ip}】备份异常: {e}"
+            completed += 1
+            if progress_callback:
+                progress_callback(completed, total, f"已完成 {dev_list[idx][0]}")
+
     if progress_callback:
         progress_callback(total, total, "全网配置备份完成")
     return results

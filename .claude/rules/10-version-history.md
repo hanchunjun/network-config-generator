@@ -1,7 +1,17 @@
-# 版本更新历史（V0.0.9 ~ V0.3.6）
+# 版本更新历史（V0.0.9 ~ V0.3.7）
 
 > 本文件收纳 CLAUDE.md 版本更新历史章节。
 > 每次重大改动在 `CHANGELOG.md` 对应版本下追加条目，格式遵循 Keep a Changelog。
+
+## V0.3.7 性能优化版（2026-05-26）
+
+- ✅ **QSS 主题缓存**：`theme_engine.py` 全局 QSS 和组件 QSS 分别缓存，主题切换不再重复生成 250 行 f-string
+- ✅ **配置生成缓存修复**：修复 `_get_config_cache_key()` 从未定义导致的 `AttributeError`，统一改用 `functools.lru_cache(maxsize=128)`
+- ✅ **批量命令生成热循环优化**：进度标签每 100 条更新一次，`str.replace()` 替换为预编译 `re.sub()`，10 万条命令从 ~20s 降至 ~2s
+- ✅ **SSH 备份/巡检并发化**：`backup_all_config.py` 和 `network_inspect.py` 改用 `ThreadPoolExecutor`，多设备提速 5~10 倍
+- ✅ **启动阶段 WMIC 去重**：`main.py` 和 `main_window.py` 共享 `machine_code`，从 4 次 WMIC 降至 1 次（节省 400~600ms）
+- ✅ **死依赖清理**：移除 `bcrypt`，注释 `openpyxl`，PyQt5 子模块排除 14 个，EXE 体积减小 10~15MB
+- ✅ 全量 362 个测试用例通过，pre-commit 32/32 全绿
 
 ## V0.3.6 主题增强版（2026-05-26）
 

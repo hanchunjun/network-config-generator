@@ -81,7 +81,7 @@ VENDOR_CONFIG_MAP: Dict[str, Dict[str, type]] = {
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, machine_code: Optional[str] = None):
         super().__init__()
         ensure_dirs()
 
@@ -91,8 +91,8 @@ class MainWindow(QMainWindow):
         if app is not None:
             self._theme_engine.apply(app, self._theme_engine.current_theme_id)
 
-        # 激活状态检测
-        is_active, act_status, act_info = check_activation()
+        # 激活状态检测（复用 main.py 传入的机器码，避免重复 WMIC 调用）
+        is_active, act_status, act_info = check_activation(machine_code=machine_code)
         self._trial_mode: bool = not is_active
         self._activation_info: dict = act_info
         if self._trial_mode:

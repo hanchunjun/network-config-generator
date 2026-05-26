@@ -14,6 +14,7 @@ import sys
 import traceback
 import logging
 from datetime import datetime
+from typing import Optional, Tuple
 
 # 配置Qt环境变量
 if "QT_DEVICE_PIXEL_RATIO" in os.environ:
@@ -62,22 +63,25 @@ def _install_qt_message_handler():
         pass
 
 
-def _check_activation() -> bool:
+def _check_activation() -> Tuple[bool, Optional[str], Optional[str]]:
     """启动时激活校验（最高优先级）。
 
     流程：
-    1. 检查本地激活状态
-    2. 已激活 → 方案B静默黑名单校验
-    3. 黑名单命中 → 提示失效并退出
-    4. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置）
+    1. 采集机器码（仅一次，避免重复 WMIC 调用）
+    2. 检查本地激活状态
+    3. 已激活 → 方案B静默黑名单校验
+    4. 黑名单命中 → 提示失效并退出
+    5. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置）
 
     Returns:
-        bool: 是否允许继续启动（激活或试用模式均返回True）
+        Tuple[bool, Optional[str], Optional[str]]: (是否允许启动, 机器码, 状态描述)
     """
-    from src.core.activation_engine import check_activation, perform_silent_check
+    from src.core.activation_engine import check_activation, perform_silent_check, get_machine_code
     from src.core.logger import netops_logger
 
-    is_active, status, _info = check_activation()
+    # 仅采集一次机器码，传递给 check_activation 和 MainWindow，避免重复 WMIC
+    machine_code = get_machine_code()
+    is_active, status, _info = check_activation(machine_code=machine_code)
 
     if is_active:
         # 方案B：激活成功后静默校验黑名单（联网失败跳过，不判失效）
@@ -93,14 +97,14 @@ def _check_activation() -> bool:
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec_()
             netops_logger.get_logger().warning("黑名单校验未通过，程序退出")
-            return False
+            return False, machine_code, status
 
         netops_logger.get_logger().info("激活校验通过，启动主程序")
-        return True
+        return True, machine_code, status
 
     # 未激活 → 进入试用模式
     netops_logger.get_logger().info("未激活，进入试用模式（仅开放锐捷接入交换机配置）")
-    return True  # 试用模式也允许启动
+    return True, machine_code, status  # 试用模式也允许启动
 
 
 _setup_crash_logger()
@@ -123,7 +127,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     # ★ 最高优先级：激活校验（未激活不加载任何业务模块）
-    if not _check_activation():
+    can_start, machine_code, act_status = _check_activation()
+    if not can_start:
         sys.exit(1)
 
     # ★ 登录认证（激活通过后执行，登录成功才加载主窗口）
@@ -132,8 +137,8 @@ if __name__ == '__main__':
     if login_dialog.exec_() != QDialog.Accepted:
         sys.exit(0)
 
-    # 激活+登录通过后才加载主窗口
+    # 激活+登录通过后才加载主窗口（传入机器码避免重复 WMIC）
     from src.ui.main_window import MainWindow
-    window = MainWindow()
+    window = MainWindow(machine_code=machine_code)
     window.show()
     sys.exit(app.exec_())

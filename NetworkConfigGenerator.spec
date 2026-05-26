@@ -8,7 +8,9 @@ a = Analysis(
     datas=[('src', 'src'), ('config', 'config')],
     hiddenimports=[
         'src.core.local_audit_engine', 'src.core.local_diagnostic_engine',
+        'src.core.theme_engine',
         'src.ui.subnet_calculator_page', 'src.ui.batch_cmd_generator_page',
+        'src.ui.theme_switcher_page',
         'src.core.account_manager', 'src.ui.login_dialog',
         'src.ui.account_manager_dialog',
         'PyQt5.sip',
@@ -24,6 +26,15 @@ a = Analysis(
         'beautifulsoup4', 'selenium', 'jupyter', 'nbformat', 'nbconvert',
         'openpyxl', 'tzdata', 'pydantic', 'rich', 'lxml', 'docutils',
         'grpc', 'zmq', 'h5py', 'onnxruntime',
+        # PyQt5 未使用子模块（减小 EXE 体积 10~20MB）
+        'PyQt5.QtSql', 'PyQt5.QtOpenGL', 'PyQt5.QtSvg', 'PyQt5.QtTest',
+        'PyQt5.QtWebEngine', 'PyQt5.QtWebEngineWidgets', 'PyQt5.QtMultimedia',
+        'PyQt5.QtMultimediaWidgets', 'PyQt5.QtBluetooth',
+        'PyQt5.QtPositioning', 'PyQt5.QtSensors', 'PyQt5.QtSerialPort',
+        'PyQt5.QtWinExtras', 'PyQt5.QtMacExtras', 'PyQt5.QtX11Extras',
+        'PyQt5.QtAndroidExtras',
+        # 死依赖清理
+        'bcrypt',
     ],
     noarchive=False,
 )
@@ -35,7 +46,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='NetworkConfigGenerator',
+    name='NetOps',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

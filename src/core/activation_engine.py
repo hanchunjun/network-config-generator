@@ -338,7 +338,8 @@ def load_license(license_path: Optional[str] = None) -> Optional[dict]:
         return None
 
 
-def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dict]:
+def check_activation(license_path: Optional[str] = None,
+                     machine_code: Optional[str] = None) -> Tuple[bool, str, dict]:
     """启动时激活状态校验。
 
     校验逻辑：
@@ -349,6 +350,7 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dic
 
     Args:
         license_path: 授权文件路径，默认使用全局 LICENSE_FILE
+        machine_code: 预计算的机器码（避免重复调用 WMIC），为 None 时自动采集
 
     Returns:
         Tuple[bool, str, dict]: (是否已激活, 状态描述, 详细信息)
@@ -363,7 +365,7 @@ def check_activation(license_path: Optional[str] = None) -> Tuple[bool, str, dic
     if license_data is None:
         return False, "未激活", {}
 
-    current_code = get_machine_code()
+    current_code = machine_code if machine_code else get_machine_code()
     saved_code = license_data.get("machine_code", "")
 
     if current_code != saved_code:

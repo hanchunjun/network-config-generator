@@ -1,19 +1,12 @@
 import re
-import threading
 import functools
 from typing import Dict, Any, Callable, List, Tuple, Optional
-from pathlib import Path
-import json
 
 from src.core.logger import netops_logger
 
-class ConfigGenerator:
-    """配置生成器类"""
 
-    # 配置缓存（LRU缓存）
-    _config_cache = {}
-    _cache_lock = threading.Lock()
-    CACHE_SIZE = 128  # 缓存大小限制
+class ConfigGenerator:
+    """配置生成器类（带 LRU 缓存）。"""
 
     # 厂商到配置生成函数的映射
     _VENDOR_CONFIG_MAP: Dict[str, Dict[str, Callable]] = {
@@ -122,8 +115,16 @@ class ConfigGenerator:
             raise ValueError(f"不支持的设备类型 '{device_type}' 或厂商 '{vendor}'")
 
     @staticmethod
+    @functools.lru_cache(maxsize=128)
+    def _cached_generate(device_type: str, vendor: str, kwargs_frozen: frozenset) -> str:
+        """内部缓存方法（lru_cache 要求参数可哈希）。"""
+        kwargs = dict(kwargs_frozen)
+        config_func = ConfigGenerator._get_config_function(device_type, vendor)
+        return config_func(**kwargs)
+
+    @staticmethod
     def generate_access_switch_config(vendor: str, **kwargs: Any) -> str:
-        """生成接入交换机配置
+        """生成接入交换机配置（带 LRU 缓存）。
 
         Args:
             vendor: 厂商名称
@@ -133,33 +134,17 @@ class ConfigGenerator:
             生成的配置
         """
         try:
-            # 验证enable_password参数
             enable_password = kwargs.get('enable_password')
             if not enable_password:
                 return "# 必须提供enable特权密码"
             if len(enable_password) < 8:
                 return "# 密码长度必须至少8位"
 
-            # 生成缓存键并检查缓存
-            cache_key = ConfigGenerator._get_config_cache_key('access_switch', vendor, kwargs)
-            with ConfigGenerator._cache_lock:
-                if cache_key in ConfigGenerator._config_cache:
-                    logger = netops_logger.get_logger()
-                    logger.debug("使用缓存的配置")
-                    return ConfigGenerator._config_cache[cache_key]
-
-            # 生成新配置
-            config_func = ConfigGenerator._get_config_function('access_switch', vendor)
-            config_result = config_func(**kwargs)
-
-            # 缓存结果
-            with ConfigGenerator._cache_lock:
-                if len(ConfigGenerator._config_cache) >= ConfigGenerator.CACHE_SIZE:
-                    # 缓存满时，移除最旧的条目
-                    ConfigGenerator._config_cache.pop(next(iter(ConfigGenerator._config_cache)))
-                ConfigGenerator._config_cache[cache_key] = config_result
-
-            return config_result
+            cache_key = frozenset(kwargs.items())
+            result = ConfigGenerator._cached_generate('access_switch', vendor, cache_key)
+            if result and not result.startswith("#"):
+                netops_logger.get_logger().debug("配置缓存命中")
+            return result
         except ValueError as e:
             logger = netops_logger.get_logger()
             logger.error(f"配置生成失败: {e}")
@@ -167,7 +152,7 @@ class ConfigGenerator:
 
     @staticmethod
     def generate_core_switch_config(vendor: str, **kwargs: Any) -> str:
-        """生成核心交换机配置
+        """生成核心交换机配置（带 LRU 缓存）。
 
         Args:
             vendor: 厂商名称
@@ -177,14 +162,14 @@ class ConfigGenerator:
             生成的配置
         """
         try:
-            config_func = ConfigGenerator._get_config_function('core_switch', vendor)
-            return config_func(**kwargs)
+            cache_key = frozenset(kwargs.items())
+            return ConfigGenerator._cached_generate('core_switch', vendor, cache_key)
         except ValueError:
             return "# 不支持的厂商"
 
     @staticmethod
     def generate_router_config(vendor: str, **kwargs: Any) -> str:
-        """生成路由器配置
+        """生成路由器配置（带 LRU 缓存）。
 
         Args:
             vendor: 厂商名称
@@ -194,14 +179,14 @@ class ConfigGenerator:
             生成的配置
         """
         try:
-            config_func = ConfigGenerator._get_config_function('router', vendor)
-            return config_func(**kwargs)
+            cache_key = frozenset(kwargs.items())
+            return ConfigGenerator._cached_generate('router', vendor, cache_key)
         except ValueError:
             return "# 不支持的厂商"
 
     @staticmethod
     def generate_ac_config(vendor: str, **kwargs: Any) -> str:
-        """生成AC配置
+        """生成AC配置（带 LRU 缓存）。
 
         Args:
             vendor: 厂商名称
@@ -211,8 +196,8 @@ class ConfigGenerator:
             生成的配置
         """
         try:
-            config_func = ConfigGenerator._get_config_function('ac', vendor)
-            return config_func(**kwargs)
+            cache_key = frozenset(kwargs.items())
+            return ConfigGenerator._cached_generate('ac', vendor, cache_key)
         except ValueError:
             return "# 不支持的厂商"
     

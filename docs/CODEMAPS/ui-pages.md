@@ -227,7 +227,7 @@ config_pages/
 
 ---
 
-## 页面7：📜 命令生成（batch_cmd_generator_page.py）★V0.3.1新增 → V0.3.2重构
+## 页面7：📜 命令生成（batch_cmd_generator_page.py）★V0.3.1新增 → V0.3.2重构 → V0.3.5主题适配
 
 **文件：** `src/ui/batch_cmd_generator_page.py`
 
@@ -371,3 +371,54 @@ ParamGroupWidget:
 | 台账自动保存 | 写入 `admin_data/records.dat`（AES-GCM加密） |
 | 黑名单快捷添加 | 一键将机器码加入黑名单 |
 | 黑名单导出 | 导出为可上传云端的TXT格式 |
+
+---
+
+## 主题切换页（theme_switcher_page.py）— V0.3.5新增
+
+**文件：** `src/ui/theme_switcher_page.py`
+
+### 功能清单
+| 功能 | 说明 |
+|------|------|
+| 三个预览卡片 | `_PreviewCard(QFrame)` 使用 QPainter 自定义绘制主题预览（导航栏、内容块、按钮） |
+| 即时切换 | 点击卡片调用 `ThemeEngine.apply(app, theme_id)` 切换全局主题 |
+| 视觉反馈 | 选中卡片高亮边框，未选中卡片半透明 |
+| 三套主题 | VSCode（深蓝黑/直角）、Raycast（紫橙/毛玻璃/大圆角）、Business（浅灰白/品牌蓝） |
+
+### 关键类
+| 类 | 说明 |
+|----|------|
+| `ThemeSwitcherPage(QWidget)` | 主面板，水平排列三个 `_PreviewCard` |
+| `_PreviewCard(QFrame)` | 自定义绘制预览卡片，paintEvent 绘制迷你主题效果 |
+
+---
+
+## 主题引擎（theme_engine.py）— V0.3.5新增
+
+**文件：** `src/core/theme_engine.py`
+
+### 功能清单
+| 功能 | 说明 |
+|------|------|
+| 单例模式 | `ThemeEngine.get()` 全局唯一实例 |
+| 三主题管理 | `_THEMES` 字典存储三套完整配色（每套60+颜色变量） |
+| 信号广播 | `theme_changed = pyqtSignal(str)` 主题切换时通知所有UI |
+| 全局QSS | `apply(app, theme_id)` 设置全局样式表 |
+| 组件QSS | `qss(component)` 返回组件级QSS片段 |
+| 配置持久化 | `_save_config()` / `_load_config()` 读写 `config/theme_config.json` |
+
+### 三套主题
+| 主题ID | 名称 | 风格 | 主色调 |
+|--------|------|------|--------|
+| `vscode` | VSCode Dark | 深蓝黑/直角/技术感 | `#1E1E1E` / `#007ACC` |
+| `raycast` | Raycast | 紫橙渐变/毛玻璃/大圆角 | `#1A1025` / `#FF6363` |
+| `business` | Business | 浅灰白/品牌蓝/政企风 | `#F5F6FA` / `#1565C0` |
+
+### 关键方法
+| 方法 | 说明 |
+|------|------|
+| `get()` | 获取单例实例 |
+| `apply(app, theme_id)` | 应用全局QSS |
+| `qss(component)` | 返回组件级QSS片段 |
+| `status_color(status)` | 返回状态灯颜色 |

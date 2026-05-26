@@ -253,6 +253,8 @@ class ThemeEngine(QObject):
 
     _instance: Optional[ThemeEngine] = None
     _config_path: str = get_config_path("config/theme_config.json")
+    _global_qss_cache: Dict[str, str] = {}       # 全局 QSS 缓存（键: theme_id）
+    _component_qss_cache: Dict[str, str] = {}    # 组件 QSS 缓存（键: component@theme_id）
 
     def __init__(self) -> None:
         super().__init__()
@@ -327,18 +329,24 @@ class ThemeEngine(QObject):
         self._current = theme_id
         self._save_config()
 
+        # 主题切换时清除 QSS 缓存
+        ThemeEngine._global_qss_cache.clear()
+        ThemeEngine._component_qss_cache.clear()
+
         t = _THEMES[theme_id]
         radius = t["radius_md"]
 
         # ── 构建全局 QSS ──────────────────────────────────────────────────
-        qss = self._build_global_qss(t, radius)
+        qss = self._build_global_qss(theme_id, t, radius)
         app.setStyleSheet(qss)
 
         self.theme_changed.emit(theme_id)
         netops_logger.get_logger().info(f"主题已切换: {t['display_name']}")
 
-    def _build_global_qss(self, t: dict, radius: int) -> str:
-        """构建全局 QSS 样式表。"""
+    def _build_global_qss(self, theme_id: str, t: dict, radius: int) -> str:
+        """构建全局 QSS 样式表（带缓存）。"""
+        if theme_id in ThemeEngine._global_qss_cache:
+            return ThemeEngine._global_qss_cache[theme_id]
         # 主按钮样式（Raycast 用渐变，其他用纯色）
         if t.get("gradient_primary"):
             primary_btn = f"""
@@ -629,12 +637,13 @@ class ThemeEngine(QObject):
         }}
         """
 
+        ThemeEngine._global_qss_cache[theme_id] = qss
         return qss
 
     # ── 便捷方法 ──────────────────────────────────────────────────────────
 
     def qss(self, component: str) -> str:
-        """获取指定组件的 QSS 片段（用于局部控件样式覆盖）。
+        """获取指定组件的 QSS 片段（用于局部控件样式覆盖，带缓存）。
 
         Args:
             component: 组件名称，如 "primary_btn", "ai_btn", "danger_btn",
@@ -646,6 +655,10 @@ class ThemeEngine(QObject):
         Returns:
             QSS 字符串
         """
+        cache_key = f"{component}@{self._current}"
+        if cache_key in ThemeEngine._component_qss_cache:
+            return ThemeEngine._component_qss_cache[cache_key]
+
         t = self.current_theme
         r = t["radius_md"]
 
@@ -803,7 +816,9 @@ class ThemeEngine(QObject):
 
         if component not in _qss_map:
             raise ValueError(f"未知组件: {component}，可用: {list(_qss_map.keys())}")
-        return _qss_map[component]
+        result = _qss_map[component]
+        ThemeEngine._component_qss_cache[cache_key] = result
+        return result
 
     def status_color(self, status: str) -> str:
         """获取状态指示颜色。
@@ -822,4 +837,4 @@ class ThemeEngine(QObject):
             "offline": t["device_offline"],
             "testing": t["device_testing"],
         }
-        return _map.get(status, t["text_tertiary"])
+        return _map.get(status, t["text_tertiary"])  # type: ignore[no-any-return]

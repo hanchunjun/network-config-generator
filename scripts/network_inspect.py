@@ -9,6 +9,7 @@ import os
 import socket
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import List, Dict, Any, Tuple
 
@@ -244,21 +245,53 @@ def _save_single_report(ip, vendor, dev_mod, inspect_time, content):
     except Exception:
         pass
 
-def run_inspect(project_dir: str, progress_callback=None) -> List[str]:
+def run_inspect(project_dir: str, progress_callback=None, max_workers: int = 5) -> List[str]:
+    """全网巡检（并发模式）。
+
+    Args:
+        project_dir: 项目目录路径
+        progress_callback: 进度回调函数 (completed, total, message)
+        max_workers: 最大并发线程数（默认 5，单台设备不影响）
+    """
     _resolve_paths(project_dir)
     init_folder()
     dev_list = load_device_list()
     if not dev_list:
         return ["未读取到设备清单"]
+
     total = len(dev_list)
-    results: List[str] = []
     all_content = [f"# 全网设备巡检总报告\n巡检时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"]
-    for idx, dev in enumerate(dev_list):
-        if progress_callback:
-            progress_callback(idx + 1, total, f"正在巡检 {dev[0]} ...")
-        result = device_inspect(dev, progress_callback)
-        results.append(result)
-        all_content.append(result)
+
+    if total <= 1 or max_workers <= 1:
+        # 单设备或显式指定单线程时，保持串行行为
+        results: List[str] = []
+        for idx, dev in enumerate(dev_list):
+            if progress_callback:
+                progress_callback(idx + 1, total, f"正在巡检 {dev[0]} ...")
+            result = device_inspect(dev, progress_callback)
+            results.append(result)
+            all_content.append(result)
+    else:
+        # 多设备并发巡检
+        results = [""] * total
+        completed = 0
+        with ThreadPoolExecutor(max_workers=min(max_workers, total)) as executor:
+            future_to_idx = {
+                executor.submit(device_inspect, dev, None): idx
+                for idx, dev in enumerate(dev_list)
+            }
+            for future in as_completed(future_to_idx):
+                idx = future_to_idx[future]
+                try:
+                    results[idx] = future.result()
+                except Exception as e:
+                    dev_ip = dev_list[idx][0] if idx < len(dev_list) else "未知"
+                    results[idx] = f"【{dev_ip}】巡检异常: {e}"
+                all_content.append(results[idx])
+                completed += 1
+                if progress_callback:
+                    progress_callback(completed, total, f"已完成 {dev_list[idx][0]}")
+
     os.makedirs(os.path.dirname(OUTPUT_ALL), exist_ok=True)
     with open(OUTPUT_ALL, "w", encoding="utf-8") as f:
         f.write("\n".join(all_content))

@@ -15,7 +15,8 @@ EXE所在目录/
 │   ├── ai_config.json.enc         # AI配置（加密）
 │   ├── projects_config.json       # 项目列表索引
 │   ├── ai_recent_files.json       # AI最近文件记录
-│   └── account.json               # 账户信息（用户名明文+密码AES-GCM密文）★V0.3.3新增
+│   ├── account.json               # 账户信息（用户名明文+密码AES-GCM密文）★V0.3.3新增
+│   └── theme_config.json          # 主题配置（theme_id持久化）★V0.3.5新增
 │
 ├── activation/       ← 🔐 用户端激活体系
 │   ├── license.dat                # 激活授权文件（AES-GCM加密）
@@ -132,6 +133,7 @@ EXE所在目录/
 | 机器ID | `config/machine_id.json` | 明文 |
 | 激活授权 | `activation/license.dat` | AES-GCM（V0.3.0新增） |
 | 账户密码 | `config/account.json` | AES-GCM，`ENC:`前缀密文（V0.3.3新增） |
+| 主题配置 | `config/theme_config.json` | 明文JSON，`{"theme_id": "vscode"}`（V0.3.5新增） |
 
 ---
 
@@ -154,6 +156,9 @@ EXE所在目录/
       → 验证用户名密码 → account.json
       → 成功 → 启动主程序
       → 失败 → 提示错误，留在登录窗口
+  → ThemeEngine.get() [主题引擎初始化，V0.3.5新增]
+      → 加载 config/theme_config.json → 应用上次主题
+      → 主窗口所有组件连接 theme_changed 信号
 ```
 
 ### 管理员制码流程

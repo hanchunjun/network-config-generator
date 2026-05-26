@@ -21,6 +21,8 @@
 - [ ] 危险操作有确认对话框（删除/导出/查看密码）
 - [ ] 文件操作使用原子操作（写 `.tmp` 再 `os.replace`）
 - [ ] 新增函数有docstring和类型注解
+- [ ] 新增UI组件使用 `ThemeEngine` 动态颜色，无硬编码色值（V0.3.5新增）
+- [ ] 新增UI页面连接 `theme_changed` 信号以支持动态主题刷新（V0.3.5新增）
 
 ### 安全红线
 - [ ] 自动化仅允许 show/display/ping/traceroute 只读指令
@@ -70,7 +72,7 @@ py -3.11 -m pytest tests/ -v
 py -3.11 -m bandit -r src/ -c bandit.yaml -ll
 
 # 6. 打包
-del dist\NetworkConfigGenerator.exe
+del dist\NetOps.exe
 pyinstaller NetworkConfigGenerator.spec --noconfirm
 ```
 
