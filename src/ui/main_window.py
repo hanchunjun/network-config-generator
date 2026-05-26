@@ -81,7 +81,8 @@ VENDOR_CONFIG_MAP: Dict[str, Dict[str, type]] = {
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, machine_code: Optional[str] = None):
+    def __init__(self, is_active: bool = False, act_status: str = "未激活",
+                 act_info: Optional[dict] = None):
         super().__init__()
         ensure_dirs()
 
@@ -91,10 +92,9 @@ class MainWindow(QMainWindow):
         if app is not None:
             self._theme_engine.apply(app, self._theme_engine.current_theme_id)
 
-        # 激活状态检测（复用 main.py 传入的机器码，避免重复 WMIC 调用）
-        is_active, act_status, act_info = check_activation(machine_code=machine_code)
+        # 直接使用 main.py 传入的激活结果，避免重复 check_activation 调用
         self._trial_mode: bool = not is_active
-        self._activation_info: dict = act_info
+        self._activation_info: dict = act_info or {}
         if self._trial_mode:
             netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 

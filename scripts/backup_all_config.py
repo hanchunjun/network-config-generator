@@ -49,6 +49,18 @@ SAFE_SSH_CONFIG: Dict[str, Any] = {
     "timeout": SSH_TIMEOUT,
 }
 
+def _get_ssh_port() -> int:
+    """获取 SSH 端口，支持 NETOPS_SSH_PORT 环境变量，无效值回退 22。"""
+    raw = os.environ.get('NETOPS_SSH_PORT', '22')
+    try:
+        port = int(raw)
+        if 1 <= port <= 65535:
+            return port
+    except (ValueError, TypeError):
+        pass
+    return 22
+
+
 def init_folder():
     os.makedirs(BACKUP_PATH, exist_ok=True)
 
@@ -126,7 +138,7 @@ def backup_one_device(dev_info: List[str]) -> str:
         "password": pwd,
         # ===================== 【修改3】新增特权密码 =====================
         "secret": secret,
-        "port": int(os.environ.get('NETOPS_SSH_PORT', '22')),  # 支持自定义端口
+        "port": _get_ssh_port(),  # 支持自定义端口（NETOPS_SSH_PORT 环境变量）
         **SAFE_SSH_CONFIG,  # 应用安全配置
     }
 

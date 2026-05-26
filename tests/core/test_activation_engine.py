@@ -480,3 +480,52 @@ class TestAdminKeygen:
         add_to_blacklist(mc)  # 重复
         codes = load_blacklist()
         assert codes.count(mc) == 1
+
+
+# ─── machine_code 参数测试（V0.3.7 新增） ─────────────────────────────────
+
+class TestActivationEngineMachineCodeParam:
+    """check_activation() machine_code 参数测试。"""
+
+    def test_check_activation_accepts_machine_code_param(self):
+        """check_activation() 接受可选 machine_code 参数。"""
+        import inspect
+        sig = inspect.signature(check_activation)
+        assert "machine_code" in sig.parameters
+
+    def test_check_activation_with_mock_machine_code(self):
+        """传入 machine_code 参数时，不再调用 get_machine_code()。"""
+        with patch("src.core.activation_engine.get_machine_code") as mock_wmic:
+            # 传入 machine_code，不应触发 WMIC
+            result = check_activation(machine_code="A" * 32)
+            mock_wmic.assert_not_called()
+
+    def test_check_activation_without_machine_code_calls_wmic(self):
+        """不传 machine_code 时，内部调用 get_machine_code()（向后兼容）。"""
+        fake_license = {
+            "machine_code": "B" * 32,
+            "activated_at": "2026-01-01 00:00:00",
+            "validity_days": 0,
+            "expire_at": "",
+        }
+        with patch("src.core.activation_engine.load_license", return_value=fake_license), \
+             patch("src.core.activation_engine.get_machine_code",
+                   return_value="B" * 32) as mock_wmic:
+            result = check_activation()
+            mock_wmic.assert_called_once()
+
+    def test_machine_code_param_avoids_duplicate_wmic(self):
+        """传入 machine_code 可避免重复 WMIC 调用（优化 1 核心验证）。"""
+        fake_license = {
+            "machine_code": "A" * 32,
+            "activated_at": "2026-01-01 00:00:00",
+            "validity_days": 0,
+            "expire_at": "",
+        }
+        with patch("src.core.activation_engine.load_license", return_value=fake_license), \
+             patch("src.core.activation_engine.get_machine_code") as mock_wmic:
+            # 模拟 main.py 启动链：一次 get_machine_code() → 传给 check_activation()
+            code = "A" * 32
+            # 传入 machine_code，不再触发 WMIC
+            check_activation(machine_code=code)
+            mock_wmic.assert_not_called()

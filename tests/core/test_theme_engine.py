@@ -51,10 +51,10 @@ class TestThemeEngineSingleton:
         b = ThemeEngine.get()
         assert a is b
 
-    def test_default_theme_is_vscode(self):
-        """默认主题为 VS Code。"""
+    def test_default_theme_is_business(self):
+        """默认主题为 Business（V0.3.6 起）。"""
         engine = ThemeEngine.get()
-        assert engine.current_theme_id == Theme.VSCODE
+        assert engine.current_theme_id == Theme.BUSINESS
 
 
 # ── 配色数据完整性测试 ───────────────────────────────────────────────────
@@ -271,3 +271,63 @@ class TestThemeSwitcherPage:
         # 验证卡片选中状态更新
         assert page._cards[Theme.BUSINESS]._selected is True
         assert page._cards[Theme.VSCODE]._selected is False
+
+
+# ── QSS 缓存测试（V0.3.7 新增） ─────────────────────────────────────────
+
+class TestThemeEngineCache:
+    """ThemeEngine QSS 缓存机制测试。"""
+
+    def setup_method(self):
+        ThemeEngine._instance = None
+        self.engine = ThemeEngine.get()
+        # 清空缓存，确保测试独立
+        self.engine._global_qss_cache.clear()
+        self.engine._component_qss_cache.clear()
+
+    def teardown_method(self):
+        self.engine._global_qss_cache.clear()
+        self.engine._component_qss_cache.clear()
+        ThemeEngine._instance = None
+
+    def test_global_qss_cached_after_apply(self):
+        """apply() 后全局 QSS 应被缓存。"""
+        app = QApplication.instance()
+        self.engine.apply(app, Theme.VSCODE)
+        assert Theme.VSCODE in self.engine._global_qss_cache
+        assert len(self.engine._global_qss_cache[Theme.VSCODE]) > 0
+
+    def test_component_qss_cache_hit(self):
+        """相同 component + theme_id 第二次调用应命中缓存。"""
+        qss1 = self.engine.qss("primary_btn")
+        key = f"primary_btn@{self.engine._current}"
+        assert key in self.engine._component_qss_cache
+        qss2 = self.engine.qss("primary_btn")
+        assert qss1 is qss2  # 同一对象引用，证明命中缓存
+
+    def test_cache_cleared_on_theme_switch(self):
+        """切换主题时旧缓存被清空，apply() 后只有新主题在缓存中。"""
+        app = QApplication.instance()
+        # 生成缓存
+        self.engine.apply(app, Theme.VSCODE)
+        self.engine.qss("primary_btn")
+        assert len(self.engine._global_qss_cache) > 0
+        assert len(self.engine._component_qss_cache) > 0
+        # 切换主题（apply 内部清空缓存后重建）
+        self.engine.apply(app, Theme.RAYCAST)
+        # 只有新主题的 QSS 在缓存中（apply 后重建）
+        assert Theme.RAYCAST in self.engine._global_qss_cache
+        assert Theme.VSCODE not in self.engine._global_qss_cache
+        # 组件缓存键应只包含新主题
+        for key in self.engine._component_qss_cache:
+            assert key.endswith(f"@{Theme.RAYCAST}")
+
+
+    def test_three_themes_last_cached(self):
+        """连续切换三个主题后，只有最后一个主题的 QSS 在缓存中（每次 apply 清空）。"""
+        app = QApplication.instance()
+        for tid in [Theme.VSCODE, Theme.RAYCAST, Theme.BUSINESS]:
+            self.engine.apply(app, tid)
+        # 只有最后一个主题在缓存中
+        assert len(self.engine._global_qss_cache) == 1
+        assert Theme.BUSINESS in self.engine._global_qss_cache
