@@ -423,7 +423,7 @@ class ProjectManagerPage(QWidget):
 
         self.setLayout(layout)
 
-    def _group_style(self):
+    def _group_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QGroupBox {{
@@ -443,7 +443,7 @@ class ProjectManagerPage(QWidget):
             }}
         """
 
-    def _input_style(self):
+    def _input_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QLineEdit {{
@@ -479,6 +479,72 @@ class ProjectManagerPage(QWidget):
                 font-size: 10pt;
             }}
             QPushButton:hover {{ border: 1px solid {t['primary']}; }}
+        """
+
+    def _combo_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QComboBox {{
+                border: 1px solid {t['input_border']}; border-radius: 4px;
+                padding: 2px 10px; font-size: 9pt; background-color: {t['page_bg']};
+            }}
+            QComboBox:hover {{ border: 1px solid {t['primary']}; }}
+            QComboBox::drop-down {{ border: none; }}
+        """
+
+    def _table_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QTableWidget {{
+                border: 1px solid {t['border']}; border-radius: 4px;
+                background-color: {t['card_bg']}; gridline-color: {t['border']};
+            }}
+            QTableWidget::item {{ padding: 6px; }}
+            QHeaderView::section {{
+                background-color: {t['page_bg']}; border: none;
+                border-bottom: 1px solid {t['border']}; padding: 8px;
+                font-weight: bold; color: {t['text_main']};
+            }}
+        """
+
+    def _danger_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['danger']}22; border: 1px solid {t['danger']};
+                border-radius: 4px; font-size: 9pt; color: {t['danger']};
+            }}
+            QPushButton:hover {{ background-color: {t['danger']}33; }}
+        """
+
+    def _accent_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['primary']}18; border: 1px solid {t['primary']};
+                border-radius: 4px; font-size: 10pt; color: {t['primary']};
+            }}
+            QPushButton:hover {{ background-color: {t['primary']}30; }}
+        """
+
+    def _success_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['success']}18; border: 1px solid {t['success']};
+                border-radius: 4px; font-size: 10pt; color: {t['success']};
+            }}
+            QPushButton:hover {{ background-color: {t['success']}30; }}
+        """
+
+    def _warning_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['warning']}18; border: 1px solid {t['warning']};
+                border-radius: 4px; font-size: 10pt; color: {t['warning']};
+            }}
+            QPushButton:hover {{ background-color: {t['warning']}30; }}
         """
 
     def _get_projects_config(self):
@@ -1246,6 +1312,8 @@ class ProjectManagerPage(QWidget):
         self._refresh_overview()
 
     def _apply_theme_style(self) -> None:
+        if self._theme_engine is None:
+            return
         t = self._theme_engine.current_theme
         # 页面级背景
         self.setStyleSheet(f"""
@@ -1254,6 +1322,69 @@ class ProjectManagerPage(QWidget):
                 font-family: {t['font_ui']};
             }}
         """)
+        # QGroupBox
+        if hasattr(self, 'workspace_group'):
+            self.workspace_group.setStyleSheet(self._group_style())
+        if hasattr(self, 'device_group'):
+            self.device_group.setStyleSheet(self._group_style())
+        # QComboBox
+        if hasattr(self, 'project_combo'):
+            self.project_combo.setStyleSheet(self._combo_style())
+        if hasattr(self, 'group_filter_combo'):
+            self.group_filter_combo.setStyleSheet(self._combo_style())
+        # QTableWidget
+        if hasattr(self, 'device_table'):
+            self.device_table.setStyleSheet(self._table_style())
+        # QLineEdit
+        if hasattr(self, 'project_name_input'):
+            self.project_name_input.setStyleSheet(self._input_style())
+        # 分隔线
+        if hasattr(self, 'separator'):
+            self.separator.setStyleSheet(f"QFrame {{ color: {t['border']}; max-height: 1px; }}")
+        # 标签颜色
+        _lc = f"color: {t['text_secondary']}; font-weight: normal;"
+        _lm = f"color: {t['text_main']};"
+        _lt = f"color: {t['text_tertiary']};"
+        _labels_main = ('create_header', 'overview_header')
+        _labels_tertiary = ('info_path', 'info_devices', 'info_logs', 'stats_label', 'overview_stats_label')
+        for attr_name in [
+            'create_header', 'name_label', 'path_label', 'overview_header',
+            'overview_stats_label', 'switch_label', 'info_path', 'info_devices',
+            'info_logs', 'stats_label',
+        ]:
+            lbl = getattr(self, attr_name, None)
+            if lbl is not None:
+                if attr_name in _labels_main:
+                    lbl.setStyleSheet(f"font-size: 10pt; font-weight: bold; {_lm}")
+                elif attr_name in _labels_tertiary:
+                    lbl.setStyleSheet(f"font-size: 11px; {_lt}; font-weight: normal;")
+                else:
+                    lbl.setStyleSheet(f"font-size: 9pt; {_lc}; font-weight: normal;")
+        # QCheckBox
+        if hasattr(self, 'show_pwd_cb'):
+            self.show_pwd_cb.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']};")
+        # 按钮样式刷新
+        for attr, style_fn in [
+            ('create_btn', self._primary_btn_style),
+            ('switch_btn', self._primary_btn_style),
+            ('refresh_btn', self._secondary_btn_style),
+            ('edit_project_btn', self._secondary_btn_style),
+            ('delete_project_btn', self._danger_btn_style),
+            ('add_row_btn', self._primary_btn_style),
+            ('edit_btn', self._secondary_btn_style),
+            ('del_row_btn', self._secondary_btn_style),
+            ('save_device_btn', self._primary_btn_style),
+            ('import_btn', self._secondary_btn_style),
+            ('export_btn', self._secondary_btn_style),
+            ('template_btn', self._secondary_btn_style),
+            ('template_lib_btn', self._accent_btn_style),
+            ('discover_btn', self._success_btn_style),
+            ('test_conn_btn', self._warning_btn_style),
+            ('history_btn', self._secondary_btn_style),
+        ]:
+            btn = getattr(self, attr, None)
+            if btn is not None:
+                btn.setStyleSheet(style_fn())
 
     def _enter_project_from_card(self, name):
         config = self._get_projects_config()

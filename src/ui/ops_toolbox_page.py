@@ -980,25 +980,25 @@ class OpsToolboxPage(QWidget):
         layout.setSpacing(8)
 
         header_layout = QHBoxLayout()
-        title_label = QLabel("项目运维")
-        title_label.setStyleSheet(f"font-size: 15pt; font-weight: bold; color: {self._theme_engine.current_theme['text_main']}; text-decoration: none;")
-        header_layout.addWidget(title_label)
+        self.title_label = QLabel("项目运维")
+        self.title_label.setStyleSheet(f"font-size: 15pt; font-weight: bold; color: {self._theme_engine.current_theme['text_main']}; text-decoration: none;")
+        header_layout.addWidget(self.title_label)
         header_layout.addStretch()
 
-        proj_label = QLabel("项目：")
-        proj_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
-        header_layout.addWidget(proj_label)
+        self.proj_label = QLabel("项目：")
+        self.proj_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
+        header_layout.addWidget(self.proj_label)
 
         self.project_combo = QComboBox()
         self.project_combo.setMinimumWidth(280)
         self.project_combo.setStyleSheet(self._combo_style())
         header_layout.addWidget(self.project_combo)
 
-        refresh_btn = QPushButton("🔄 刷新项目")
-        refresh_btn.setFixedSize(100, 32)
-        refresh_btn.setStyleSheet(_btn_style(self._theme_engine.current_theme))
-        refresh_btn.clicked.connect(self._refresh_projects)
-        header_layout.addWidget(refresh_btn)
+        self.refresh_btn = QPushButton("🔄 刷新项目")
+        self.refresh_btn.setFixedSize(100, 32)
+        self.refresh_btn.setStyleSheet(_btn_style(self._theme_engine.current_theme))
+        self.refresh_btn.clicked.connect(self._refresh_projects)
+        header_layout.addWidget(self.refresh_btn)
         layout.addLayout(header_layout)
 
         cards_layout = QHBoxLayout()
@@ -1027,10 +1027,10 @@ class OpsToolboxPage(QWidget):
 
         layout.addWidget(self.tab_widget)
 
-        desc_label = QLabel("三个运维任务独立运行，所有操作仅执行只读指令。AI分析结果自动归档到项目 report/ 目录。")
-        desc_label.setWordWrap(True)
-        desc_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_tertiary']}; padding: 2px 0;")
-        layout.addWidget(desc_label)
+        self.desc_label = QLabel("三个运维任务独立运行，所有操作仅执行只读指令。AI分析结果自动归档到项目 report/ 目录。")
+        self.desc_label.setWordWrap(True)
+        self.desc_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_tertiary']}; padding: 2px 0;")
+        layout.addWidget(self.desc_label)
 
         self.setLayout(layout)
 
@@ -1038,16 +1038,87 @@ class OpsToolboxPage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        if self._theme_engine is None:
+            return
         t = self._theme_engine.current_theme
         self.setStyleSheet(f"""
             OpsToolboxPage {{
                 background-color: {t['page_bg']};
+                font-family: {t['font_ui']};
             }}
         """)
         if hasattr(self, 'project_combo'):
             self.project_combo.setStyleSheet(self._combo_style())
         if hasattr(self, 'tab_widget'):
             self.tab_widget.setStyleSheet(self._tab_style())
+        # 标题和描述标签
+        if hasattr(self, 'title_label'):
+            self.title_label.setStyleSheet(
+                f"font-size: 15pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
+        if hasattr(self, 'proj_label'):
+            self.proj_label.setStyleSheet(
+                f"font-size: 10pt; color: {t['text_secondary']}; font-weight: normal;")
+        if hasattr(self, 'desc_label'):
+            self.desc_label.setStyleSheet(
+                f"font-size: 9pt; color: {t['text_tertiary']}; padding: 2px 0;")
+        # 刷新按钮
+        if hasattr(self, 'refresh_btn'):
+            self.refresh_btn.setStyleSheet(_btn_style(t))
+        # 三个任务卡片
+        if hasattr(self, 'backup_card'):
+            self._refresh_task_card(self.backup_card)
+        if hasattr(self, 'inspect_card'):
+            self._refresh_task_card(self.inspect_card)
+        if hasattr(self, 'trouble_card'):
+            self._refresh_task_card(self.trouble_card)
+        # 四个结果Tab
+        if hasattr(self, 'backup_tab'):
+            self._refresh_file_tab(self.backup_tab)
+        if hasattr(self, 'report_tab'):
+            self._refresh_file_tab(self.report_tab)
+        if hasattr(self, 'diagnosis_tab'):
+            self._refresh_file_tab(self.diagnosis_tab)
+        if hasattr(self, 'compliance_tab'):
+            self._refresh_file_tab(self.compliance_tab)
+
+    def _refresh_task_card(self, card) -> None:
+        """刷新单个 TaskCard 的样式"""
+        card.setStyleSheet(card._card_style())
+        t = self._theme_engine.current_theme
+        if hasattr(card, 'status_label'):
+            card.status_label.setStyleSheet(
+                f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: normal;")
+        if hasattr(card, 'progress_bar'):
+            card.progress_bar.setStyleSheet(card._progress_style())
+        if hasattr(card, 'run_btn'):
+            card.run_btn.setStyleSheet(_primary_btn_style(t))
+
+    def _refresh_file_tab(self, tab) -> None:
+        """刷新单个 FileResultTab 的样式"""
+        t = self._theme_engine.current_theme
+        for attr in ('refresh_btn', 'open_btn', 'del_btn'):
+            btn = getattr(tab, attr, None)
+            if btn is not None:
+                btn.setStyleSheet(_btn_style(t))
+        if hasattr(tab, 'file_list'):
+            tab.file_list.setStyleSheet(_list_style(t))
+        if hasattr(tab, 'preview_text'):
+            tab.preview_text.setStyleSheet(_preview_style(t))
+        # AI 按钮
+        for attr in ('compliance_btn', 'diagnose_btn', 'deep_audit_btn'):
+            btn = getattr(tab, attr, None)
+            if btn is not None:
+                btn.setStyleSheet(_ai_btn_style(t))
+        # QSplitter handle 颜色（中间竖线）
+        for sp in tab.findChildren(QSplitter):
+            sp.setStyleSheet(
+                f"QSplitter::handle {{ background-color: {t['border']}; }}"
+                f"QSplitter::handle:horizontal {{ width: 2px; }}"
+                f"QSplitter::handle:vertical {{ height: 2px; }}"
+            )
+        # Tab 内 QLabel（"设备筛选：" 等）
+        for lbl in tab.findChildren(QLabel):
+            lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
 
     def _combo_style(self) -> str:
         t = self._theme_engine.current_theme

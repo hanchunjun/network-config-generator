@@ -1,4 +1,4 @@
-# NetOps 界面设计规范（V0.3.3）
+# NetOps 界面设计规范（V0.3.5 三主题版）
 
 > **唯一权威标准**：所有界面代码的生成与修改，必须以本文件为唯一标准，禁止任何脱离规范的主观发挥。
 
@@ -6,9 +6,17 @@
 
 ## 一、项目整体视觉风格概述
 
-**企业级浅灰底桌面运维工具风格**：以白色内容区 + 浅灰页面背景为基础，品牌蓝 `#165DFF` 作为全局主色，配合语义化功能色（红/橙/绿/紫）区分操作等级。整体追求信息密度高、层次清晰、交互反馈明确的政企级专业界面。
+NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体系与界面风格：
 
-**设计关键词**：简洁 · 专业 · 信息密度高 · 低学习成本
+| 主题 ID | 名称 | 气质定位 | 默认 |
+|---------|------|---------|------|
+| `vscode` | VS Code 风格 | 深蓝黑 · 锐利 · 开发者工具感 · 长时间不疲劳 | ✅ |
+| `raycast` | Raycast 风格 | 紫橙渐变 · 毛玻璃 · 大圆角 · 新锐科技感 | |
+| `business` | 商务沉稳风格 | 浅灰白底 · 品牌蓝 · 政企级 · 专业可信 | |
+
+**实现方式**：`src/core/theme_engine.py` 中 `ThemeEngine` 单例管理三套配色数据，通过 `apply(app, theme_id)` 切换全局 QSS，发射 `theme_changed` 信号通知所有组件动态刷新。
+
+**设计关键词**：科技感 · 专业 · 可切换 · 低视觉疲劳
 
 ---
 
@@ -18,63 +26,70 @@
 
 | 色值 | 名称 | 使用场景 |
 |------|------|---------|
-| `#165DFF` | 品牌蓝 | 主按钮背景、选中态、焦点边框、链接文字、进度条填充、导航激活态 |
-| `#0E42D2` | 深蓝 | 主按钮 hover 状态 |
-| `#0A3680` | 更深蓝 | 主按钮 pressed 状态（登录/激活对话框） |
+| `#3B7CFF` | 科技蓝 | 主按钮背景、选中态、焦点边框、进度条填充、导航激活态 |
+| `#2962D9` | 科技蓝深 | 主按钮 hover 状态 |
+| `#1E4BB8` | 科技蓝更深 | 主按钮 pressed 状态 |
+| `#4D90FF` | 高亮蓝 | 链接文字、强调文字、状态栏活跃指示、光晕效果色 |
+| `#5C8AFF` | 柔光蓝 | 卡片顶部装饰线、Tab 底部选中条、选中态发光边框 |
+| `#1A3A6E` | 深蓝选中底 | 导航激活背景、列表选中背景、AI按钮背景 |
 | `#1565C0` | 管理员蓝 | 管理员制码工具专属主色（仅 admin_tool_window 使用） |
-| `#E8F3FF` | 浅蓝 | AI按钮背景、导航激活背景、列表选中背景、Tab hover 背景 |
-| `#D6E8FF` | 浅蓝 hover | AI按钮 hover 背景 |
 
-### 2.2 功能色（Semantic）
+### 2.2 强调色（Accent）
 
 | 色值 | 名称 | 使用场景 |
 |------|------|---------|
-| `#00B42A` | 成功绿 | 保存按钮、测试连接按钮、成功状态图标、已激活状态、合规通过判定 |
-| `#009A29` | 深绿 | 成功按钮 hover |
+| `#00D4E8` | 冰蓝 | 数据流高亮、实时日志关键字、进度条光晕、动态数据指示 |
+| `#0F8B6E` | 深青绿 | 设备在线/Ping成功状态灯、连接成功指示（冷暖双色调） |
+
+### 2.3 功能色（Semantic）
+
+| 色值 | 名称 | 使用场景 |
+|------|------|---------|
+| `#3DD66A` | 成功绿 | 保存按钮、测试连接按钮、成功状态图标、已激活状态、合规通过判定 |
+| `#2BA84E` | 成功绿深 | 成功按钮 hover |
 | `#43A047` | 激活绿 | 试用模式激活按钮、保存模板按钮（batch_cmd_generator） |
 | `#2E7D32` | 深绿 hover | 激活绿按钮 hover |
-| `#E8FFEA` | 浅绿背景 | 合规审计通过结果背景 |
-| `#FF7D00` | 警告橙 | 删除配置按钮、连接测试按钮、故障按钮、进行中状态、即将过期提示 |
+| `#1F4A2E` | 成功绿背景 | 合规审计通过结果背景（深色底） |
+| `#FFB040` | 警告橙 | 删除配置按钮、连接测试按钮、故障按钮、进行中状态、即将过期提示 |
+| `#CC8C30` | 警告橙深 | 警告按钮 hover |
 | `#FA8C16` | 警告橙文字 | 即将过期按钮文字/border |
-| `#FFF7E6` | 浅橙背景 | 警告按钮背景、即将过期按钮背景、安全提醒框背景 |
-| `#FFE7BA` | 浅橙 hover | 警告按钮 hover 背景 |
-| `#FFF7E8` | 浅橙背景2 | 取消按钮背景、危险小按钮背景 |
+| `#2A2210` | 警告背景 | 警告按钮背景、即将过期按钮背景、安全提醒框背景（深色底） |
 | `#FAAD14` | 金黄 | 复制按钮、重命名模板按钮（batch_cmd_generator） |
 | `#D48806` | 金黄 hover | 金黄按钮 hover |
-| `#F53F3F` | 危险红 | 删除按钮、错误状态、诊断按钮、未激活提示文字 |
-| `#CB2634` | 深红 | 诊断按钮 hover |
-| `#D9363E` | 深红 hover | 删除按钮 hover（DeleteDeviceDialog） |
+| `#FF5C5C` | 危险红 | 删除按钮、错误状态、诊断按钮、未激活提示文字 |
+| `#CC3E3E` | 危险红深 | 删除按钮 hover |
 | `#FF4D4F` | 亮红 | 表格行内删除按钮（core/access switch） |
 | `#FF7875` | 亮红 hover | 亮红按钮 hover |
-| `#FFECE8` | 浅红背景 | 不通过审计结果背景 |
-| `#722ED1` | 紫色 | AI精审按钮背景 |
-| `#531DAB` | 深紫 | AI精审按钮 hover |
+| `#3A1A1A` | 危险红背景 | 不通过审计结果背景（深色底） |
+| `#9B6CEF` | 紫色 | AI精审按钮背景 |
+| `#7A4FC7` | 深紫 | AI精审按钮 hover |
 
-### 2.3 中性色（Neutral）
+### 2.4 中性色（Neutral）
 
 | 色值 | 名称 | 使用场景 |
 |------|------|---------|
-| `#1D2129` | 标题黑 | 页面标题、表格头部文字、输入框文字、分组框标题 |
-| `#4E5969` | 正文灰 | 表单标签、副标题、表格内容文字、导航按钮默认文字 |
-| `#86909C` | 辅助灰 | 占位符文字、统计信息、状态栏文字、卡片描述、只读字段 |
-| `#C9CDD4` | 禁用灰 | 禁用状态文字/边框、占位符列表项前景 |
-| `#E5E6EB` | 边框灰 | 所有输入框边框、按钮边框、分割线、表格网格线、卡片边框 |
-| `#F2F3F5` | 浅灰背景 | 页面背景（QMainWindow）、表格网格线（部分）、列表项分割线、默认按钮背景 |
-| `#F5F7FA` | 更浅灰背景 | 输入框背景（部分页面）、次要按钮背景、进度条背景 |
-| `#F7F8FA` | 表格头背景 | QHeaderView 背景、日志编辑区背景、预览区背景 |
-| `#FAFAFA` | 窗口背景 | 管理员工具窗口背景（admin_tool_window） |
-| `#FAFBFC` | 表单背景 | DeviceFormDialog QGroupBox 背景、文本编辑区背景 |
-| `#FFFFFF` | 纯白 | 页面内容区背景、卡片背景、输入框背景、导航栏背景 |
+| `#E8ECF1` | 主文字 | 页面标题、表格头部文字、输入框文字、分组框标题 |
+| `#B0B8C8` | 正文文字 | 表单标签、副标题、表格内容文字、导航按钮默认文字 |
+| `#7A8296` | 辅助文字 | 占位符文字、统计信息、状态栏文字、卡片描述、只读字段 |
+| `#4A5266` | 禁用文字 | 禁用状态文字/边框、占位符列表项前景 |
+| `#FFFFFF` | 纯白 | 主按钮文字、激活态导航文字、最高层级强调文字 |
+| `#2E3648` | 暗边框 | 所有输入框边框、按钮边框、分割线、表格网格线、卡片边框 |
+| `#383F50` | 浅暗边框 | 分割线（QFrame HLine）、Tab 未选中边框 |
+| `#1A1F2E` | 深空蓝 | 页面背景（QMainWindow）、代码/预览区背景（最深） |
+| `#1E2433` | 深蓝灰 | 卡片背景、QGroupBox 背景、内容面板背景、输入框背景 |
+| `#242B3D` | 中蓝灰 | 导航栏背景、Tab 栏背景、工具栏背景、表头背景 |
+| `#2A3142` | 悬浮蓝灰 | 按钮 hover 背景、列表项 hover 背景、表格交替行背景 |
 
-### 2.4 状态颜色（动态）
+### 2.5 状态颜色（动态）
 
 | 场景 | 色值 |
 |------|------|
-| 项目卡片正常 | `#00B42A` |
-| 项目卡片警告（无巡检） | `#FF7D00` |
-| 项目卡片故障（有故障设备） | `#F53F3F` |
-| 设备状态成功 | `#00B42A` |
-| 设备状态失败 | `#F53F3F` |
+| 项目卡片正常 | `#3DD66A` |
+| 项目卡片警告（无巡检） | `#FFB040` |
+| 项目卡片故障（有故障设备） | `#FF5C5C` |
+| 设备在线/成功 | `#0F8B6E` |
+| 设备离线/失败 | `#4A5266` |
+| 连接测试中 | `#00D4E8` |
 
 ---
 
@@ -117,15 +132,15 @@
 #### 主按钮（Primary Action）
 ```css
 QPushButton {
-    background-color: #165DFF;
-    color: white;
+    background-color: #3B7CFF;
+    color: #FFFFFF;
     border: none;
     border-radius: 4px;
     font-size: 10pt;
 }
-QPushButton:hover { background-color: #0E42D2; }
-QPushButton:pressed { background-color: #0A3680; }
-QPushButton:disabled { background-color: #C9CDD4; }
+QPushButton:hover { background-color: #2962D9; }
+QPushButton:pressed { background-color: #1E4BB8; }
+QPushButton:disabled { background-color: #4A5266; color: #7A8296; }
 ```
 - **尺寸**：高度 32~40px，宽度根据内容自适应或固定 80~120px
 - **场景**：生成配置、保存、关闭、执行任务等主要操作
@@ -133,12 +148,13 @@ QPushButton:disabled { background-color: #C9CDD4; }
 #### 次要按钮（Secondary Action）
 ```css
 QPushButton {
-    background-color: #F5F7FA;
-    border: 1px solid #E5E6EB;
+    background-color: #2A3142;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     font-size: 10pt;
+    color: #B0B8C8;
 }
-QPushButton:hover { border: 1px solid #165DFF; }
+QPushButton:hover { border: 1px solid #3B7CFF; color: #E8ECF1; }
 ```
 - **尺寸**：高度 32~40px，宽度 80~120px
 - **场景**：取消、返回、复制、导出、重置等非破坏性操作
@@ -146,19 +162,19 @@ QPushButton:hover { border: 1px solid #165DFF; }
 #### AI 按钮
 ```css
 QPushButton {
-    background-color: #E8F3FF;
-    color: #165DFF;
-    border: 1px solid #165DFF;
+    background-color: #1A3A6E;
+    color: #4D90FF;
+    border: 1px solid #3B7CFF;
     border-radius: 4px;
     font-size: 10pt;
     font-weight: bold;
     padding: 8px 16px;
 }
-QPushButton:hover { background-color: #D6E8FF; }
+QPushButton:hover { background-color: #234888; }
 QPushButton:disabled {
-    background-color: #F2F3F5;
-    color: #C9CDD4;
-    border-color: #E5E6EB;
+    background-color: #2A3142;
+    color: #4A5266;
+    border-color: #2E3648;
 }
 ```
 - **场景**：所有 AI 分析按钮（AI合规巡检、AI故障诊断、AI精审）
@@ -166,14 +182,14 @@ QPushButton:disabled {
 #### 危险按钮（Danger Action）
 ```css
 QPushButton {
-    background-color: #F53F3F;
-    color: white;
+    background-color: #FF5C5C;
+    color: #FFFFFF;
     border: none;
     border-radius: 4px;
     font-size: 9pt;
 }
-QPushButton:hover { background-color: #D9363E; }
-QPushButton:disabled { background-color: #C9CDD4; }
+QPushButton:hover { background-color: #CC3E3E; }
+QPushButton:disabled { background-color: #4A5266; color: #7A8296; }
 ```
 - **尺寸**：高度 24~36px，宽度 60~100px
 - **场景**：删除设备、删除配置等破坏性操作
@@ -181,40 +197,40 @@ QPushButton:disabled { background-color: #C9CDD4; }
 #### 诊断按钮（Diagnose）
 ```css
 QPushButton {
-    background-color: #F53F3F;
-    color: white;
+    background-color: #FF5C5C;
+    color: #FFFFFF;
     border: none;
     border-radius: 4px;
     font-size: 9pt;
     font-weight: bold;
 }
-QPushButton:hover { background-color: #CB2634; }
+QPushButton:hover { background-color: #CC3E3E; }
 ```
 
 #### AI 精审按钮（Compliance）
 ```css
 QPushButton {
-    background-color: #722ED1;
-    color: white;
+    background-color: #9B6CEF;
+    color: #FFFFFF;
     border: none;
     border-radius: 4px;
     font-size: 9pt;
     font-weight: bold;
 }
-QPushButton:hover { background-color: #531DAB; }
+QPushButton:hover { background-color: #7A4FC7; }
 ```
 
 #### 工具栏小按钮（Toolbar Small）
 ```css
 QPushButton {
-    background-color: #F5F7FA;
-    border: 1px solid #E5E6EB;
+    background-color: #2A3142;
+    border: 1px solid #2E3648;
     border-radius: 3px;
     font-size: 11px;
-    color: #4E5969;
+    color: #B0B8C8;
     padding: 2px 8px;
 }
-QPushButton:hover { border-color: #165DFF; color: #165DFF; }
+QPushButton:hover { border-color: #3B7CFF; color: #4D90FF; }
 ```
 - **尺寸**：高度 22~26px，宽度 60~70px
 - **场景**：文件列表上方的刷新/打开/删除三件套
@@ -227,15 +243,15 @@ QPushButton {
     border-radius: 6px;
     padding: 6px 16px;
     font-size: 10pt;
-    color: #4E5969;
+    color: #B0B8C8;
 }
 QPushButton:hover {
-    background-color: #F2F3F5;
-    color: #1D2129;
+    background-color: #2A3142;
+    color: #E8ECF1;
 }
 QPushButton[active="true"] {
-    background-color: #E8F3FF;
-    color: #165DFF;
+    background-color: #1A3A6E;
+    color: #4D90FF;
     font-weight: bold;
 }
 ```
@@ -245,9 +261,9 @@ QPushButton[active="true"] {
 
 | 状态 | 背景 | 边框 | 文字色 |
 |------|------|------|--------|
-| 试用/未激活 | `#FFF2F0` | `#FF7875` | `#F5222D` |
-| 即将过期 | `#FFF7E6` | `#FFA940` | `#FA8C16` |
-| 永久/充足 | `#F6FFED` | `#73D13D` | `#52C41A` |
+| 试用/未激活 | `#3A1A1A` | `#FF5C5C` | `#FF5C5C` |
+| 即将过期 | `#2A2210` | `#FFB040` | `#FA8C16` |
+| 永久/充足 | `#1F4A2E` | `#3DD66A` | `#3DD66A` |
 
 ```css
 QPushButton {
@@ -264,15 +280,15 @@ QPushButton {
 #### 标准输入框
 ```css
 QLineEdit {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 8px 12px;
     font-size: 10pt;
-    background-color: #FFFFFF;
-    color: #1D2129;
+    background-color: #1E2433;
+    color: #E8ECF1;
 }
 QLineEdit:focus {
-    border-color: #165DFF;
+    border-color: #3B7CFF;
 }
 ```
 - **高度**：32px（`setFixedHeight(32)`）
@@ -281,26 +297,27 @@ QLineEdit:focus {
 #### 带背景输入框（project_manager / system_settings）
 ```css
 QLineEdit {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 8px 12px;
     font-size: 10pt;
-    background-color: #F5F7FA;
+    background-color: #1A1F2E;
+    color: #E8ECF1;
 }
 QLineEdit:focus {
-    border-color: #165DFF;
-    background-color: #FFFFFF;
+    border-color: #3B7CFF;
+    background-color: #1E2433;
 }
 ```
 
 #### 只读/机器码输入框
 ```css
 QLineEdit {
-    background-color: #F5F5F5;
-    border: 1px solid #BDBDBD;
+    background-color: #1A1F2E;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 4px 8px;
-    color: #212121;
+    color: #4D90FF;
     font-family: Consolas;
 }
 ```
@@ -310,31 +327,34 @@ QLineEdit {
 #### 标准下拉框
 ```css
 QComboBox {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 8px 12px;
     font-size: 10pt;
-    background-color: #FFFFFF;
+    background-color: #1E2433;
+    color: #E8ECF1;
 }
-QComboBox:hover { border-color: #165DFF; }
+QComboBox:hover { border-color: #3B7CFF; }
 QComboBox::drop-down { border: none; width: 28px; }
 QComboBox QAbstractItemView {
-    border: 1px solid #E5E6EB;
-    selection-background-color: #E8F3FF;
+    border: 1px solid #2E3648;
+    selection-background-color: #1A3A6E;
     outline: none;
+    background-color: #1E2433;
 }
 ```
 
 #### 小组合框（工具栏）
 ```css
 QComboBox {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 5px 10px;
     font-size: 9pt;
-    background-color: #F5F7FA;
+    background-color: #242B3D;
+    color: #B0B8C8;
 }
-QComboBox:focus { border-color: #165DFF; }
+QComboBox:focus { border-color: #3B7CFF; }
 QComboBox::drop-down { border: none; width: 20px; }
 ```
 
@@ -342,22 +362,23 @@ QComboBox::drop-down { border: none; width: 20px; }
 
 ```css
 QTableWidget {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
-    background-color: #FFFFFF;
-    gridline-color: #F2F3F5;
+    background-color: #1E2433;
+    gridline-color: #2A3142;
 }
-QTableWidget::item { padding: 6px 8px; }
-QTableWidget::item:alternate { background-color: #F7F8FA; }
+QTableWidget::item { padding: 6px 8px; color: #B0B8C8; }
+QTableWidget::item:alternate { background-color: #2A3142; }
 QHeaderView::section {
-    background-color: #F7F8FA;
+    background-color: #242B3D;
     border: none;
-    border-bottom: 1px solid #E5E6EB;
+    border-bottom: 1px solid #2E3648;
     padding: 8px;
     font-weight: bold;
-    color: #1D2129;
+    color: #E8ECF1;
     font-size: 9pt;
 }
+QTableWidget::item:selected { background-color: #1A3A6E; color: #E8ECF1; }
 ```
 
 - **行高**：36px（`verticalHeader.setDefaultSectionSize(36)`）
@@ -368,30 +389,30 @@ QHeaderView::section {
 
 ```css
 QTabWidget::pane {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
-    background-color: #FFFFFF;
+    background-color: #1E2433;
 }
 QTabBar::tab {
-    background-color: #F5F7FA;
-    border: 1px solid #E5E6EB;
+    background-color: #242B3D;
+    border: 1px solid #2E3648;
     border-bottom: none;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     padding: 6px 16px;
     font-size: 10pt;
-    color: #4E5969;
+    color: #7A8296;
     margin-right: 2px;
 }
 QTabBar::tab:selected {
-    background-color: #FFFFFF;
-    color: #165DFF;
-    border-bottom: 2px solid #165DFF;
+    background-color: #1E2433;
+    color: #4D90FF;
+    border-bottom: 2px solid #5C8AFF;
     font-weight: bold;
 }
 QTabBar::tab:hover:!selected {
-    background-color: #E8F3FF;
-    color: #165DFF;
+    background-color: #2A3142;
+    color: #B0B8C8;
 }
 ```
 
@@ -401,12 +422,12 @@ QTabBar::tab:hover:!selected {
 QGroupBox {
     font-size: 10pt;
     font-weight: bold;
-    color: #1D2129;
-    border: 1px solid #E5E6EB;
+    color: #E8ECF1;
+    border: 1px solid #2E3648;
     border-radius: 8px;
     margin-top: 10px;
     padding: 14px;
-    background-color: #FFFFFF;
+    background-color: #1E2433;
 }
 QGroupBox::title {
     subcontrol-origin: margin;
@@ -419,15 +440,16 @@ QGroupBox::title {
 
 ```css
 QListWidget {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
-    background-color: #FFFFFF;
+    background-color: #1E2433;
     font-size: 10pt;
     outline: none;
+    color: #B0B8C8;
 }
 QListWidget::item { padding: 5px 8px; }
-QListWidget::item:selected { background-color: #E8F3FF; color: #1D2129; }
-QListWidget::item:hover { background-color: #F5F7FA; }
+QListWidget::item:selected { background-color: #1A3A6E; color: #E8ECF1; }
+QListWidget::item:hover { background-color: #2A3142; }
 ```
 
 ### 4.8 文本编辑区（QTextEdit）
@@ -435,25 +457,26 @@ QListWidget::item:hover { background-color: #F5F7FA; }
 #### 代码/预览区
 ```css
 QTextEdit {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 10pt;
-    background-color: #F7F8FA;
-    color: #4E5969;
+    background-color: #1A1F2E;
+    color: #B0B8C8;
 }
 ```
 
 #### Prompt 编辑区
 ```css
 QTextEdit {
-    border: 1px solid #165DFF;
+    border: 1px solid #3B7CFF;
     border-radius: 4px;
     padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 10pt;
-    background-color: #F7F8FA;
+    background-color: #1A1F2E;
+    color: #E8ECF1;
 }
 ```
 
@@ -461,14 +484,15 @@ QTextEdit {
 
 ```css
 QProgressBar {
-    border: 1px solid #E5E6EB;
+    border: 1px solid #2E3648;
     border-radius: 4px;
     text-align: center;
-    background-color: #F5F7FA;
+    background-color: #2A3142;
     font-size: 10px;
+    color: #B0B8C8;
 }
 QProgressBar::chunk {
-    background-color: #165DFF;
+    background-color: #3B7CFF;
     border-radius: 3px;
 }
 ```
@@ -476,16 +500,16 @@ QProgressBar::chunk {
 ### 4.10 复选框（QCheckBox）
 
 ```css
-QCheckBox { font-size: 10pt; }
+QCheckBox { font-size: 10pt; color: #B0B8C8; }
 QCheckBox::indicator {
     width: 15px;
     height: 15px;
     border-radius: 3px;
-    border: 1px solid #C9CDD4;
+    border: 1px solid #2E3648;
 }
 QCheckBox::indicator:checked {
-    background-color: #165DFF;
-    border-color: #165DFF;
+    background-color: #3B7CFF;
+    border-color: #3B7CFF;
 }
 ```
 
@@ -493,26 +517,26 @@ QCheckBox::indicator:checked {
 
 ```css
 QWidget {
-    background-color: #FFFFFF;
+    background-color: #1E2433;
     border-radius: 8px;
     padding: 14px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #2E3648;
 }
 ```
 
 - **内部间距**：`spacing: 10`
-- **标题**：`font-size: 12pt; font-weight: bold;`
-- **描述**：`font-size: 10pt; color: #86909C; margin-bottom: 10px;`
+- **标题**：`font-size: 12pt; font-weight: bold; color: #E8ECF1;`
+- **描述**：`font-size: 10pt; color: #7A8296; margin-bottom: 10px;`
 
 ### 4.12 分割线（QFrame HLine）
 
 ```css
-QFrame { color: #E5E6EB; max-height: 1px; }
+QFrame { color: #383F50; max-height: 1px; }
 ```
 
 ### 4.13 对话框（QDialog）
 
-- **全局背景**：`#FFFFFF`
+- **全局背景**：`#1E2433`
 - **标准尺寸**：
   - 登录对话框：`400×320`
   - 激活对话框：`580×560`（三重锁定）
@@ -610,15 +634,15 @@ QFrame { color: #E5E6EB; max-height: 1px; }
 
 | 类型 | 样式 |
 |------|------|
-| 就绪状态 | `font-size: 9pt; color: #86909C;` |
-| 运行中 | `font-size: 9pt; color: #165DFF; font-weight: normal;` |
-| 完成 | `font-size: 9pt; color: #00B42A; font-weight: normal;` |
-| 错误 | `font-size: 9pt; color: #F53F3F; font-weight: normal;` |
+| 就绪状态 | `font-size: 9pt; color: #7A8296;` |
+| 运行中 | `font-size: 9pt; color: #00D4E8; font-weight: normal;` |
+| 完成 | `font-size: 9pt; color: #3DD66A; font-weight: normal;` |
+| 错误 | `font-size: 9pt; color: #FF5C5C; font-weight: normal;` |
 
 ### 6.6 加载效果
 
-- 进度条：`QProgressBar`，高度 14~22px，蓝色 chunk `#165DFF`
-- 按钮加载中：背景 `#FF7D00`，`disabled` 状态
+- 进度条：`QProgressBar`，高度 14~22px，蓝色 chunk `#3B7CFF`
+- 按钮加载中：背景 `#FFB040`，`disabled` 状态
 
 ---
 
@@ -679,6 +703,15 @@ QFrame { color: #E5E6EB; max-height: 1px; }
 ## 九、文件与维护
 
 - **本文件位置**：项目根目录 `DESIGN.md`，与 `CLAUDE.md` 同级
-- **版本**：V0.3.3
-- **更新日期**：2026年5月24日
+- **版本**：V0.3.5
+- **更新日期**：2026年5月25日
 - **维护规则**：每次新增/修改界面样式后，必须同步更新本文件对应章节
+
+## 十、变更记录
+
+| 日期 | 变更内容 |
+|------|---------|
+| 2026-05-24 | 初版创建，从30+ UI文件提取完整设计规范 |
+| 2026-05-25 | 修正复选框指示器边框色 `#C9CDD4`→`#E5E6EB`（§4.10）；同步修正代码中10处正常态组件边框色不一致 |
+| 2026-05-25 | **V0.3.4 暗蓝科技感升级**：整体配色从浅灰底迁移为深空蓝 `#1A1F2E` 暗色系；主色从 `#165DFF` 升级为 `#3B7CFF` 科技蓝；新增冰蓝 `#00D4E8`、深青绿 `#0F8B6E`、柔光蓝 `#5C8AFF` 三强调色；所有功能色适配暗色背景（提亮15-20%）；更新主窗口、登录/激活/账户管理对话框共5个文件 |
+| 2026-05-25 | **V0.3.5 三主题切换体系**：新增 `src/core/theme_engine.py`（ThemeEngine 单例 + 三套完整配色数据 + 全局QSS生成 + 组件QSS片段 + 配置持久化）；新增 `src/ui/theme_switcher_page.py`（主题切换面板 + 预览卡片 + 一键切换）；重构 `main_window.py`（移除硬编码QSS，集成ThemeEngine，导航栏/状态栏/配置栏/激活按钮/关于对话框全部动态适配）；重构 `login_dialog.py`、`activation_dialog.py`、`account_manager_dialog.py`（硬编码颜色→ThemeEngine动态颜色 + theme_changed监听）；重构 `batch_cmd_generator_page.py`（ParamGroupWidget + 模板按钮 + 状态栏全部动态适配）；更新 DESIGN.md 为三主题规范 |

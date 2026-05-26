@@ -1966,6 +1966,8 @@ class SingleDevicePage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        if self._theme_engine is None:
+            return
         t = self._theme_engine.current_theme
         # 页面级背景（只设置背景和字体，不设置color避免覆盖子控件）
         self.setStyleSheet(f"""
@@ -1973,15 +1975,87 @@ class SingleDevicePage(QWidget):
                 background-color: {t['page_bg']};
                 font-family: {t['font_ui']};
             }}
-            QGroupBox {{
-                font-size: 10pt; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 8px;
-                margin-top: 4px; padding: 4px 10px; background-color: {t['card_bg']};
-            }}
-            QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 4px; }}
         """)
+        # QGroupBox 单独设置（避免在页面级 setStyleSheet 中使用 color 属性）
+        if hasattr(self, 'table_group'):
+            self.table_group.setStyleSheet(self._group_style())
+        # 表格
+        if hasattr(self, 'table'):
+            self.table.setStyleSheet(self._table_style())
+        # TabWidget
+        if hasattr(self, 'result_tabs'):
+            self.result_tabs.setStyleSheet(self._result_tabs_style())
+        # 工具栏按钮
+        for attr, style_fn in [
+            ('add_btn', self._primary_btn_style),
+            ('edit_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
+            ('del_btn', lambda: self._toolbar_btn_style(t['warning_bg'], t['warning'])),
+            ('clear_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_tertiary'])),
+        ]:
+            btn = getattr(self, attr, None)
+            if btn is not None:
+                btn.setStyleSheet(style_fn())
+        # 操作按钮
+        if hasattr(self, 'inspect_btn'):
+            self.inspect_btn.setStyleSheet(self._primary_btn_style())
+        if hasattr(self, 'backup_btn'):
+            self.backup_btn.setStyleSheet(self._secondary_btn_style())
+        if hasattr(self, 'test_btn'):
+            self.test_btn.setStyleSheet(self._test_btn_style())
+        if hasattr(self, 'cancel_btn'):
+            self.cancel_btn.setStyleSheet(self._cancel_btn_style())
+        # 进度条
+        if hasattr(self, 'progress_bar'):
+            self.progress_bar.setStyleSheet(self._progress_style())
+        # 状态标签
+        for attr in ('status_label', 'select_count_lbl'):
+            lbl = getattr(self, attr, None)
+            if lbl is not None:
+                lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+        # 描述标签
+        if hasattr(self, 'desc_label'):
+            self.desc_label.setStyleSheet(
+                f"font-size: 9pt; color: {t['text_tertiary']}; padding: 4px 0;")
+        # 刷新所有 Tab 内容
+        self._refresh_all_tabs()
 
-    def _group_style(self):
+    def _refresh_all_tabs(self) -> None:
+        """刷新所有结果 Tab 的内部控件样式"""
+        t = self._theme_engine.current_theme
+        for i in range(self.result_tabs.count()):
+            page = self.result_tabs.widget(i)
+            if page is None:
+                continue
+            # 使用 findChildren 刷新子控件
+            for lst in page.findChildren(QListWidget):
+                lst.setStyleSheet(self._list_widget_style())
+            for te in page.findChildren(QTextEdit):
+                te.setStyleSheet(self._text_edit_style())
+            for cb in page.findChildren(QComboBox):
+                cb.setStyleSheet(self._combo_small_style())
+            # 收集当前 page 的 del 按钮引用
+            _page_del_btns = [
+                getattr(page, a, None) for a in (
+                    'backup_del_btn', 'report_del_btn',
+                    'diagnosis_del_btn', 'compliance_del_btn')
+            ]
+            for btn in page.findChildren(QPushButton):
+                obj_name = btn.objectName()
+                if 'del' in obj_name or btn in _page_del_btns:
+                    btn.setStyleSheet(self._small_danger_btn_style())
+                elif any(kw in obj_name for kw in ('ai_', 'inspect', 'diagnose', 'refine')):
+                    btn.setStyleSheet(self._ai_small_btn_style())
+                else:
+                    btn.setStyleSheet(self._small_btn_style())
+            # 刷新 Tab 内 QLabel（"设备筛选："、文件名标签、info 标签等）
+            for lbl in page.findChildren(QLabel):
+                obj_name = lbl.objectName()
+                if any(kw in obj_name for kw in ('_title_lbl', '_name_lbl')):
+                    lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+                else:
+                    lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+
+    def _group_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QGroupBox {{
@@ -2022,6 +2096,63 @@ class SingleDevicePage(QWidget):
             }}
             QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
             QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+        """
+
+    def _table_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QTableWidget {{
+                border: 1px solid {t['border']}; border-radius: 6px;
+                gridline-color: {t['border_deep']}; background-color: {t['card_bg']}; font-size: 9pt;
+            }}
+            QTableWidget::item {{ padding: 2px 4px; }}
+            QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
+            QHeaderView::section {{
+                background-color: {t['toolbar_bg']}; border: none;
+                border-bottom: 1px solid {t['border']}; padding: 2px 6px;
+                font-size: 9pt; font-weight: bold; color: {t['text_secondary']};
+            }}
+        """
+
+    def _result_tabs_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QTabWidget::pane {{
+                border: 1px solid {t['border']}; border-radius: 6px;
+                background-color: {t['card_bg']}; top: -1px;
+            }}
+            QTabBar::tab {{
+                background-color: {t['page_bg']}; border: 1px solid {t['border']};
+                border-bottom: none; border-top-left-radius: 6px;
+                border-top-right-radius: 6px; padding: 6px 16px;
+                font-size: 10pt; color: {t['text_secondary']}; margin-right: 2px;
+            }}
+            QTabBar::tab:selected {{
+                background-color: {t['card_bg']}; color: {t['primary']};
+                border-bottom: 2px solid {t['primary']}; font-weight: bold;
+            }}
+            QTabBar::tab:hover:!selected {{ background-color: {t['selection_bg']}; color: {t['primary']}; }}
+        """
+
+    def _progress_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QProgressBar {{
+                border: 1px solid {t['border']}; border-radius: 4px;
+                text-align: center; height: 20px; background-color: {t['page_bg']}; font-size: 11px;
+            }}
+            QProgressBar::chunk {{ background-color: {t['primary']}; border-radius: 3px; }}
+        """
+
+    def _ai_small_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        return f"""
+            QPushButton {{
+                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
+                border-radius: 4px; font-size: 9pt; font-weight: bold;
+            }}
+            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
         """
 
     def _test_btn_style(self) -> str:
