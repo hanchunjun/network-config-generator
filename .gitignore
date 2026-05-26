@@ -30,6 +30,13 @@ coverage.xml
 
 # Logs
 logs/
+*.log
+
+# Temp test files
+test_*.py
+
+# Runtime generated config (user-specific)
+config/theme_config.json
 
 # OS
 Thumbs.db
