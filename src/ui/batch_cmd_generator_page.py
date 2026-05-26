@@ -185,7 +185,7 @@ class ParamGroupWidget(QGroupBox):
         t = self._theme
         self.setStyleSheet(
             f"QGroupBox {{"
-            f"  font-size: 9pt; font-weight: bold; color: {t['text_main']};"
+            f"  font-size: 10pt; font-weight: bold; color: {t['text_main']};"
             f"  border: 1px solid {t['border']}; border-radius: {t['radius_lg']}px;"
             f"  margin-top: 8px; padding-top: 10px;"
             f"}}"
@@ -532,7 +532,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.template_combo.setStyleSheet(
             f"QComboBox {{"
             f"  border: 1px solid {t['input_border']}; border-radius: {r}px;"
-            f"  padding: 4px 8px; font-size: 9pt; background: {t['input_bg']};"
+            f"  padding: 4px 8px; font-size: 10pt; background: {t['input_bg']};"
             f"  color: {t['text_main']};"
             "}}"
             f"QComboBox:hover {{ border-color: {t['primary']}; }}"
@@ -544,28 +544,28 @@ class BatchCmdGeneratorPage(QWidget):
         self.btn_add_template = QPushButton("+ 新增")
         self.btn_add_template.setObjectName("tplAddBtn")
         self.btn_add_template.setCursor(Qt.PointingHandCursor)
-        self.btn_add_template.setMinimumHeight(28)
+        self.btn_add_template.setMinimumHeight(24)
         self.btn_add_template.setMinimumWidth(52)
         template_bar.addWidget(self.btn_add_template)
 
         self.btn_rename_template = QPushButton("重命名")
         self.btn_rename_template.setObjectName("tplRenameBtn")
         self.btn_rename_template.setCursor(Qt.PointingHandCursor)
-        self.btn_rename_template.setMinimumHeight(28)
+        self.btn_rename_template.setMinimumHeight(24)
         self.btn_rename_template.setMinimumWidth(52)
         template_bar.addWidget(self.btn_rename_template)
 
         self.btn_save_template = QPushButton("保存")
         self.btn_save_template.setObjectName("tplSaveBtn")
         self.btn_save_template.setCursor(Qt.PointingHandCursor)
-        self.btn_save_template.setMinimumHeight(28)
+        self.btn_save_template.setMinimumHeight(24)
         self.btn_save_template.setMinimumWidth(40)
         template_bar.addWidget(self.btn_save_template)
 
         self.btn_delete_template = QPushButton("删除")
         self.btn_delete_template.setObjectName("tplDeleteBtn")
         self.btn_delete_template.setCursor(Qt.PointingHandCursor)
-        self.btn_delete_template.setMinimumHeight(28)
+        self.btn_delete_template.setMinimumHeight(24)
         self.btn_delete_template.setMinimumWidth(40)
         template_bar.addWidget(self.btn_delete_template)
 
@@ -573,7 +573,7 @@ class BatchCmdGeneratorPage(QWidget):
         template_layout.addLayout(template_bar)
 
         hint_lbl = QLabel("请输入命令模板，参数格式为：%a ~ %f")
-        hint_lbl.setStyleSheet(f"font-size: 9pt; color: {self._theme['text_tertiary']};")
+        hint_lbl.setStyleSheet(f"font-size: 10pt; color: {self._theme['text_tertiary']};")
         template_layout.addWidget(hint_lbl)
 
         self.template_edit = QTextEdit()
@@ -638,14 +638,14 @@ class BatchCmdGeneratorPage(QWidget):
         self.cmd_count_spin = QSpinBox()
         self.cmd_count_spin.setRange(1, 999999)
         self.cmd_count_spin.setValue(12)
-        self.cmd_count_spin.setMinimumHeight(30)
+        self.cmd_count_spin.setMinimumHeight(28)
         self.cmd_count_spin.setMinimumWidth(75)
         self.cmd_count_spin.setToolTip("输出多少条相同的命令\n取消勾选后由下方「循环个数」控制差异化条数")
         action_row.addWidget(self.cmd_count_spin)
 
         self.mode_hint_label = QLabel()
         self.mode_hint_label.setStyleSheet(
-            f"color: {self._theme['text_tertiary']}; font-size: 8pt; padding: 0 4px;"
+            f"color: {self._theme['text_tertiary']}; font-size: 10pt; padding: 0 4px;"
         )
         self.mode_hint_label.setText("📌 当前模式：固定重复")
         action_row.addWidget(self.mode_hint_label)
@@ -653,27 +653,27 @@ class BatchCmdGeneratorPage(QWidget):
         btn_gen = QPushButton("生成命令")
         btn_gen.setObjectName("genBtn")
         btn_gen.setCursor(Qt.PointingHandCursor)
-        btn_gen.setMinimumHeight(32)
+        btn_gen.setMinimumHeight(28)
         btn_gen.setMinimumWidth(85)
         action_row.addWidget(btn_gen)
 
         btn_save = QPushButton("保存结果")
         btn_save.setObjectName("saveBtn")
         btn_save.setCursor(Qt.PointingHandCursor)
-        btn_save.setMinimumHeight(32)
+        btn_save.setMinimumHeight(28)
         btn_save.setMinimumWidth(85)
         action_row.addWidget(btn_save)
 
         btn_copy = QPushButton("复制全部")
         btn_copy.setObjectName("copyBtn")
         btn_copy.setCursor(Qt.PointingHandCursor)
-        btn_copy.setMinimumHeight(32)
+        btn_copy.setMinimumHeight(28)
         btn_copy.setMinimumWidth(85)
         action_row.addWidget(btn_copy)
 
         btn_clear = QPushButton("清空")
         btn_clear.setCursor(Qt.PointingHandCursor)
-        btn_clear.setMinimumHeight(32)
+        btn_clear.setMinimumHeight(24)
         btn_clear.setMinimumWidth(65)
         action_row.addWidget(btn_clear)
 
@@ -691,7 +691,7 @@ class BatchCmdGeneratorPage(QWidget):
         status_bar = QLabel("  0 %")
         status_bar.setAlignment(Qt.AlignCenter)
         status_bar.setStyleSheet(
-            f"background-color: {t['hover_bg']}; color: {t['text_tertiary']}; font-size: 9pt;"
+            f"background-color: {t['hover_bg']}; color: {t['text_tertiary']}; font-size: 10pt;"
             f"border: 1px solid {t['border']}; padding: 3px;"
         )
         status_bar.setMinimumHeight(24)
@@ -702,7 +702,7 @@ class BatchCmdGeneratorPage(QWidget):
         t = self._theme
         return (
             "QGroupBox {"
-            f"  font-size: 10pt; font-weight: bold; color: {t['text_main']};"
+            f"  font-size: 11pt; font-weight: bold; color: {t['text_main']};"
             f"  border: 1px solid {t['border']}; border-radius: {t['radius_lg']}px;"
             "  margin-top: 8px; padding-top: 8px;"
             "}"
@@ -717,7 +717,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.setStyleSheet(
             "QTextEdit {"
             f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
-            f"  background: {t['input_bg']}; font-size: 10pt; color: {t['text_main']};"
+            f"  background: {t['input_bg']}; font-size: 11pt; color: {t['text_main']};"
             "}"
             f"QTextEdit:focus {{ border-color: {t['primary']}; }}"
             "QSpinBox {"
@@ -726,51 +726,124 @@ class BatchCmdGeneratorPage(QWidget):
             "}"
             f"QSpinBox:focus {{ border-color: {t['primary']}; }}"
             f"QPushButton#genBtn {{"
-            f"  background-color: {t['primary']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
+            f"  padding: 5px 8px;"
             "}}"
-            f"QPushButton#genBtn:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton#genBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#genBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#saveBtn {{"
-            f"  background-color: {t['success']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
+            f"  padding: 5px 8px;"
             "}}"
-            f"QPushButton#saveBtn:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton#saveBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#saveBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#copyBtn {{"
-            f"  background-color: {t['warning']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
+            f"  padding: 5px 8px;"
             "}}"
-            f"QPushButton#copyBtn:hover {{ background-color: {t['warning_hover']}; }}"
+            f"QPushButton#copyBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#copyBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#tplAddBtn {{"
-            f"  background-color: {t['primary']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  padding: 4px 12px;"
             "}}"
-            f"QPushButton#tplAddBtn:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton#tplAddBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#tplAddBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#tplRenameBtn {{"
-            f"  background-color: {t['warning']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  padding: 4px 12px;"
             "}}"
-            f"QPushButton#tplRenameBtn:hover {{ background-color: {t['warning_hover']}; }}"
+            f"QPushButton#tplRenameBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#tplRenameBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#tplSaveBtn {{"
-            f"  background-color: {t['success']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  padding: 4px 12px;"
             "}}"
-            f"QPushButton#tplSaveBtn:hover {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton#tplSaveBtn:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            "}}"
+            f"QPushButton#tplSaveBtn:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            "}}"
             f"QPushButton#tplDeleteBtn {{"
-            f"  background-color: {t['danger']}; color: {t['text_primary']}; border: none;"
-            f"  border-radius: {r}px; font-size: 9pt; font-weight: bold;"
+            f"  background-color: {t['page_bg']}; color: {t['danger']};"
+            f"  border: 1px solid {t['danger']};"
+            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
+            f"  padding: 4px 12px;"
             "}}"
-            f"QPushButton#tplDeleteBtn:hover {{ background-color: {t['danger_hover']}; }}"
+            f"QPushButton#tplDeleteBtn:hover {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border: 1px solid {t['danger']};"
+            f"  color: {t['danger']};"
+            "}}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
             ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn) {"
             f"  background-color: {t['hover_bg']}; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']}; border-radius: {r}px; font-size: 10pt;"
+            f"  border: 1px solid {t['border']}; border-radius: {r}px; font-size: 11pt;"
+            f"  padding: 5px 8px;"
             "}"
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
             ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn):hover {"
             f"  background-color: {t['border']}; border-color: {t['text_tertiary']};"
             "}"
             "QCheckBox { spacing: 4px; }"
-            "QCheckBox::indicator { width: 15px; height: 15px; border-radius: 3px;"
+            f"QCheckBox::indicator {{ width: 15px; height: 15px; border-radius: {r}px;"
             f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
             f"QCheckBox::indicator:checked {{ background-color: {t['primary']}; border-color: {t['primary']}; }}"
         )
@@ -783,7 +856,7 @@ class BatchCmdGeneratorPage(QWidget):
         for pw in self._param_widgets:
             pw.setStyleSheet(
                 f"QGroupBox {{"
-                f"  font-size: 9pt; font-weight: bold; color: {self._theme['text_main']};"
+                f"  font-size: 10pt; font-weight: bold; color: {self._theme['text_main']};"
                 f"  border: 1px solid {self._theme['border']}; border-radius: {self._theme['radius_lg']}px;"
                 f"  margin-top: 8px; padding-top: 10px;"
                 f"}}"
@@ -793,12 +866,12 @@ class BatchCmdGeneratorPage(QWidget):
         hint_color = self._theme['text_tertiary']
         for lbl in self.findChildren(QLabel):
             if lbl.text() and "%a" in lbl.text():
-                lbl.setStyleSheet(f"font-size: 9pt; color: {hint_color};")
+                lbl.setStyleSheet(f"font-size: 10pt; color: {hint_color};")
         if hasattr(self, '_status_label') and self._status_label:
             t = self._theme
             self._status_label.setStyleSheet(
                 f"background-color: {t['hover_bg']}; color: {t['text_tertiary']};"
-                f"font-size: 9pt; border: 1px solid {t['border']}; padding: 3px;"
+                f"font-size: 10pt; border: 1px solid {t['border']}; padding: 3px;"
             )
         self.update()
 

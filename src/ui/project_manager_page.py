@@ -134,7 +134,7 @@ class ProjectManagerPage(QWidget):
         input_layout.setSpacing(6)
         name_label = QLabel("项目名称")
         name_label.setFixedWidth(60)
-        name_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
+        name_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
         input_layout.addWidget(name_label)
         self.project_name_input = QLineEdit()
         self.project_name_input.setFixedWidth(240)
@@ -144,7 +144,7 @@ class ProjectManagerPage(QWidget):
         input_layout.addWidget(self.project_name_input)
 
         self.create_btn = QPushButton("创建项目")
-        self.create_btn.setFixedSize(88, 28)
+        self.create_btn.setFixedSize(88, 30)
         self.create_btn.setStyleSheet(self._primary_btn_style())
         self.create_btn.clicked.connect(self.create_project)
         input_layout.addWidget(self.create_btn)
@@ -155,10 +155,10 @@ class ProjectManagerPage(QWidget):
         path_layout.setSpacing(6)
         path_label = QLabel("存储路径")
         path_label.setFixedWidth(60)
-        path_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
+        path_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
         path_layout.addWidget(path_label)
         self.path_label = QLabel(PROJECTS_DIR)
-        self.path_label.setStyleSheet(f"font-size: 11px; color: {self._theme_engine.current_theme['text_tertiary']};")
+        self.path_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_tertiary']};")
         path_layout.addWidget(self.path_label)
         path_layout.addStretch()
         create_section.addLayout(path_layout)
@@ -173,7 +173,7 @@ class ProjectManagerPage(QWidget):
         overview_header.setStyleSheet(f"font-size: 10pt; font-weight: bold; color: {self._theme_engine.current_theme['text_main']};")
         overview_header_row.addWidget(overview_header)
         self.overview_stats_label = QLabel("")
-        self.overview_stats_label.setStyleSheet(f"font-size: 11px; color: {self._theme_engine.current_theme['text_tertiary']}; font-weight: normal;")
+        self.overview_stats_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_tertiary']}; font-weight: normal;")
         overview_header_row.addWidget(self.overview_stats_label)
         overview_header_row.addStretch()
         overview_section.addLayout(overview_header_row)
@@ -197,65 +197,72 @@ class ProjectManagerPage(QWidget):
 
         switch_label = QLabel("当前项目")
         switch_label.setFixedWidth(60)
-        switch_label.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
+        switch_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
         console_layout.addWidget(switch_label)
         self.project_combo = QComboBox()
         self.project_combo.setFixedWidth(280)
         self.project_combo.setFixedHeight(28)
+        _tc = self._theme_engine.current_theme
+        _r_md = _tc['radius_md']
         self.project_combo.setStyleSheet(f"""
             QComboBox {{
-                border: 1px solid {self._theme_engine.current_theme['input_border']};
-                border-radius: 4px;
+                border: 1px solid {_tc['input_border']};
+                border-radius: {_r_md}px;
                 padding: 2px 10px;
-                font-size: 9pt;
-                background-color: {self._theme_engine.current_theme['page_bg']};
+                font-size: 10pt;
+                background-color: {_tc['page_bg']};
             }}
-            QComboBox:hover {{ border: 1px solid {self._theme_engine.current_theme['primary']}; }}
+            QComboBox:hover {{ border: 1px solid {_tc['primary']}; }}
             QComboBox::drop-down {{ border: none; }}
         """)
         self.project_combo.currentIndexChanged.connect(self.on_project_changed)
         console_layout.addWidget(self.project_combo)
 
         self.switch_btn = QPushButton("切换")
-        self.switch_btn.setFixedSize(56, 28)
+        self.switch_btn.setFixedSize(56, 30)
         self.switch_btn.setStyleSheet(self._primary_btn_style())
         self.switch_btn.clicked.connect(self.switch_project)
         console_layout.addWidget(self.switch_btn)
 
         self.refresh_btn = QPushButton("刷新")
-        self.refresh_btn.setFixedSize(56, 28)
+        self.refresh_btn.setFixedSize(56, 30)
         self.refresh_btn.setStyleSheet(self._secondary_btn_style())
         self.refresh_btn.clicked.connect(self.refresh_project_list)
         console_layout.addWidget(self.refresh_btn)
 
         self.edit_project_btn = QPushButton("编辑")
-        self.edit_project_btn.setFixedSize(56, 28)
+        self.edit_project_btn.setFixedSize(56, 30)
         self.edit_project_btn.setStyleSheet(self._secondary_btn_style())
         self.edit_project_btn.clicked.connect(self.edit_project)
         console_layout.addWidget(self.edit_project_btn)
 
         self.delete_project_btn = QPushButton("删除")
-        self.delete_project_btn.setFixedSize(56, 28)
+        self.delete_project_btn.setFixedSize(56, 30)
         t = self._theme_engine.current_theme
         self.delete_project_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['danger']}22; border: 1px solid {t['danger']};
-                border-radius: 4px; font-size: 9pt; color: {t['danger']};
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
-            QPushButton:hover {{ background-color: {t['danger']}33; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['danger']};
+                color: {t['danger']};
+            }}
         """)
         self.delete_project_btn.clicked.connect(self.delete_project)
         console_layout.addWidget(self.delete_project_btn)
 
         t = self._theme_engine.current_theme
         self.info_path = QLabel("项目路径：未选择")
-        self.info_path.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']}; font-weight: normal;")
+        self.info_path.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: normal;")
         console_layout.addWidget(self.info_path)
         self.info_devices = QLabel("设备数量：0")
-        self.info_devices.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']}; font-weight: normal;")
+        self.info_devices.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: normal;")
         console_layout.addWidget(self.info_devices)
         self.info_logs = QLabel("运维日志：0")
-        self.info_logs.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']}; font-weight: normal;")
+        self.info_logs.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: normal;")
         console_layout.addWidget(self.info_logs)
 
         console_layout.addStretch()
@@ -273,88 +280,103 @@ class ProjectManagerPage(QWidget):
         table_btn_layout.setSpacing(8)
 
         self.add_row_btn = QPushButton("新增设备")
-        self.add_row_btn.setFixedSize(90, 36)
+        self.add_row_btn.setFixedSize(90, 30)
         self.add_row_btn.setStyleSheet(self._primary_btn_style())
         self.add_row_btn.clicked.connect(self.add_device_dialog)
         table_btn_layout.addWidget(self.add_row_btn)
 
         self.edit_btn = QPushButton("编辑设备")
-        self.edit_btn.setFixedSize(90, 36)
+        self.edit_btn.setFixedSize(90, 30)
         self.edit_btn.setStyleSheet(self._secondary_btn_style())
         self.edit_btn.clicked.connect(self.edit_device_dialog)
         table_btn_layout.addWidget(self.edit_btn)
 
         self.del_row_btn = QPushButton("删除选中")
-        self.del_row_btn.setFixedSize(90, 36)
+        self.del_row_btn.setFixedSize(90, 30)
         self.del_row_btn.setStyleSheet(self._secondary_btn_style())
         self.del_row_btn.clicked.connect(self.delete_device_row)
         table_btn_layout.addWidget(self.del_row_btn)
 
         self.save_device_btn = QPushButton("保存清单")
-        self.save_device_btn.setFixedSize(90, 36)
+        self.save_device_btn.setFixedSize(90, 30)
         self.save_device_btn.setStyleSheet(self._primary_btn_style())
         self.save_device_btn.clicked.connect(self.save_device_list)
         table_btn_layout.addWidget(self.save_device_btn)
 
         self.import_btn = QPushButton("导入")
-        self.import_btn.setFixedSize(70, 36)
+        self.import_btn.setFixedSize(70, 30)
         self.import_btn.setStyleSheet(self._secondary_btn_style())
         self.import_btn.clicked.connect(self.import_device_list)
         table_btn_layout.addWidget(self.import_btn)
 
         self.export_btn = QPushButton("导出")
-        self.export_btn.setFixedSize(70, 36)
+        self.export_btn.setFixedSize(70, 30)
         self.export_btn.setStyleSheet(self._secondary_btn_style())
         self.export_btn.clicked.connect(self.export_device_list)
         table_btn_layout.addWidget(self.export_btn)
 
         self.template_btn = QPushButton("下载模板")
-        self.template_btn.setFixedSize(90, 36)
+        self.template_btn.setFixedSize(90, 30)
         self.template_btn.setStyleSheet(self._secondary_btn_style())
         self.template_btn.clicked.connect(self.download_template)
         table_btn_layout.addWidget(self.template_btn)
 
         self.template_lib_btn = QPushButton("模板库")
-        self.template_lib_btn.setFixedSize(80, 36)
+        self.template_lib_btn.setFixedSize(80, 30)
         t = self._theme_engine.current_theme
         self.template_lib_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']}18; border: 1px solid {t['primary']};
-                border-radius: 4px; font-size: 10pt; color: {t['primary']};
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
-            QPushButton:hover {{ background-color: {t['primary']}30; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
         """)
         self.template_lib_btn.clicked.connect(self.open_template_library)
         table_btn_layout.addWidget(self.template_lib_btn)
 
         self.discover_btn = QPushButton("批量发现")
-        self.discover_btn.setFixedSize(90, 36)
+        self.discover_btn.setFixedSize(90, 30)
         t = self._theme_engine.current_theme
         self.discover_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['success']}18; border: 1px solid {t['success']};
-                border-radius: 4px; font-size: 10pt; color: {t['success']};
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
-            QPushButton:hover {{ background-color: {t['success']}30; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
         """)
         self.discover_btn.clicked.connect(self.open_discovery)
         table_btn_layout.addWidget(self.discover_btn)
 
         self.test_conn_btn = QPushButton("连接测试")
-        self.test_conn_btn.setFixedSize(90, 36)
+        self.test_conn_btn.setFixedSize(90, 30)
         t = self._theme_engine.current_theme
         self.test_conn_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['warning']}18; border: 1px solid {t['warning']};
-                border-radius: 4px; font-size: 10pt; color: {t['warning']};
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
-            QPushButton:hover {{ background-color: {t['warning']}30; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
         """)
         self.test_conn_btn.clicked.connect(self.test_connection)
         table_btn_layout.addWidget(self.test_conn_btn)
 
         self.history_btn = QPushButton("变更历史")
-        self.history_btn.setFixedSize(90, 36)
+        self.history_btn.setFixedSize(90, 30)
         self.history_btn.setStyleSheet(self._secondary_btn_style())
         self.history_btn.clicked.connect(self.show_history)
         table_btn_layout.addWidget(self.history_btn)
@@ -370,7 +392,7 @@ class ProjectManagerPage(QWidget):
         t = self._theme_engine.current_theme
         self.group_filter_combo.setStyleSheet(f"""
             QComboBox {{
-                border: 1px solid {t['input_border']}; border-radius: 4px;
+                border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;
                 padding: 6px 10px; font-size: 10pt; background-color: {t['card_bg']};
             }}
             QComboBox:hover {{ border: 1px solid {t['primary']}; }}
@@ -402,7 +424,7 @@ class ProjectManagerPage(QWidget):
         self.device_table.setStyleSheet(f"""
             QTableWidget {{
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']};
                 gridline-color: {t['border']};
             }}
@@ -425,13 +447,14 @@ class ProjectManagerPage(QWidget):
 
     def _group_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_lg = t['radius_lg']
         return f"""
             QGroupBox {{
                 font-size: 12pt;
                 font-weight: bold;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
-                border-radius: 8px;
+                border-radius: {r_lg}px;
                 margin-top: 10px;
                 padding: 14px;
                 background-color: {t['card_bg']};
@@ -445,10 +468,11 @@ class ProjectManagerPage(QWidget):
 
     def _input_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QLineEdit {{
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {r_md}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['page_bg']};
@@ -456,59 +480,52 @@ class ProjectManagerPage(QWidget):
             QLineEdit:focus {{ border: 1px solid {t['primary']}; }}
         """
 
-    def _primary_btn_style(self) -> str:
+    def _primary_btn_style(self):
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent;
-                color: {t['primary']};
+                background-color: {t['primary']};
+                color: {t['text_primary']};
                 border: 1px solid {t['primary']};
-                border-radius: 4px;
+                border-radius: {r_md}px;
                 font-size: 10pt;
-                font-weight: bold;
-                padding: 8px 20px;
+                padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border: 1px solid {t['primary_hover']};
-                color: {t['primary_hover']};
+                background-color: {t['primary_hover']};
+                border-color: {t['primary_hover']};
+            }}
+            QPushButton:pressed {{
+                background-color: {t['primary_pressed']};
             }}
             QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
+                background-color: {t['border_deep']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
             }}
         """
 
-    def _secondary_btn_style(self) -> str:
+    def _secondary_btn_style(self):
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent;
-                color: {t['text_secondary']};
+                background-color: {t['page_bg']};
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {r_md}px;
                 font-size: 10pt;
-                padding: 8px 16px;
             }}
-            QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border: 1px solid {t['primary']};
-                color: {t['primary']};
-            }}
-            QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
-            }}
+            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
         """
 
     def _combo_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QComboBox {{
-                border: 1px solid {t['input_border']}; border-radius: 4px;
-                padding: 2px 10px; font-size: 9pt; background-color: {t['page_bg']};
+                border: 1px solid {t['input_border']}; border-radius: {r_md}px;
+                padding: 2px 10px; font-size: 10pt; background-color: {t['page_bg']};
             }}
             QComboBox:hover {{ border: 1px solid {t['primary']}; }}
             QComboBox::drop-down {{ border: none; }}
@@ -516,9 +533,10 @@ class ProjectManagerPage(QWidget):
 
     def _table_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QTableWidget {{
-                border: 1px solid {t['border']}; border-radius: 4px;
+                border: 1px solid {t['border']}; border-radius: {r_md}px;
                 background-color: {t['card_bg']}; gridline-color: {t['border']};
             }}
             QTableWidget::item {{ padding: 6px; }}
@@ -531,61 +549,65 @@ class ProjectManagerPage(QWidget):
 
     def _danger_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent; border: 1px solid {t['danger']};
-                border-radius: 4px; font-size: 9pt; color: {t['danger']};
-                padding: 8px 16px;
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['danger_bg']};
-                border: 1px solid {t['danger_hover']};
-                color: {t['danger_hover']};
+                background-color: {t['card_bg']};
+                border-color: {t['danger']};
+                color: {t['danger']};
             }}
         """
 
     def _accent_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent; border: 1px solid {t['primary']};
-                border-radius: 4px; font-size: 10pt; color: {t['primary']};
-                padding: 8px 16px;
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border: 1px solid {t['primary_hover']};
-                color: {t['primary_hover']};
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
             }}
         """
 
     def _success_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent; border: 1px solid {t['success']};
-                border-radius: 4px; font-size: 10pt; color: {t['success']};
-                padding: 8px 16px;
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['success_bg']};
-                border: 1px solid {t['success_hover']};
-                color: {t['success_hover']};
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
             }}
         """
 
     def _warning_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: transparent; border: 1px solid {t['warning']};
-                border-radius: 4px; font-size: 10pt; color: {t['warning']};
-                padding: 8px 16px;
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['warning_bg']};
-                border: 1px solid {t['warning_hover']};
-                color: {t['warning_hover']};
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
             }}
         """
 
@@ -1291,13 +1313,14 @@ class ProjectManagerPage(QWidget):
                 status_icon = "🟢"
 
             card = QGroupBox(f"{status_icon} {name}")
+            r_lg = t['radius_lg']
             card.setStyleSheet(f"""
                 QGroupBox {{
                     font-size: 10pt;
                     font-weight: bold;
                     color: {t['text_main']};
                     border: 1px solid {t['border']};
-                    border-radius: 8px;
+                    border-radius: {r_lg}px;
                     margin-top: 8px;
                     padding: 12px 10px 8px 10px;
                     background-color: {t['card_bg']};
@@ -1311,34 +1334,39 @@ class ProjectManagerPage(QWidget):
             """)
             card.setFixedWidth(210)
             card_layout = QVBoxLayout()
-            card_layout.setSpacing(3)
-            card_layout.setContentsMargins(6, 14, 6, 6)
+            card_layout.setSpacing(2)
+            card_layout.setContentsMargins(8, 8, 8, 6)
 
             info_dev = QLabel(f"设备: {device_count}台")
-            info_dev.setStyleSheet(f"font-size: 9pt; color: {t['text_secondary']}; font-weight: normal;")
+            info_dev.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: normal;")
             card_layout.addWidget(info_dev)
             info_bkp = QLabel(f"备份: {last_backup}")
-            info_bkp.setStyleSheet(f"font-size: 9pt; color: {t['text_secondary']}; font-weight: normal;")
+            info_bkp.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: normal;")
             card_layout.addWidget(info_bkp)
             info_ins = QLabel(f"巡检: {last_inspect}")
-            info_ins.setStyleSheet(f"font-size: 9pt; color: {t['text_secondary']}; font-weight: normal;")
+            info_ins.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: normal;")
             card_layout.addWidget(info_ins)
             info_fault = QLabel(f"故障: {fault_count}台")
-            info_fault.setStyleSheet(f"font-size: 9pt; color: {status_color}; font-weight: normal;")
+            info_fault.setStyleSheet(f"font-size: 10pt; color: {status_color}; font-weight: normal;")
             card_layout.addWidget(info_fault)
 
             enter_btn = QPushButton("进入项目")
-            enter_btn.setFixedHeight(28)
+            enter_btn.setFixedHeight(26)
             enter_btn.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['primary']}18;
-                    color: {t['primary']};
-                    border: 1px solid {t['primary']};
-                    border-radius: 4px;
-                    font-size: 9pt;
+                    background-color: {t['hover_bg']};
+                    color: {t['text_main']};
+                    border: 1px solid {t['border']};
+                    border-radius: {t['radius_md']}px;
+                    font-size: 10pt;
                     font-weight: bold;
+                    padding: 3px 6px;
                 }}
-                QPushButton:hover {{ background-color: {t['primary']}30; }}
+                QPushButton:hover {{
+                    background-color: {t['card_bg']};
+                    border-color: {t['primary']};
+                    color: {t['primary']};
+                }}
             """)
             enter_btn.clicked.connect(lambda checked, n=name: self._enter_project_from_card(n))
             card_layout.addWidget(enter_btn)
@@ -1399,9 +1427,9 @@ class ProjectManagerPage(QWidget):
                 if attr_name in _labels_main:
                     lbl.setStyleSheet(f"font-size: 10pt; font-weight: bold; {_lm}")
                 elif attr_name in _labels_tertiary:
-                    lbl.setStyleSheet(f"font-size: 11px; {_lt}; font-weight: normal;")
+                    lbl.setStyleSheet(f"font-size: 10pt; {_lt}; font-weight: normal;")
                 else:
-                    lbl.setStyleSheet(f"font-size: 9pt; {_lc}; font-weight: normal;")
+                    lbl.setStyleSheet(f"font-size: 10pt; {_lc}; font-weight: normal;")
         # QCheckBox
         if hasattr(self, 'show_pwd_cb'):
             self.show_pwd_cb.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']};")

@@ -28,7 +28,7 @@ class ExportWarningDialog(QDialog):
 
         # 警告图标和标题
         title_label = QLabel("⚠️ 导出操作将包含敏感信息")
-        title_label.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {t['danger']};")
+        title_label.setStyleSheet(f"font-size: 16pt; font-weight: bold; color: {t['danger']};")
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
 
@@ -44,7 +44,7 @@ class ExportWarningDialog(QDialog):
             f"包含信息：设备IP、厂商、类型、用户名、密码、特权密码、分组、标签"
         )
         risk_text.setWordWrap(True)
-        risk_text.setStyleSheet(f"font-size: 13px; line-height: 1.6; color: {t['text_main']};")
+        risk_text.setStyleSheet(f"font-size: 13pt; line-height: 1.6; color: {t['text_main']};")
         layout.addWidget(risk_text)
 
         # 安全提醒
@@ -55,9 +55,9 @@ class ExportWarningDialog(QDialog):
             QTextEdit {{
                 background-color: {t['warning_bg']};
                 border: 1px solid {t['warning']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px;
-                font-size: 12px;
+                font-size: 12pt;
                 color: {t['warning']};
             }}
         """)
@@ -71,7 +71,7 @@ class ExportWarningDialog(QDialog):
 
         # 安全确认复选框
         self.confirm_checkbox = QCheckBox("我已了解上述安全风险，确认继续导出")
-        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14pt; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮布局
@@ -79,18 +79,27 @@ class ExportWarningDialog(QDialog):
         button_layout.setSpacing(12)
 
         confirm_btn = QPushButton("确认导出")
-        confirm_btn.setFixedSize(120, 36)
+        confirm_btn.setFixedSize(120, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']};
-                color: {t['text_primary']};
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
+                background-color: {t['hover_bg']};
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
                 font-weight: bold;
+                padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -100,14 +109,15 @@ class ExportWarningDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消导出")
-        cancel_btn.setFixedSize(120, 36)
+        cancel_btn.setFixedSize(120, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']};
                 border: 1px solid {t['border']};
-                border-radius: 4px;
-                font-size: 14px;
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
                 font-weight: bold;
+                padding: 6px;
             }}
             QPushButton:hover {{ border-color: {t['primary']}; }}
         """)
@@ -152,12 +162,12 @@ class PasswordVisibilityDialog(QDialog):
             "请确保当前环境安全，防止他人窥屏。"
         )
         warning_label.setWordWrap(True)
-        warning_label.setStyleSheet(f"font-size: 13px; color: {t['text_main']};")
+        warning_label.setStyleSheet(f"font-size: 13pt; color: {t['text_main']};")
         layout.addWidget(warning_label)
 
         # 确认复选框
         self.confirm_checkbox = QCheckBox("当前环境安全，确认查看密码")
-        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14pt; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮
@@ -165,17 +175,26 @@ class PasswordVisibilityDialog(QDialog):
         button_layout.setSpacing(10)
 
         confirm_btn = QPushButton("确认查看")
-        confirm_btn.setFixedSize(100, 32)
+        confirm_btn.setFixedSize(100, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']};
-                color: {t['text_primary']};
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
+                background-color: {t['hover_bg']};
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
+                padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -185,13 +204,14 @@ class PasswordVisibilityDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 32)
+        cancel_btn.setFixedSize(100, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']};
                 border: 1px solid {t['border']};
-                border-radius: 4px;
-                font-size: 14px;
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
+                padding: 6px;
             }}
             QPushButton:hover {{ border-color: {t['primary']}; }}
         """)
@@ -238,17 +258,17 @@ class DeleteDeviceDialog(QDialog):
             "此操作将永久删除设备信息，无法恢复。"
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet(f"font-size: 13px; color: {t['text_main']};")
+        info_label.setStyleSheet(f"font-size: 13pt; color: {t['text_main']};")
         layout.addWidget(info_label)
 
         # 风险提醒
         risk_label = QLabel("⚠️ 删除后相关配置和历史记录也将被清除")
-        risk_label.setStyleSheet(f"font-size: 12px; color: {t['danger']};")
+        risk_label.setStyleSheet(f"font-size: 12pt; color: {t['danger']};")
         layout.addWidget(risk_label)
 
         # 确认复选框
         self.confirm_checkbox = QCheckBox("确认删除此设备")
-        self.confirm_checkbox.setStyleSheet(f"font-size: 14px; color: {t['primary']};")
+        self.confirm_checkbox.setStyleSheet(f"font-size: 14pt; color: {t['primary']};")
         layout.addWidget(self.confirm_checkbox)
 
         # 按钮
@@ -256,17 +276,26 @@ class DeleteDeviceDialog(QDialog):
         button_layout.setSpacing(10)
 
         confirm_btn = QPushButton("确认删除")
-        confirm_btn.setFixedSize(100, 32)
+        confirm_btn.setFixedSize(100, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['danger']};
-                color: {t['text_primary']};
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
+                background-color: {t['hover_bg']};
+                color: {t['danger']};
+                border: 1px solid {t['danger']};
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
+                padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['danger_hover']};
+                color: {t['danger_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         confirm_btn.clicked.connect(self._on_confirm)
         confirm_btn.setEnabled(False)
@@ -276,13 +305,14 @@ class DeleteDeviceDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 32)
+        cancel_btn.setFixedSize(100, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']};
                 border: 1px solid {t['border']};
-                border-radius: 4px;
-                font-size: 14px;
+                border-radius: {t['radius_md']}px;
+                font-size: 11pt;
+                padding: 6px;
             }}
             QPushButton:hover {{ border-color: {t['primary']}; }}
         """)

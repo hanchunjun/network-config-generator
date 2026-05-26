@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
             QStatusBar {{
                 background-color: {t['toolbar_bg']};
                 border-top: 1px solid {t['border_deep']};
-                font-size: 9pt;
+                font-size: 10pt;
                 color: {t['text_tertiary']};
                 padding: 2px 12px;
             }}
@@ -314,10 +314,10 @@ class MainWindow(QMainWindow):
         t = self._theme_engine.current_theme
         if project_name:
             self.project_status_label.setText(f"当前项目：{project_name}")
-            self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['success']}; padding-right: 12px; font-weight: bold;")
+            self.project_status_label.setStyleSheet(f"font-size: 10pt; color: {t['success']}; padding-right: 12px; font-weight: bold;")
         else:
             self.project_status_label.setText("未选择项目")
-            self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding-right: 12px;")
+            self.project_status_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; padding-right: 12px;")
 
     def refresh_project_status(self):
         try:
@@ -351,7 +351,7 @@ class MainWindow(QMainWindow):
             QStatusBar {{
                 background-color: {t['toolbar_bg']};
                 border-top: 1px solid {t['border_deep']};
-                font-size: 9pt;
+                font-size: 10pt;
                 color: {t['text_tertiary']};
                 padding: 2px 12px;
             }}
@@ -392,8 +392,8 @@ class MainWindow(QMainWindow):
                         background-color: {t['selection_bg']};
                         border: none;
                         border-radius: {t['radius_md']}px;
-                        padding: 6px 16px;
-                        font-size: 10pt;
+                        padding: 3px 8px;
+                        font-size: 11pt;
                         color: {t['primary_light']};
                         font-weight: bold;
                     }}
@@ -404,8 +404,8 @@ class MainWindow(QMainWindow):
                         background-color: transparent;
                         border: none;
                         border-radius: {t['radius_md']}px;
-                        padding: 6px 16px;
-                        font-size: 10pt;
+                        padding: 3px 8px;
+                        font-size: 11pt;
                         color: {t['text_secondary']};
                     }}
                     QPushButton:hover {{
@@ -426,17 +426,24 @@ class MainWindow(QMainWindow):
         r = t['radius_md']
         # 刷新配置选择栏背景
         if self._config_top_bar is not None:
-            self._config_top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; padding: 10px; border-bottom: 1px solid {t["border"]};')
+            self._config_top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; border-bottom: 1px solid {t["border"]};')
         # 刷新厂家选择按钮
         for vid, button in self.vendor_buttons.items():
             if vid == self.selected_vendor:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['primary']};
-                        color: {t['text_primary']};
+                        background-color: {t['hover_bg']};
+                        color: {t['primary']};
                         border: 1px solid {t['primary']};
                         border-radius: {r}px;
                         font-size: 10pt;
+                        font-weight: bold;
+                        padding: 4px 6px;
+                    }}
+                    QPushButton:hover {{
+                        background-color: {t['card_bg']};
+                        border: 1px solid {t['primary']};
+                        color: {t['primary']};
                     }}
                 """)
             else:
@@ -447,6 +454,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
+                        padding: 4px 6px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
@@ -455,11 +463,17 @@ class MainWindow(QMainWindow):
             if did == self.selected_device:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['primary']};
-                        color: {t['text_primary']};
+                        background-color: {t['hover_bg']};
+                        color: {t['primary']};
                         border: 1px solid {t['primary']};
                         border-radius: {r}px;
                         font-size: 10pt;
+                        font-weight: bold;
+                        padding: 4px 6px;
+                    }}
+                    QPushButton:hover {{
+                        background-color: {t['card_bg']};
+                        border: 1px solid {t['primary_hover']};
                     }}
                 """)
             else:
@@ -470,6 +484,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
+                        padding: 4px 6px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
@@ -497,7 +512,7 @@ class MainWindow(QMainWindow):
         t = self._theme_engine.current_theme
 
         self._nav_bar = QWidget()
-        self._nav_bar.setFixedHeight(56)
+        self._nav_bar.setFixedHeight(48)
         self._nav_bar.setStyleSheet(f"""
             background-color: {t['nav_bg']};
             border-bottom: 1px solid {t['border']};
@@ -514,14 +529,14 @@ class MainWindow(QMainWindow):
         self.nav_buttons = {}
         for module_id, module_name, icon in MODULES:
             btn = QPushButton(f" {icon}  {module_name}")
-            btn.setFixedHeight(40)
+            btn.setFixedHeight(26)
             btn.setStyleSheet(f"""
                 QPushButton {{
                     background-color: transparent;
                     border: none;
-                    border-radius: {t['radius_md']}px;
-                    padding: 6px 16px;
-                    font-size: 10pt;
+                    border-radius: {t['radius_sm']}px;
+                    padding: 3px 8px;
+                    font-size: 11pt;
                     color: {t['text_secondary']};
                 }}
                 QPushButton:hover {{
@@ -541,7 +556,7 @@ class MainWindow(QMainWindow):
         nav_layout.addStretch()
 
         self.project_status_label = QLabel("未选择项目")
-        self.project_status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding-right: 12px;")
+        self.project_status_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; padding-right: 12px;")
         nav_layout.addWidget(self.project_status_label)
 
         # 保存账户管理和关于按钮引用，主题切换时刷新
@@ -550,7 +565,7 @@ class MainWindow(QMainWindow):
 
         # 激活状态按钮
         self._activation_btn = QPushButton()
-        self._activation_btn.setFixedSize(90, 32)
+        self._activation_btn.setFixedSize(90, 26)
         self._activation_btn.setCursor(Qt.PointingHandCursor)
         self._activation_btn.clicked.connect(self._on_activation_btn_clicked)
         self._update_activation_btn_style()
@@ -558,13 +573,13 @@ class MainWindow(QMainWindow):
 
         # 账户管理按钮
         self._account_btn = QPushButton("账户管理")
-        self._account_btn.setFixedSize(80, 32)
+        self._account_btn.setFixedSize(72, 26)
         self._account_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
         self._account_btn.clicked.connect(self._show_account_dialog)
         nav_layout.addWidget(self._account_btn)
 
         self._about_btn = QPushButton("关于")
-        self._about_btn.setFixedSize(60, 32)
+        self._about_btn.setFixedSize(48, 26)
         self._about_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
         self._about_btn.clicked.connect(self.show_about_dialog)
         nav_layout.addWidget(self._about_btn)
@@ -634,9 +649,13 @@ class MainWindow(QMainWindow):
         self._config_top_bar = top_bar
         top_layout = QHBoxLayout()
         top_bar.setLayout(top_layout)
-        top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; padding: 10px; border-bottom: 1px solid {t["border"]};')
+        top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; border-bottom: 1px solid {t["border"]};')
+        top_layout.setContentsMargins(10, 4, 10, 4)
+        top_layout.setSpacing(0)
 
         vendor_layout = QHBoxLayout()
+        vendor_layout.setSpacing(4)
+        vendor_layout.setContentsMargins(0, 0, 0, 0)
         vendor_label = QPushButton('厂家选择:')
         vendor_label.setStyleSheet(f'font-weight: bold; border: none; background: none; color: {t["text_main"]};')
         vendor_layout.addWidget(vendor_label)
@@ -647,7 +666,7 @@ class MainWindow(QMainWindow):
 
         for name, vendor_id in zip(vendors, vendor_ids):
             button = QPushButton(name)
-            button.setFixedSize(100, 40)
+            button.setFixedSize(80, 30)
             button.setStyleSheet(f"""
                 QPushButton {{
                     background-color: {t['hover_bg']};
@@ -655,6 +674,7 @@ class MainWindow(QMainWindow):
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
                     color: {t['text_secondary']};
+                    padding: 4px 6px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
             """)
@@ -663,6 +683,8 @@ class MainWindow(QMainWindow):
             vendor_layout.addWidget(button)
 
         device_layout = QHBoxLayout()
+        device_layout.setSpacing(4)
+        device_layout.setContentsMargins(0, 0, 0, 0)
         device_label = QPushButton('设备类型:')
         device_label.setStyleSheet(f'font-weight: bold; border: none; background: none; color: {t["text_main"]};')
         device_layout.addWidget(device_label)
@@ -673,7 +695,7 @@ class MainWindow(QMainWindow):
 
         for name, device_id in zip(devices, device_ids):
             button = QPushButton(name)
-            button.setFixedSize(120, 40)
+            button.setFixedSize(100, 30)
             button.setStyleSheet(f"""
                 QPushButton {{
                     background-color: {t['hover_bg']};
@@ -681,6 +703,7 @@ class MainWindow(QMainWindow):
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
                     color: {t['text_secondary']};
+                    padding: 4px 6px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
             """)
@@ -703,11 +726,13 @@ class MainWindow(QMainWindow):
             if vid == vendor:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['primary']};
-                        color: {t['text_primary']};
+                        background-color: {t['hover_bg']};
+                        color: {t['primary']};
                         border: 1px solid {t['primary']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
+                        font-weight: bold;
+                        padding: 4px 6px;
                     }}
                 """)
             else:
@@ -718,6 +743,7 @@ class MainWindow(QMainWindow):
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
+                        padding: 4px 6px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
@@ -733,11 +759,13 @@ class MainWindow(QMainWindow):
             if did == device_type:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['primary']};
-                        color: {t['text_primary']};
+                        background-color: {t['hover_bg']};
+                        color: {t['primary']};
                         border: 1px solid {t['primary']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
+                        font-weight: bold;
+                        padding: 4px 6px;
                     }}
                 """)
             else:
@@ -748,6 +776,7 @@ class MainWindow(QMainWindow):
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
+                        padding: 4px 6px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
                 """)
@@ -850,7 +879,7 @@ class MainWindow(QMainWindow):
                     background-color: {t['danger_bg']};
                     border: 1px solid {t['danger']};
                     border-radius: {r}px;
-                    font-size: 9pt;
+                    font-size: 10pt;
                     color: {t['danger']};
                     font-weight: bold;
                 }}
@@ -870,7 +899,7 @@ class MainWindow(QMainWindow):
                         background-color: {t['warning_bg']};
                         border: 1px solid {t['warning']};
                         border-radius: {r}px;
-                        font-size: 9pt;
+                        font-size: 10pt;
                         color: {t['warning']};
                         font-weight: bold;
                     }}
@@ -885,7 +914,7 @@ class MainWindow(QMainWindow):
                         background-color: {t['success_bg']};
                         border: 1px solid {t['success']};
                         border-radius: {r}px;
-                        font-size: 9pt;
+                        font-size: 10pt;
                         color: {t['success']};
                         font-weight: bold;
                     }}
@@ -960,23 +989,23 @@ class MainWindow(QMainWindow):
 
         desc1 = QLabel('面向网络工程师的多厂商网络设备配置脚本生成与自动化运维工具，支持锐捷、华为、华三、思科等设备。\n开源项目地址: https://github.com/hanchunjun/network-config-generator')
         desc1.setAlignment(Qt.AlignLeft)
-        desc1.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
+        desc1.setStyleSheet(f'font-size: 11pt; color: {t["text_secondary"]};')
         desc1.setWordWrap(True)
         layout.addWidget(desc1)
 
         copyright_label = QLabel('Copyright @ 2026 laohan')
         copyright_label.setAlignment(Qt.AlignLeft)
-        copyright_label.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
+        copyright_label.setStyleSheet(f'font-size: 11pt; color: {t["text_secondary"]};')
         layout.addWidget(copyright_label)
 
         license_label = QLabel('Released under the MIT License')
         license_label.setAlignment(Qt.AlignLeft)
-        license_label.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
+        license_label.setStyleSheet(f'font-size: 11pt; color: {t["text_secondary"]};')
         layout.addWidget(license_label)
 
         disclaimer = QLabel('本软件源码基于 MIT License 开源发布，可自由获取与修改。软件全功能使用需授权激活，不代表任何厂商官方立场，无任何官方认证。')
         disclaimer.setAlignment(Qt.AlignLeft)
-        disclaimer.setStyleSheet(f'font-size: 10pt; color: {t["text_secondary"]};')
+        disclaimer.setStyleSheet(f'font-size: 11pt; color: {t["text_secondary"]};')
         disclaimer.setWordWrap(True)
         layout.addWidget(disclaimer)
 
@@ -985,31 +1014,40 @@ class MainWindow(QMainWindow):
 
         if self._trial_mode:
             activate_btn = QPushButton('🔓 软件激活')
-            activate_btn.setFixedSize(120, 40)
+            activate_btn.setFixedSize(120, 30)
             activate_btn.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['success']};
-                    color: {t['text_primary']};
-                    border: none;
+                    background-color: {t['hover_bg']};
+                    color: {t['text_main']};
+                    border: 1px solid {t['border']};
                     border-radius: {t['radius_md']}px;
-                    font-size: 10pt;
+                    font-size: 11pt;
                 }}
-                QPushButton:hover {{ background-color: {t['success_hover']}; }}
+                QPushButton:hover {{
+                    background-color: {t['card_bg']};
+                    border-color: {t['primary']};
+                    color: {t['primary']};
+                }}
             """)
             activate_btn.clicked.connect(lambda: (dialog.close(), self._open_activation_dialog()))
             button_layout.addWidget(activate_btn)
 
         close_button = QPushButton('关闭')
-        close_button.setFixedSize(100, 40)
+        close_button.setFixedSize(100, 30)
         close_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']};
-                color: {t['text_primary']};
-                border: none;
+                background-color: {t['hover_bg']};
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
-                font-size: 10pt;
+                font-size: 11pt;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+                border: 1px solid {t['primary_hover']};
+            }}
         """)
         close_button.clicked.connect(dialog.close)
         button_layout.addWidget(close_button)

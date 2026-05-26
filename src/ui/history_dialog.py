@@ -23,12 +23,12 @@ class HistoryDialog(QDialog):
         layout.setSpacing(16)
 
         title = QLabel("设备变更历史")
-        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
+        title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         if not self.history:
             empty_label = QLabel("暂无变更记录")
-            empty_label.setStyleSheet(f"font-size: 14px; color: {t['text_tertiary']};")
+            empty_label.setStyleSheet(f"font-size: 14pt; color: {t['text_tertiary']};")
             empty_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(empty_label)
         else:
@@ -40,7 +40,7 @@ class HistoryDialog(QDialog):
             table.setEditTriggers(QAbstractItemView.NoEditTriggers)
             table.setStyleSheet(f"""
                 QTableWidget {{
-                    border: 1px solid {t['border']}; border-radius: 4px;
+                    border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                     background-color: {t['card_bg']}; gridline-color: {t['hover_bg']};
                 }}
                 QTableWidget::item {{ padding: 6px; }}
@@ -75,7 +75,7 @@ class HistoryDialog(QDialog):
         close_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
-                border-radius: 4px; font-size: 14px;
+                border-radius: {t['radius_md']}px; font-size: 14pt;
             }}
             QPushButton:hover {{ border: 1px solid {t['primary']}; }}
         """)

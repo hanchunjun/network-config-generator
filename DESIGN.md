@@ -1,4 +1,4 @@
-# NetOps 界面设计规范（V0.3.5 三主题版）
+# NetOps 界面设计规范（V0.3.7 按钮统一边框版）
 
 > **唯一权威标准**：所有界面代码的生成与修改，必须以本文件为唯一标准，禁止任何脱离规范的主观发挥。
 
@@ -43,25 +43,33 @@ NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体
 
 ### 2.3 功能色（Semantic）
 
+> **按钮用色总纲（§4.1）**：禁止用 success/warning/accent 功能色作为按钮背景区分功能。按钮仅分四类：
+> - **主按钮**：`primary` 实色背景 + `primary` 边框（主要操作）
+> - **次要按钮**：`transparent`/`page_bg` 背景 + `border` 边框（常规操作）
+> - **危险按钮**：`transparent`/`page_bg` 背景 + `danger` 边框（删除等破坏性操作）
+> - **AI/精审按钮**：`transparent`/`page_bg` 背景 + `primary`/紫色 边框
+>
+> 功能色仅用于**文字颜色、状态图标、结果背景、进度条**等非按钮背景场景。
+
 | 色值 | 名称 | 使用场景 |
 |------|------|---------|
-| `#3DD66A` | 成功绿 | 保存按钮、测试连接按钮、成功状态图标、已激活状态、合规通过判定 |
-| `#2BA84E` | 成功绿深 | 成功按钮 hover |
-| `#43A047` | 激活绿 | 试用模式激活按钮、保存模板按钮（batch_cmd_generator） |
-| `#2E7D32` | 深绿 hover | 激活绿按钮 hover |
+| `#3DD66A` | 成功绿 | 成功状态图标、已激活状态指示灯、合规通过判定文字、进度条 chunk |
+| `#2BA84E` | 成功绿深 | 成功状态 hover |
+| `#43A047` | 激活绿 | 试用模式激活指示灯 |
+| `#2E7D32` | 深绿 hover | 激活绿 hover |
 | `#1F4A2E` | 成功绿背景 | 合规审计通过结果背景（深色底） |
-| `#FFB040` | 警告橙 | 删除配置按钮、连接测试按钮、故障按钮、进行中状态、即将过期提示 |
-| `#CC8C30` | 警告橙深 | 警告按钮 hover |
+| `#FFB040` | 警告橙 | 进行中状态指示灯、即将过期提示文字、故障状态图标 |
+| `#CC8C30` | 警告橙深 | 警告状态 hover |
 | `#FA8C16` | 警告橙文字 | 即将过期按钮文字/border |
-| `#2A2210` | 警告背景 | 警告按钮背景、即将过期按钮背景、安全提醒框背景（深色底） |
-| `#FAAD14` | 金黄 | 复制按钮、重命名模板按钮（batch_cmd_generator） |
-| `#D48806` | 金黄 hover | 金黄按钮 hover |
-| `#FF5C5C` | 危险红 | 删除按钮、错误状态、诊断按钮、未激活提示文字 |
-| `#CC3E3E` | 危险红深 | 删除按钮 hover |
-| `#FF4D4F` | 亮红 | 表格行内删除按钮（core/access switch） |
-| `#FF7875` | 亮红 hover | 亮红按钮 hover |
+| `#2A2210` | 警告背景 | 即将过期提示背景、安全提醒框背景（深色底） |
+| `#FAAD14` | 金黄 | 提示性文字、状态图标 |
+| `#D48806` | 金黄 hover | 金黄 hover |
+| `#FF5C5C` | 危险红 | 危险按钮边框/文字、错误状态图标、未激活提示文字、诊断按钮边框 |
+| `#CC3E3E` | 危险红深 | 危险按钮 hover |
+| `#FF4D4F` | 亮红 | 状态指示灯 |
+| `#FF7875` | 亮红 hover | 亮红 hover |
 | `#3A1A1A` | 危险红背景 | 不通过审计结果背景（深色底） |
-| `#9B6CEF` | 紫色 | AI精审按钮背景 |
+| `#9B6CEF` | 紫色 | AI精审按钮边框 |
 | `#7A4FC7` | 深紫 | AI精审按钮 hover |
 
 ### 2.4 中性色（Neutral）
@@ -99,29 +107,34 @@ NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体
 
 | 场景 | 字体 |
 |------|------|
-| 全局 UI | `Microsoft YaHei`（系统默认回退） |
+| 全局 UI（三主题统一） | `'Segoe UI', 'Microsoft YaHei', sans-serif` |
 | 代码/日志/预览/等宽内容 | `'Consolas', 'Courier New', monospace` |
-| HTML 报告渲染 | `'Microsoft YaHei', sans-serif` |
 
-### 3.2 字号层级
+> **V0.3.7 统一**：三套主题 font_ui 统一为 `'Segoe UI', 'Microsoft YaHei', sans-serif`，不再使用 `Inter`/`SF Pro Display`（Windows 不可用）。font_mono 统一为 `'Consolas', 'Courier New', monospace`。
+
+### 3.2 字号层级（4 级，统一使用 pt）
 
 | 层级 | 字号 | 使用场景 |
 |------|------|---------|
-| **L1 页面大标题** | `15pt` | 页面标题（"AI专家工作站"、"项目运维"）、base_config_page 标题 |
-| **L2 分组标题** | `12pt` | QGroupBox 标题、预览区标题、卡片标题 |
-| **L3 正文/按钮** | `10pt` | 按钮文字、输入框文字、表单标签、Tab 文字、组合框、描述文字 |
-| **L4 辅助信息** | `9pt` | 标签文字、输入框标签、辅助信息、表格内容、小按钮、工具栏按钮、状态标签 |
-| **L5 细小信息** | `11px` | 路径信息、统计信息、小按钮文字、进度条文字 |
-| **Logo** | `14pt` | 导航栏 Logo 标签 |
-| **配置默认页提示** | `18pt` | 配置选择栏默认提示标签 |
+| **L1 标题** | `14pt` | 页面大标题、导航栏 Logo |
+| **L2 分组** | `12pt` | 区块标题、大按钮文字、重要数据 |
+| **L3 正文** | `11pt` | 表单标签、正文、输入框、标准按钮、Tab 文字、表格内容、描述文字 |
+| **L4 辅助** | `10pt` | 辅助说明、状态栏、表格头部、小按钮、工具栏按钮、提示文字 |
+
+> **V0.3.7 变更**：
+> - 全局默认字号从 `10pt` → `11pt`（政企用户可读性优先）
+> - 去掉 `9pt` 字号，最小字号为 `10pt`
+> - 去掉 `px` 单位混用，全部统一 `pt`
+> - 去掉 `15pt` 页面大标题，统一为 `14pt`
+> - 关于对话框标题 `18pt` 保持不变
 
 ### 3.3 字重
 
 | 场景 | 字重 |
 |------|------|
-| 页面标题、分组标题、主按钮、导航激活态、表格头部 | `bold` |
-| 普通标签、输入框文字、描述文字 | `normal` |
-| 部分强调按钮（AI按钮、进入项目按钮） | `bold` |
+| 页面标题、分组标题、主按钮、导航激活态、表格头部 | `bold`（700） |
+| 次级标题、卡片标题 | `500`（Medium） |
+| 普通标签、输入框文字、描述文字 | `normal`（400） |
 
 ---
 
@@ -129,180 +142,200 @@ NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体
 
 ### 4.1 按钮（QPushButton）
 
-> **V0.3.7 按钮透明规范**：所有按钮默认背景透明，仅边框+文字可见；悬停时背景变为浅色，边框/文字变亮。
-> 使用 ThemeEngine Token 动态配色，禁止硬编码色值。
+> **V0.3.7 统一规范**：所有按钮按下表四类严格区分，禁止在此之外使用 success/warning/accent 功能色作为按钮背景。
+> - **主操作按钮**：`primary` 实色背景 + `primary` 边框（主要操作，如生成、保存、执行）
+> - **次要按钮**：`transparent`/`page_bg` 背景 + `border` 边框（常规操作，如添加、编辑、清空、测试连接、取消）
+> - **危险/删除按钮**：`transparent`/`page_bg` 背景 + `danger` 边框（破坏性操作，如删除设备/配置/模板）
+> - **AI/精审按钮**：`transparent`/`page_bg` 背景 + `primary`/紫色 边框（AI分析类操作）
 
-#### A — 主按钮（Primary）
+#### 主按钮（Primary Action）
 ```css
-/* 使用 Token: primary, selection_bg, primary_hover, border, text_disabled */
+QPushButton {
+    background-color: #3B7CFF;
+    color: #FFFFFF;
+    border: 1px solid #3B7CFF;
+    border-radius: 5px;
+    font-size: 11pt;
+    padding: 5px 8px;
+}
+QPushButton:hover {
+    background-color: #2962D9;
+    border: 1px solid #2962D9;
+}
+QPushButton:pressed { background-color: #1E4BB8; }
+QPushButton:disabled {
+    background-color: #4A5266;
+    border: 1px solid #2E3648;
+    color: #7A8296;
+}
+```
+- **尺寸**：固定高度 30px（上下内边距各 5px，边框 1px × 2，文字 18px），宽度自适应或 80~140px
+- **场景**：生成配置、保存、关闭、执行任务等主要操作
+- **V0.3.7**：padding 统一 `5px 8px`，固定高度 30px
+
+#### 次要按钮（Secondary Action）
+```css
 QPushButton {
     background-color: transparent;
-    color: {primary};
-    border: 1px solid {primary};
-    border-radius: {radius_md}px;
-    font-size: 10pt;
+    border: 1px solid #2E3648;
+    border-radius: 5px;
+    font-size: 11pt;
+    color: #B0B8C8;
+    padding: 5px 8px;
+}
+QPushButton:hover {
+    background-color: rgba(0,122,204,0.08);
+    border: 1px solid #3B7CFF;
+    color: #3B7CFF;
+}
+QPushButton:disabled {
+    background-color: transparent;
+    border-color: #2E3648;
+    color: #7A8296;
+}
+```
+- **尺寸**：固定高度 30px（上下内边距各 5px，边框 1px × 2，文字 18px），宽度 80~120px
+- **场景**：取消、返回、复制、导出、重置等非破坏性操作
+- **V0.3.7**：padding 统一 `5px 8px`，固定高度 30px
+
+#### AI 按钮
+```css
+QPushButton {
+    background-color: transparent;
+    color: #4D90FF;
+    border: 1px solid #3B7CFF;
+    border-radius: 5px;
+    font-size: 11pt;
     font-weight: bold;
-    padding: 8px 20px;
+    padding: 5px 8px;
 }
 QPushButton:hover {
-    background-color: {selection_bg};
-    border: 1px solid {primary_hover};
-    color: {primary_hover};
+    background-color: rgba(0,122,204,0.08);
+    border-color: #4D90FF;
+    color: #4D90FF;
 }
 QPushButton:disabled {
     background-color: transparent;
-    border: 1px solid {border};
-    color: {text_disabled};
+    color: #7A8296;
+    border-color: #2E3648;
 }
 ```
-- **尺寸**：高度 32~40px，宽度根据内容自适应或固定 80~120px
-- **场景**：生成配置、保存、执行任务、AI分析等主要操作
-- **效果**：默认透明+主题色边框 → 悬停浅色背景+深色边框
-
-#### B — 次要边框按钮（Secondary）
-```css
-/* 使用 Token: text_secondary, border, selection_bg, primary, text_disabled */
-QPushButton {
-    background-color: transparent;
-    color: {text_secondary};
-    border: 1px solid {border};
-    border-radius: {radius_md}px;
-    font-size: 10pt;
-    padding: 8px 16px;
-}
-QPushButton:hover {
-    background-color: {selection_bg};
-    border: 1px solid {primary};
-    color: {primary};
-}
-QPushButton:disabled {
-    background-color: transparent;
-    border: 1px solid {border};
-    color: {text_disabled};
-}
-```
-- **尺寸**：高度 32~40px，宽度 80~120px
-- **场景**：取消、刷新、编辑、导入、导出等非破坏性操作
-- **效果**：默认透明+灰色边框 → 悬停浅色背景+主题色边框
-
-#### C — 语义按钮（Semantic）
-```css
-/* Danger — 使用 Token: danger, danger_bg, danger_hover */
-QPushButton {
-    background-color: transparent;
-    color: {danger};
-    border: 1px solid {danger};
-    border-radius: {radius_md}px;
-    font-size: 9pt;
-    padding: 8px 16px;
-}
-QPushButton:hover {
-    background-color: {danger_bg};
-    border: 1px solid {danger_hover};
-    color: {danger_hover};
-}
-
-/* Success — 使用 Token: success, success_bg, success_hover */
-QPushButton {
-    background-color: transparent;
-    color: {success};
-    border: 1px solid {success};
-    border-radius: {radius_md}px;
-    font-size: 10pt;
-    padding: 8px 20px;
-}
-QPushButton:hover {
-    background-color: {success_bg};
-    border: 1px solid {success_hover};
-    color: {success_hover};
-}
-
-/* Warning — 使用 Token: warning, warning_bg, warning_hover */
-QPushButton {
-    background-color: transparent;
-    color: {warning};
-    border: 1px solid {warning};
-    border-radius: {radius_md}px;
-    font-size: 9pt;
-    padding: 8px 16px;
-}
-QPushButton:hover {
-    background-color: {warning_bg};
-    border: 1px solid {warning_hover};
-    color: {warning_hover};
-}
-```
-- **尺寸**：高度 24~36px，宽度 60~100px
-- **场景**：删除(红)、测试连接(绿)、取消(黄)等语义操作
-- **关键**：使用 `*_bg` Token 替代手动透明度，三主题自适应
-
-#### D — AI 按钮
-```css
-/* 使用 Token: ai_text, ai_border, selection_bg, text_disabled */
-QPushButton {
-    background-color: transparent;
-    color: {ai_text};
-    border: 1px solid {ai_border};
-    border-radius: {radius_md}px;
-    font-size: 10pt;
-    font-weight: bold;
-    padding: 8px 16px;
-}
-QPushButton:hover {
-    background-color: {selection_bg};
-    border-color: {ai_text};
-    color: {ai_text};
-}
-QPushButton:disabled {
-    background-color: transparent;
-    color: {text_disabled};
-    border-color: {border};
-}
-```
+- **尺寸**：高度 28px，宽度自适应
 - **场景**：所有 AI 分析按钮（AI合规巡检、AI故障诊断、AI精审）
+- **V0.3.7**：字号 10pt→11pt，高度→28px
 
-#### E — 工具栏小按钮（Toolbar Small）
+#### 危险按钮（Danger Action）
 ```css
-/* 使用 Token: text_secondary, border, selection_bg, primary */
 QPushButton {
     background-color: transparent;
-    border: 1px solid {border};
-    border-radius: {radius_sm}px;
-    font-size: 11px;
-    color: {text_secondary};
+    color: #FF5C5C;
+    border: 1px solid #FF5C5C;
+    border-radius: 5px;
+    font-size: 10pt;
+    padding: 5px 8px;
+}
+QPushButton:hover {
+    background-color: rgba(255,92,92,0.08);
+    border: 1px solid #CC3E3E;
+    color: #CC3E3E;
+}
+QPushButton:disabled {
+    background-color: transparent;
+    border: 1px solid #2E3648;
+    color: #7A8296;
+}
+```
+- **尺寸**：高度 24px，宽度 60~100px
+- **场景**：删除设备、删除配置等破坏性操作
+- **V0.3.7**：字号 9pt→10pt，高度 24~36px→24px
+
+#### 诊断按钮（Diagnose）
+```css
+QPushButton {
+    background-color: transparent;
+    color: #FF5C5C;
+    border: 1px solid #FF5C5C;
+    border-radius: 5px;
+    font-size: 10pt;
+    font-weight: bold;
+    padding: 5px 8px;
+}
+QPushButton:hover {
+    background-color: rgba(255,92,92,0.08);
+    border: 1px solid #CC3E3E;
+    color: #CC3E3E;
+}
+```
+
+#### AI 精审按钮（Compliance）
+```css
+QPushButton {
+    background-color: transparent;
+    color: #9B6CEF;
+    border: 1px solid #9B6CEF;
+    border-radius: 5px;
+    font-size: 10pt;
+    font-weight: bold;
+    padding: 5px 8px;
+}
+QPushButton:hover {
+    background-color: rgba(155,108,239,0.08);
+    border: 1px solid #7A4FC7;
+    color: #7A4FC7;
+}
+```
+- **尺寸**：高度 24px
+- **V0.3.7**：字号 9pt→10pt，高度→24px
+
+#### 工具栏小按钮（Toolbar Small）
+```css
+QPushButton {
+    background-color: transparent;
+    border: 1px solid #2E3648;
+    border-radius: 3px;
+    font-size: 10pt;
+    color: #B0B8C8;
     padding: 2px 8px;
 }
 QPushButton:hover {
-    background-color: {selection_bg};
-    border-color: {primary};
-    color: {primary};
+    background-color: rgba(0,122,204,0.08);
+    border-color: #3B7CFF;
+    color: #3B7CFF;
+}
+QPushButton:disabled {
+    background-color: transparent;
+    border-color: #2E3648;
+    color: #7A8296;
 }
 ```
-- **尺寸**：高度 22~26px，宽度 60~70px
+- **尺寸**：高度 24px，宽度根据内容自适应
 - **场景**：文件列表上方的刷新/打开/删除三件套
+- **V0.3.7**：字号 11px→10pt，高度 22~26px→24px
 
-#### F — 导航按钮（Navigation）
+#### 导航按钮（Navigation）
 ```css
-/* 无边框设计，保持透明背景 */
 QPushButton {
     background-color: transparent;
     border: none;
-    border-radius: {radius_lg}px;
-    padding: 6px 16px;
-    font-size: 10pt;
-    color: {text_secondary};
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-size: 11pt;
+    color: #B0B8C8;
 }
 QPushButton:hover {
-    background-color: {hover_bg};
-    color: {text_main};
+    background-color: #2A3142;
+    color: #E8ECF1;
 }
 QPushButton[active="true"] {
-    background-color: {selection_bg};
-    color: {primary_light};
+    background-color: #1A3A6E;
+    color: #4D90FF;
     font-weight: bold;
 }
 ```
-- **尺寸**：高度 40px，宽度自适应
+- **尺寸**：高度 28px，宽度自适应
+- **V0.3.7**：字号 10pt→11pt，高度 40px→28px
+
+#### 状态指示按钮（Activation Status）
 
 | 状态 | 背景 | 边框 | 文字色 |
 |------|------|------|--------|
@@ -312,13 +345,14 @@ QPushButton[active="true"] {
 
 ```css
 QPushButton {
-    border-radius: 4px;
-    font-size: 9pt;
+    border-radius: 5px;
+    font-size: 10pt;
     font-weight: bold;
 }
 /* hover 对应加深背景/边框 */
 ```
-- **尺寸**：`setFixedSize(90, 32)`
+- **尺寸**：`setFixedSize(90, 28)`
+- **V0.3.7**：字号 9pt→10pt，高度 32px→28px
 
 ### 4.2 输入框（QLineEdit）
 
@@ -326,46 +360,53 @@ QPushButton {
 ```css
 QLineEdit {
     border: 1px solid #2E3648;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 10pt;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 11pt;
     background-color: #1E2433;
     color: #E8ECF1;
+    min-height: 26px;
 }
 QLineEdit:focus {
     border-color: #3B7CFF;
 }
 ```
-- **高度**：32px（`setFixedHeight(32)`）
+- **高度**：28px（`setMinimumHeight(28)`）
 - **场景**：大部分表单输入
+- **V0.3.7**：字号 10pt→11pt，高度 32px→28px
 
 #### 带背景输入框（project_manager / system_settings）
 ```css
 QLineEdit {
     border: 1px solid #2E3648;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 10pt;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 11pt;
     background-color: #1A1F2E;
     color: #E8ECF1;
+    min-height: 26px;
 }
 QLineEdit:focus {
     border-color: #3B7CFF;
     background-color: #1E2433;
 }
 ```
+- **V0.3.7**：字号 10pt→11pt，padding 8px→6px，统一 min-height: 28px
 
 #### 只读/机器码输入框
 ```css
 QLineEdit {
     background-color: #1A1F2E;
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     padding: 4px 8px;
     color: #4D90FF;
     font-family: Consolas;
+    font-size: 11pt;
+    min-height: 26px;
 }
 ```
+- **V0.3.7**：新增 font-size: 11pt，min-height: 28px
 
 ### 4.3 下拉框（QComboBox）
 
@@ -373,11 +414,12 @@ QLineEdit {
 ```css
 QComboBox {
     border: 1px solid #2E3648;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 10pt;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 11pt;
     background-color: #1E2433;
     color: #E8ECF1;
+    min-height: 26px;
 }
 QComboBox:hover { border-color: #3B7CFF; }
 QComboBox::drop-down { border: none; width: 28px; }
@@ -388,27 +430,30 @@ QComboBox QAbstractItemView {
     background-color: #1E2433;
 }
 ```
+- **V0.3.7**：字号 10pt→11pt，padding 8px→6px，统一 min-height: 28px
 
 #### 小组合框（工具栏）
 ```css
 QComboBox {
     border: 1px solid #2E3648;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 9pt;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 10pt;
     background-color: #242B3D;
     color: #B0B8C8;
+    min-height: 26px;
 }
 QComboBox:focus { border-color: #3B7CFF; }
 QComboBox::drop-down { border: none; width: 20px; }
 ```
+- **V0.3.7**：字号 9pt→10pt，padding 5px→4px
 
 ### 4.4 表格（QTableWidget）
 
 ```css
 QTableWidget {
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: #1E2433;
     gridline-color: #2A3142;
 }
@@ -421,7 +466,7 @@ QHeaderView::section {
     padding: 8px;
     font-weight: bold;
     color: #E8ECF1;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 QTableWidget::item:selected { background-color: #1A3A6E; color: #E8ECF1; }
 ```
@@ -435,17 +480,17 @@ QTableWidget::item:selected { background-color: #1A3A6E; color: #E8ECF1; }
 ```css
 QTabWidget::pane {
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: #1E2433;
 }
 QTabBar::tab {
     background-color: #242B3D;
     border: 1px solid #2E3648;
     border-bottom: none;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    padding: 6px 16px;
-    font-size: 10pt;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 5px 8px;
+    font-size: 11pt;
     color: #7A8296;
     margin-right: 2px;
 }
@@ -465,7 +510,7 @@ QTabBar::tab:hover:!selected {
 
 ```css
 QGroupBox {
-    font-size: 10pt;
+    font-size: 11pt;
     font-weight: bold;
     color: #E8ECF1;
     border: 1px solid #2E3648;
@@ -480,15 +525,16 @@ QGroupBox::title {
     padding: 0 8px;
 }
 ```
+- **V0.3.7**：字号 10pt→11pt
 
 ### 4.7 列表（QListWidget）
 
 ```css
 QListWidget {
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: #1E2433;
-    font-size: 10pt;
+    font-size: 11pt;
     outline: none;
     color: #B0B8C8;
 }
@@ -496,6 +542,7 @@ QListWidget::item { padding: 5px 8px; }
 QListWidget::item:selected { background-color: #1A3A6E; color: #E8ECF1; }
 QListWidget::item:hover { background-color: #2A3142; }
 ```
+- **V0.3.7**：字号 10pt→11pt
 
 ### 4.8 文本编辑区（QTextEdit）
 
@@ -503,10 +550,10 @@ QListWidget::item:hover { background-color: #2A3142; }
 ```css
 QTextEdit {
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 10pt;
+    font-size: 11pt;
     background-color: #1A1F2E;
     color: #B0B8C8;
 }
@@ -516,26 +563,29 @@ QTextEdit {
 ```css
 QTextEdit {
     border: 1px solid #3B7CFF;
-    border-radius: 4px;
+    border-radius: 5px;
     padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 10pt;
+    font-size: 11pt;
     background-color: #1A1F2E;
     color: #E8ECF1;
 }
 ```
+- **V0.3.7**：字号 10pt→11pt
 
 ### 4.9 进度条（QProgressBar）
 
 ```css
 QProgressBar {
     border: 1px solid #2E3648;
-    border-radius: 4px;
+    border-radius: 5px;
     text-align: center;
     background-color: #2A3142;
-    font-size: 10px;
+    font-size: 10pt;
     color: #B0B8C8;
 }
+```
+- **V0.3.7**：字号 10px→10pt
 QProgressBar::chunk {
     background-color: #3B7CFF;
     border-radius: 3px;
@@ -545,7 +595,8 @@ QProgressBar::chunk {
 ### 4.10 复选框（QCheckBox）
 
 ```css
-QCheckBox { font-size: 10pt; color: #B0B8C8; }
+QCheckBox { font-size: 11pt; color: #B0B8C8; }
+- **V0.3.7**：字号 10pt→11pt
 QCheckBox::indicator {
     width: 15px;
     height: 15px;
@@ -571,7 +622,8 @@ QWidget {
 
 - **内部间距**：`spacing: 10`
 - **标题**：`font-size: 12pt; font-weight: bold; color: #E8ECF1;`
-- **描述**：`font-size: 10pt; color: #7A8296; margin-bottom: 10px;`
+- **描述**：`font-size: 11pt; color: #7A8296; margin-bottom: 10px;`
+- **V0.3.7**：描述字号 10pt→11pt
 
 ### 4.12 分割线（QFrame HLine）
 
@@ -599,46 +651,94 @@ QFrame { color: #383F50; max-height: 1px; }
 - **圆角单位**：px
 - **字号单位**：pt
 
-### 5.2 页面级边距与间距
+### 5.2 间距系统
+
+#### 间距 Token
+
+| Token | 值 | 使用场景 |
+|-------|----|---------|
+| `xs` | `2px` | 分割线上下间距、极紧凑元素间距 |
+| `sm` | `6px` | 工具栏按钮间距、同行小间距 |
+| `md` | `12px` | 表单行间距、卡片内部间距、Tab 间距 |
+| `lg` | `16px` | 页面级 ContentsMargins、GroupBox 内部 padding |
+| `xl` | `16px` | 大区域留白（与 lg 同级） |
+
+#### 页面级边距与间距
 
 | 页面/区域 | ContentsMargins | Spacing |
 |-----------|----------------|---------|
 | 主窗口主布局 | `(0, 0, 0, 0)` | `0` |
-| 导航栏布局 | `(16, 0, 16, 0)` | `4` |
-| 配置页面根布局 | `(16, 16, 16, 16)` | `12` |
-| 项目运维主布局 | `(16, 14, 16, 14)` | `8` |
-| 单点运维主布局 | `(12, 8, 12, 8)` | `6` |
-| AI分析主布局 | `(16, 16, 16, 16)` | `10` |
-| 状态栏 | `padding: 2px 12px` | - |
+| 导航栏布局 | `(lg, 0, lg, 0)` 即 `(16, 0, 16, 0)` | `4` |
+| 配置页面根布局 | `(lg, lg, lg, lg)` 即 `(16, 16, 16, 16)` | `md` |
+| 项目运维主布局 | `(lg, md, lg, md)` 即 `(16, 12, 16, 12)` | `sm` |
+| 单点运维主布局 | `(md, sm, md, sm)` 即 `(12, 6, 12, 6)` | `sm` |
+| AI分析主布局 | `(lg, lg, lg, lg)` 即 `(16, 16, 16, 16)` | `md` |
+| 状态栏 | `padding: xs md` 即 `padding: 2px 12px` | - |
+
+> **V0.3.7**：引入五级间距 Token（xs/sm/md/lg/xl），统一页面边距与间距标准。
 
 ### 5.3 圆角规范
 
-| 圆角值 | 适用组件 |
-|--------|---------|
-| `3px` | 小按钮、复选框 indicator |
-| `4px` | 标准按钮、输入框、下拉框、文本框、Spinbox、进度条 chunk |
-| `6px` | 导航按钮、部分 GroupBox |
-| `8px` | GroupBox、卡片、配置选择栏按钮 |
+| Token | 值 | 适用组件 |
+|-------|----|---------|
+| `sm` | `3px` | 小按钮、工具栏按钮、复选框 indicator、进度条 chunk |
+| `md` | `5px` | 标准按钮、输入框、下拉框、文本框、Spinbox、导航按钮 |
+| `lg` | `8px` | GroupBox、卡片、配置选择栏按钮、Tab 页签 |
 
-### 5.4 布局比例
+> **V0.3.7**：圆角精简为三级（3/5/8px），原 4px 统一升为 5px，原 6px 统一降为 5px，消除冗余中间值。
+
+### 5.4 边框规范
+
+| 属性 | 标准值 | 说明 |
+|------|----|------|
+| 宽度 | `1px` | 所有边框统一 1px，禁止 2px 及以上 |
+| 样式 | `solid` | 仅使用实线，禁止 dashed/dotted |
+| 颜色 | 主题动态色 | 使用 `t['border']` 或 `t['input_border']`，禁止硬编码色值 |
+
+**各控件边框颜色**：
+
+| 控件 | 边框颜色 Key |
+|------|-------------|
+| 输入框（QLineEdit） | `input_border`（未聚焦）、`primary`（聚焦） |
+| 下拉框（QComboBox） | `input_border` |
+| 文本框（QTextEdit） | `input_border` |
+| 表格（QTableWidget） | `border` |
+| 按钮 | 各按钮类型自定义（透明边框+主题色） |
+| GroupBox | `border` |
+| 卡片 | `border` |
+| Tab 页签 | `border` |
+| 进度条 | `border` |
+| 列表（QListWidget） | `border` |
+
+> **V0.3.7**：边框统一为 `1px solid`，颜色全部引用主题动态色，禁止硬编码。
+
+### 5.5 布局比例
 
 | 区域 | 比例 |
 |------|------|
 | 左侧配置区 : 右侧预览区 | `7 : 3` |
 | AI分析左侧面板 : 右侧面板 | 最大宽 320px : 自适应，分割比例 `1:4` |
 
-### 5.5 标准控件高度
+### 5.6 标准控件高度
 
-| 控件 | 高度 |
-|------|------|
-| 导航栏 | 56px |
-| 导航按钮 | 40px |
-| 输入框（QLineEdit） | 32px |
-| 主按钮 | 36~40px |
-| 小按钮 | 22~26px |
-| 设备状态/激活按钮 | 32px |
-| 账户/关于按钮 | 32px |
-| 表格行 | 36px |
+| 控件 | 高度 | 说明 |
+|------|------|------|
+| 导航栏 | 48px | 顶部主导航区域 |
+| 导航按钮 | 24px | 与导航栏同高，紧凑排列 |
+| 输入框（QLineEdit） | 26px | padding 4+4 + 边框 1×2 = 26px |
+| 下拉框（QComboBox） | 26px | 与输入框对齐 |
+| 文本框（QTextEdit） | 自适应 | 不固定高度 |
+| 主按钮 | 30px | padding 5+5 + 边框 1×2 + 文字18px = 30px |
+| 标准按钮 | 30px | 同行与输入框视觉居中对齐 |
+| 小按钮/工具栏按钮 | 26px | padding 3+3 + 边框 1×2 + 文字18px = 26px |
+| 设备状态/激活按钮 | 26px | 与工具栏同档 |
+| 账户/关于按钮 | 26px | 与导航按钮同档 |
+| 表格行 | 32px | 紧凑行高，提升信息密度 |
+| 表格内图标按钮 | 22px | 行内操作按钮 |
+| 进度条 | 16px | 细长进度指示 |
+| 复选框 indicator | 16px | 方形 indicator |
+
+> **V0.3.7 统一**：控件高度由 padding + 边框 + 文字高度精确计算，不凭感觉设定。11pt 中文字体渲染高度约 18px，按钮统一 `padding: 5px 8px`，固定高度 30px（5+5+2+18=30）。输入框 padding `4px 8px`，固定高度 26px。导航栏压缩至 48px，表格行压缩至 32px，整体更紧凑精致。
 
 ---
 
@@ -646,30 +746,13 @@ QFrame { color: #383F50; max-height: 1px; }
 
 ### 6.1 按钮状态
 
-| 状态 | 视觉反馈 | Token 参考 |
-|------|---------|-----------|
-| **默认** | 实心按钮：背景色 + 同色系深色边框；次要按钮：card_bg + 灰色边框 | `primary`+`primary_hover` / `card_bg`+`border` |
-| **hover** | 实心按钮：背景变深 + 边框变亮；次要/语义按钮：边框变为主题色 + 文字变主题色 | `primary_hover`+`primary_light` / `selection_bg`+`primary` |
-| **pressed** | 背景色更深（仅部分按钮定义） | `primary_pressed` |
-| **disabled** | 背景 `border_deep`，边框 `border`，文字 `text_disabled` | 三主题自适应 |
-| **active**（自定义属性） | 选中态：`selection_bg` 背景 + `primary_light` 文字 + 加粗 | 导航按钮专用 |
-
-### 6.2 按钮边框规范（V0.3.7）
-
-| 按钮类型 | 默认背景 | 默认边框 | 悬停背景 | 悬停边框 | 文字默认 | 文字悬停 |
-|---------|---------|---------|---------|---------|---------|---------|
-| A 主按钮 | `transparent` | `1px solid {primary}` | `{selection_bg}` | `1px solid {primary_hover}` | `{primary}` | `{primary_hover}` |
-| B 次要按钮 | `transparent` | `1px solid {border}` | `{selection_bg}` | `1px solid {primary}` | `{text_secondary}` | `{primary}` |
-| C 语义按钮 | `transparent` | `1px solid {语义色}` | `{语义色_bg}` | `1px solid {语义色_hover}` | 语义色本身 | 语义色_hover |
-| D 工具栏小按钮 | `transparent` | `1px solid {border}` | `{selection_bg}` | `1px solid {primary}` | `{text_secondary}` | `{primary}` |
-| E AI 按钮 | `transparent` | `1px solid {ai_border}` | `{selection_bg}` | `1px solid {ai_text}` | `{ai_text}` | `{ai_text}` |
-| F 导航按钮 | `transparent` | 无边框 | `{hover_bg}` | 无边框 | `{text_secondary}` | `{text_main}` |
-
-**核心原则**：
-- 所有按钮默认背景透明（导航按钮除外），仅边框+文字可见
-- 悬停时背景变为浅色（`selection_bg` 或 `*_bg`），边框/文字变亮
-- 使用 `*_bg` Token 替代手动透明度（如 `{danger}22`），确保三主题自适应
-- 禁止在按钮样式中使用 `border: none`（导航按钮除外）
+| 状态 | 视觉反馈 |
+|------|---------|
+| **默认** | 各按钮各自的基础色 |
+| **hover** | 背景色变深或边框变蓝（`#165DFF`） |
+| **pressed** | 背景色更深（仅部分按钮定义） |
+| **disabled** | 背景 `#C9CDD4`，文字变灰 |
+| **active**（自定义属性） | 蓝色背景 + 白色文字 + 加粗 |
 
 ### 6.2 输入框状态
 
@@ -696,10 +779,12 @@ QFrame { color: #383F50; max-height: 1px; }
 
 | 类型 | 样式 |
 |------|------|
-| 就绪状态 | `font-size: 9pt; color: #7A8296;` |
-| 运行中 | `font-size: 9pt; color: #00D4E8; font-weight: normal;` |
-| 完成 | `font-size: 9pt; color: #3DD66A; font-weight: normal;` |
-| 错误 | `font-size: 9pt; color: #FF5C5C; font-weight: normal;` |
+| 就绪状态 | `font-size: 10pt; color: #7A8296;` |
+| 运行中 | `font-size: 10pt; color: #00D4E8; font-weight: normal;` |
+| 完成 | `font-size: 10pt; color: #3DD66A; font-weight: normal;` |
+| 错误 | `font-size: 10pt; color: #FF5C5C; font-weight: normal;` |
+
+> **V0.3.7**：9pt→10pt
 
 ### 6.6 加载效果
 
@@ -713,7 +798,7 @@ QFrame { color: #383F50; max-height: 1px; }
 ### ✅ 推荐行为
 
 1. **颜色**：新增颜色必须从本规范色盘中选取，如需新色须先更新本文件
-2. **按钮**：区分主次操作，主按钮用品牌蓝，次要按钮用浅灰底+灰边框
+2. **按钮**：严格按四类规范 — 主按钮 `primary` 实色，次要按钮 `transparent`+`border` 边框，危险按钮 `transparent`+`danger` 边框，AI按钮 `transparent`+`primary`/紫色边框；禁止用 success/warning/accent 功能色作按钮背景
 3. **输入框**：统一高度 32px，focus 时边框变蓝
 4. **表格**：统一行高 36px，交替行背景，禁止直接编辑
 5. **间距**：页面级边距 12~16px，组件间距 4~12px
@@ -746,10 +831,10 @@ QFrame { color: #383F50; max-height: 1px; }
 
 > 「请根据项目根目录的 `DESIGN.md` 规范，开发 **[功能名称]** 界面。要求：
 > 1. 组件样式（按钮、输入框、表格、分组框、标签等）必须严格遵循 DESIGN.md 中的 QSS 样式模板
-> 2. 色彩必须从 DESIGN.md 色盘中选取，禁止自创颜色
-> 3. 字体层级遵循 L1~L5 字号规范
+> 2. 色彩必须从 DESIGN.md 色盘中选取，禁止自创颜色；**按钮用色严格按四类规范**：主按钮 `primary` 实色、次要按钮 `transparent`+`border` 边框、危险按钮 `transparent`+`danger` 边框、AI按钮 `transparent`+`primary`/紫色边框；**禁止用 success/warning/accent 功能色作为按钮背景**
+> 3. 字体层级遵循 L1~L4 字号规范
 > 4. 间距与边距遵循布局标准（页面边距 12~16px，组件间距 4~12px）
-> 5. 圆角规范：按钮/输入框 4px，GroupBox/卡片 8px
+> 5. 圆角规范：按钮/输入框 5px（md），小按钮/工具栏 3px（sm），GroupBox/卡片 8px（lg）
 > 6. 所有可交互组件必须定义 hover 和 focus 状态
 > 7. 危险操作必须有二次确认对话框
 > 8. 整体风格与现有项目页面保持完全一致。」
@@ -762,12 +847,156 @@ QFrame { color: #383F50; max-height: 1px; }
 > 3. 补齐缺失的 hover/focus/disabled 状态
 > 4. 整改完成后列出修改项清单。」
 
+## 八之三、V0.3.7 控件紧凑化变更记录
+
+> 本次调整目标：消除"偏大、不紧凑、不精致"感，所有控件高度由 padding + 边框精确计算。
+
+### 按钮内部留白（文字 ↔ 按钮边框）
+
+| 方向 | 值 | 说明 |
+|------|----|------|
+| 顶部内边距 | `5px` | 统一所有按钮 |
+| 底部内边距 | `5px` | 统一所有按钮 |
+| 左侧内边距 | `8px` | 统一所有按钮 |
+| 右侧内边距 | `8px` | 统一所有按钮 |
+| 固定总高度 | `28px` | padding 5+5 + 边框 1×2 = 28px |
+
+### 按钮之间间距（按钮 ↔ 相邻按钮）
+
+| 关系 | 值 |
+|------|----|
+| 横向并排按钮间距 | `5px` |
+| 竖向堆叠按钮间距 | `5px` |
+
+### 按钮与外部元素间距
+
+| 关系 | 值 |
+|------|----|
+| 按钮 → 所属窗口/面板内壁 | `10px` |
+| 按钮 → 旁边输入框/下拉框 | `5px` |
+| 按钮组 → 上方/下方标题/分割线 | `10px` |
+
+### 控件高度调整
+
+| 控件 | 旧值 | 新值 | 计算依据 |
+|------|------|------|---------|
+| 导航栏 | 56px | 48px | 压缩留白 |
+| 导航按钮 | 28px | 26px | padding 3+3 + 边框 1×2 + 文字18px = 26px |
+| 输入框 | 28px | 26px | padding 4+4 + 边框 1×2 = 26px |
+| 下拉框 | 28px | 26px | 与输入框对齐 |
+| 主按钮 | 30px | 30px | padding 5+5 + 边框 1×2 + 文字18px = 30px |
+| 标准按钮 | 28px | 30px | 修复文字裁剪：11pt中文字高18px，28px不够 |
+| 小按钮/工具栏 | 24px | 26px | padding 3+3 + 边框 1×2 + 文字18px = 26px |
+| 账户/关于按钮 | 28px | 26px | 与导航按钮同档 |
+| 设备状态/激活按钮 | 28px | 26px | 与工具栏同档 |
+| 表格行 | 36px | 32px | 提升信息密度 |
+| 进度条 | 自适应 | 16px | 固定细长高度 |
+| 复选框 indicator | 15px | 16px | 标准方形尺寸 |
+
+### 圆角 Token 更新
+
+| Token | 旧值 | 新值 |
+|-------|------|------|
+| radius_sm | 各主题不一 | 3/2/3 |
+| radius_md | 各主题不一 | 5/3/5 |
+| radius_lg | 各主题不一 | 8/5/8 |
+
+### 影响文件
+
+- `src/core/theme_engine.py` — 圆角 Token、全局 QSS 控件高度/圆角/padding
+- `src/ui/main_window.py` — 导航栏高度、导航按钮/账户/关于按钮尺寸
+- `src/ui/ai_analysis_page.py` — 按钮 padding
+- `src/ui/ops_toolbox_page.py` — 按钮 padding、主布局边距
+- `src/ui/single_device_page.py` — 按钮 padding、主布局边距、表格行高
+- `src/ui/batch_cmd_generator_page.py` — 按钮 padding
+- `src/ui/system_settings_page.py` — 按钮 padding
+- `src/ui/device_discovery_dialog.py` — 输入框 padding/高度
+- `src/ui/device_form_dialog.py` — 输入框 padding/高度
+- `src/ui/config_pages/` — 全部 16 个配置页表格行高 36→32
+
+---
+
 ## 九、文件与维护
 
 - **本文件位置**：项目根目录 `DESIGN.md`，与 `CLAUDE.md` 同级
-- **版本**：V0.3.5
-- **更新日期**：2026年5月25日
+- **版本**：V0.3.7
+- **更新日期**：2026年5月26日
 - **维护规则**：每次新增/修改界面样式后，必须同步更新本文件对应章节
+
+## 十一、PyQt5 渲染与 DPI 专项规范
+
+> **本章节为渲染底层规范，优先级高于配色与样式章节。所有涉及 DPI、渲染管线、字体绘制的代码，必须以本章节为唯一标准。**
+
+### 11.1 适用范围
+
+仅约束 PyQt5 项目底层渲染、DPI 缩放、文本绘制逻辑，不改动配色、界面样式、业务代码。
+
+### 11.2 核心目标
+
+1. 程序固定以 **96DPI（系统 100% 缩放基准）** 渲染，不受 Windows 系统缩放（100%/125%/150% 等）影响
+2. 字体、控件尺寸全程保持固定，杜绝发虚、重影、锯齿，提升文字清晰度
+3. 兼容窗口最大化、手动调整窗口大小功能，切换状态后显示无异常
+
+### 11.3 强制开发规则
+
+| 序号 | 规则 | 实现方式 |
+|------|------|---------|
+| R1 | 关闭高 DPI 自适应 | `Qt.AA_EnableHighDpiScaling = False` + `Qt.AA_DisableHighDpiScaling = True`，必须在 `QApplication` 构造前调用 |
+| R2 | 禁止 Qt 自动屏幕缩放 | 删除 `QT_AUTO_SCREEN_SCALE_FACTOR` 环境变量，设置 `QT_ENABLE_HIGHDPI_SCALING=0` |
+| R3 | 屏蔽系统原生主题差异 | `QApplication.setStyle("Fusion")`，全局启用 Fusion 样式 |
+| R4 | 全局文本抗锯齿 | `QFont.setStyleStrategy(QFont.PreferAntialias)` 应用到全局字体 |
+| R5 | 固定像素尺寸 | 所有控件尺寸、字号使用绝对像素/pt 单位，禁止使用动态适配、相对尺寸单位（em、百分比等） |
+| R6 | 进程 DPI Unaware 兜底 | `SetProcessDpiAwareness(0)` + `app.manifest` 声明 `dpiAwareness:unaware`，三层控制确保布局稳定 |
+
+### 11.4 main.py DPI 初始化代码模板
+
+```python
+# ── 第1步：环境变量（QApplication 构造前）──
+if "QT_DEVICE_PIXEL_RATIO" in os.environ:
+    del os.environ["QT_DEVICE_PIXEL_RATIO"]
+if "QT_AUTO_SCREEN_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"]
+if "QT_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_SCALE_FACTOR"]
+os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
+
+# ── 第2步：Qt 属性（QApplication 构造前）──
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+QApplication.setAttribute(Qt.AA_DisableHighDpiScaling, True)
+QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+app = QApplication(sys.argv)
+
+# ── 第3步：进程 DPI Unaware（Windows API 兜底）──
+try:
+    import ctypes
+    ctypes.windll.shcore.SetProcessDpiAwareness(0)
+except Exception:
+    pass
+
+# ── 第4步：Fusion 样式 + 全局抗锯齿 ──
+app.setStyle("Fusion")
+font = app.font()
+font.setStyleStrategy(QFont.PreferAntialias)
+app.setFont(font)
+```
+
+### 11.5 效果说明
+
+- 系统缩放仅作用于系统桌面，本程序界面大小、字体大小不会跟随改变
+- 文字边缘锐利清晰，解决缩放引发的模糊问题
+- 高分屏环境下字体不会自动放大，可通过调整基准字号平衡视觉大小与可读性
+- 窗口常规尺寸、最大化状态互相切换，渲染效果、字体清晰度保持一致
+
+### 11.6 验收标准
+
+| 编号 | 验收项 | 方法 |
+|------|--------|------|
+| A1 | 切换系统不同缩放比例（100%/125%/150%），程序字体、控件、布局尺寸无变化 | 实机切换对比 |
+| A2 | 字体显示清晰，无模糊、锯齿、重影现象 | 与系统记事本文字对比 |
+| A3 | 窗口最大化/还原、拖拽调整窗口大小，界面显示正常 | 手动操作验证 |
+
+---
 
 ## 十、变更记录
 
@@ -777,3 +1006,8 @@ QFrame { color: #383F50; max-height: 1px; }
 | 2026-05-25 | 修正复选框指示器边框色 `#C9CDD4`→`#E5E6EB`（§4.10）；同步修正代码中10处正常态组件边框色不一致 |
 | 2026-05-25 | **V0.3.4 暗蓝科技感升级**：整体配色从浅灰底迁移为深空蓝 `#1A1F2E` 暗色系；主色从 `#165DFF` 升级为 `#3B7CFF` 科技蓝；新增冰蓝 `#00D4E8`、深青绿 `#0F8B6E`、柔光蓝 `#5C8AFF` 三强调色；所有功能色适配暗色背景（提亮15-20%）；更新主窗口、登录/激活/账户管理对话框共5个文件 |
 | 2026-05-25 | **V0.3.5 三主题切换体系**：新增 `src/core/theme_engine.py`（ThemeEngine 单例 + 三套完整配色数据 + 全局QSS生成 + 组件QSS片段 + 配置持久化）；新增 `src/ui/theme_switcher_page.py`（主题切换面板 + 预览卡片 + 一键切换）；重构 `main_window.py`（移除硬编码QSS，集成ThemeEngine，导航栏/状态栏/配置栏/激活按钮/关于对话框全部动态适配）；重构 `login_dialog.py`、`activation_dialog.py`、`account_manager_dialog.py`（硬编码颜色→ThemeEngine动态颜色 + theme_changed监听）；重构 `batch_cmd_generator_page.py`（ParamGroupWidget + 模板按钮 + 状态栏全部动态适配）；更新 DESIGN.md 为三主题规范 |
+| 2026-05-26 | **DPI 渲染专项规范**：新增第十一章「PyQt5 渲染与 DPI 专项规范」；修改 `main.py` DPI 初始化逻辑：移除冲突的 `QT_AUTO_SCREEN_SCALE_FACTOR`，关闭 `AA_EnableHighDpiScaling`，全局启用 Fusion 样式 + `QFont.PreferAntialias` 文本抗锯齿，设置 `QT_ENABLE_HIGHDPI_SCALING=0` 兜底 |
+| 2026-05-26 | **商务主题黑色残留修复**：`theme_engine.py` 商务主题 `text_primary` 从 `#202124` 改为 `#FFFFFF`（彩色按钮文字统一白色）；`selection_bg` 从 `rgba(26,115,232,0.08)` 改为 `#BBDEFB`（选中项背景加深确保白字可读）；`single_device_page.py` 占位符文字从 `border_deep` 改为 `text_tertiary`（极浅灰→可见灰色） |
+| 2026-05-26 | **V0.3.7 字号与按钮尺寸全局规范化**：① 字号体系从 6 级（15/12/10/9/8 + 游离）精简为 4 级（14/12/11/10），去掉 9pt 和 15pt；② 全局默认 10pt→11pt；③ 页面大标题 15pt→14pt；④ 配置输出框 10pt→11pt monospace；⑤ 按钮三档高度统一为 30/26/26px（留白 5~6px），字号对应 12/11/10pt；⑥ 输入框统一 26px 高度；⑦ 所有 px 字号单位改为 pt；⑧ 涉及 theme_engine.py + 18 个 UI 文件全面整改 |
+| 2026-05-27 | **V0.3.7 按钮文字裁剪修复**：实测发现 11pt 中文字体渲染高度约 18px，28px 按钮高度（padding 5+5 + border 2 + 文字 18 = 30px 需求）导致文字被上下裁剪 1px。将所有 `setFixedSize(..., 28)` 的按钮统一改为 30px，共涉及 11 个文件 40+ 处。厂商选择按钮（锐捷/华为/H3C/思科）和设备类型按钮（接入交换机/核心交换机/路由器/AC）文字现已完整显示 |
+| 2026-05-27 | **V0.3.7 按钮用色规范统一**：彻底清除所有 success/warning/accent 功能色作为按钮背景的违规用法。修复 `single_device_page.py`（添加设备/测试连接/删除/取消按钮）、`batch_cmd_generator_page.py`（删除模板按钮）共 6 处。同步修订 DESIGN.md：§2.3 功能色表删除按钮相关描述并增加总纲引用、§4.1 总纲明确四类按钮规范并删除矛盾表述、§7 推荐行为更新按钮描述、§8.1 开发模板增加按钮用色约束。**根本原因**：DESIGN.md 色值表与按钮规范存在矛盾，导致多次修复不彻底 |

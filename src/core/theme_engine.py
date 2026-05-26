@@ -93,11 +93,11 @@ _THEMES: Dict[str, dict] = {
         "device_online": "#34D399",
         "device_offline": "#52525B",
         "device_testing": "#60A5FA",
-        "radius_sm": 4,
-        "radius_md": 8,
-        "radius_lg": 10,
-        "radius_xl": 12,
-        "radius_xxl": 16,
+        "radius_sm": 3,
+        "radius_md": 5,
+        "radius_lg": 8,
+        "radius_xl": 10,
+        "radius_xxl": 12,
         "radius_pill": 999,
         "font_ui": "'Inter', 'SF Pro Display', 'Microsoft YaHei', sans-serif",
         "font_mono": "'JetBrains Mono', 'Consolas', 'Courier New', monospace",
@@ -161,9 +161,9 @@ _THEMES: Dict[str, dict] = {
         "device_testing": "#569CD6",
         "radius_sm": 2,
         "radius_md": 3,
-        "radius_lg": 4,
-        "radius_xl": 4,
-        "radius_xxl": 6,
+        "radius_lg": 5,
+        "radius_xl": 6,
+        "radius_xxl": 8,
         "radius_pill": 999,
         "font_ui": "'Segoe UI', 'Microsoft YaHei', sans-serif",
         "font_mono": "'Cascadia Code', 'Consolas', 'Courier New', monospace",
@@ -226,8 +226,8 @@ _THEMES: Dict[str, dict] = {
         "device_offline": "#9AA0A6",
         "device_testing": "#4285F4",
         "radius_sm": 3,
-        "radius_md": 4,
-        "radius_lg": 6,
+        "radius_md": 5,
+        "radius_lg": 8,
         "radius_xl": 8,
         "radius_xxl": 8,
         "radius_pill": 999,
@@ -347,26 +347,28 @@ class ThemeEngine(QObject):
         """构建全局 QSS 样式表（带缓存）。"""
         if theme_id in ThemeEngine._global_qss_cache:
             return ThemeEngine._global_qss_cache[theme_id]
-        # 主按钮样式（Raycast 用渐变，其他用纯色）
+        # 主按钮样式（Raycast 用渐变，其他用纯色；统一加 primary 色边框，背景不变）
         if t.get("gradient_primary"):
             primary_btn = f"""
             QPushButton {{
                 background: {t['gradient_primary']};
                 color: {t['text_primary']};
-                border: none;
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px;
-                font-size: 10pt;
+                font-size: 11pt;
                 font-weight: bold;
-                padding: 8px 20px;
+                padding: 5px 8px;
             }}
             QPushButton:hover {{
                 background: {t['gradient_primary_hover']};
+                border: 1px solid {t['primary_hover']};
             }}
             QPushButton:pressed {{
                 background: {t['primary_pressed']};
             }}
             QPushButton:disabled {{
                 background: {t['border_deep']};
+                border: 1px solid {t['border']};
                 color: {t['text_disabled']};
             }}"""
         else:
@@ -374,15 +376,19 @@ class ThemeEngine(QObject):
             QPushButton {{
                 background-color: {t['primary']};
                 color: {t['text_primary']};
-                border: none;
+                border: 1px solid {t['primary']};
                 border-radius: {radius}px;
-                font-size: 10pt;
-                padding: 8px 18px;
+                font-size: 11pt;
+                padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:hover {{
+                background-color: {t['primary_hover']};
+                border: 1px solid {t['primary_hover']};
+            }}
             QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}
             QPushButton:disabled {{
                 background-color: {t['border']};
+                border: 1px solid {t['border']};
                 color: {t['text_disabled']};
             }}"""
 
@@ -391,7 +397,7 @@ class ThemeEngine(QObject):
         QMainWindow {{ background-color: {t['page_bg']}; }}
         QWidget {{
             font-family: {t['font_ui']};
-            font-size: 10pt;
+            font-size: 11pt;
             color: {t['text_main']};
         }}
 
@@ -403,9 +409,9 @@ class ThemeEngine(QObject):
             background-color: {t['hover_bg']};
             border: 1px solid {t['border']};
             border-radius: {radius}px;
-            font-size: 10pt;
+            font-size: 11pt;
             color: {t['text_secondary']};
-            padding: 8px 16px;
+            padding: 5px 8px;
         }}
         QPushButton.secondary:hover {{
             border-color: {t['primary']};
@@ -416,10 +422,11 @@ class ThemeEngine(QObject):
         QLineEdit {{
             border: 1px solid {t['input_border']};
             border-radius: {radius}px;
-            padding: 8px 12px;
-            font-size: 10pt;
+            padding: 4px 8px;
+            font-size: 11pt;
             background-color: {t['input_bg']};
             color: {t['text_secondary']};
+            min-height: 26px;
         }}
         QLineEdit:focus {{ border-color: {t['primary']}; }}
         QLineEdit:disabled {{
@@ -431,10 +438,11 @@ class ThemeEngine(QObject):
         QComboBox {{
             border: 1px solid {t['input_border']};
             border-radius: {radius}px;
-            padding: 8px 12px;
-            font-size: 10pt;
+            padding: 4px 8px;
+            font-size: 11pt;
             background-color: {t['input_bg']};
             color: {t['text_secondary']};
+            min-height: 26px;
         }}
         QComboBox:hover {{ border-color: {t['primary']}; }}
         QComboBox::drop-down {{ border: none; width: 28px; }}
@@ -466,7 +474,7 @@ class ThemeEngine(QObject):
             padding: 8px;
             font-weight: bold;
             color: {t['text_main']};
-            font-size: 9pt;
+            font-size: 10pt;
         }}
 
         /* ── 标签页 ── */
@@ -482,7 +490,7 @@ class ThemeEngine(QObject):
             border-top-left-radius: {radius}px;
             border-top-right-radius: {radius}px;
             padding: 6px 14px;
-            font-size: 10pt;
+            font-size: 11pt;
             color: {t['text_tertiary']};
             margin-right: 2px;
         }}
@@ -499,7 +507,7 @@ class ThemeEngine(QObject):
 
         /* ── 分组框 ── */
         QGroupBox {{
-            font-size: 10pt;
+            font-size: 11pt;
             font-weight: bold;
             color: {t['text_main']};
             border: 1px solid {t['border_deep']};
@@ -519,7 +527,7 @@ class ThemeEngine(QObject):
             border: 1px solid {t['border_deep']};
             border-radius: {radius}px;
             background-color: {t['card_bg']};
-            font-size: 10pt;
+            font-size: 11pt;
             outline: none;
             color: {t['text_secondary']};
         }}
@@ -536,7 +544,7 @@ class ThemeEngine(QObject):
             border-radius: {radius}px;
             padding: 10px;
             font-family: {t['font_mono']};
-            font-size: 10pt;
+            font-size: 11pt;
             background-color: {t['code_bg']};
             color: {t['text_secondary']};
         }}
@@ -547,8 +555,9 @@ class ThemeEngine(QObject):
             border-radius: {t['radius_sm']}px;
             text-align: center;
             background-color: {t['hover_bg']};
-            font-size: 10px;
+            font-size: 10pt;
             color: {t['text_tertiary']};
+            height: 16px;
         }}
         QProgressBar::chunk {{
             background-color: {t['primary']};
@@ -556,10 +565,10 @@ class ThemeEngine(QObject):
         }}
 
         /* ── 复选框 ── */
-        QCheckBox {{ font-size: 10pt; color: {t['text_secondary']}; }}
+        QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; }}
         QCheckBox::indicator {{
-            width: 15px;
-            height: 15px;
+            width: 16px;
+            height: 16px;
             border-radius: {t['radius_sm']}px;
             border: 1px solid {t['border']};
             background-color: {t['input_bg']};
@@ -604,14 +613,14 @@ class ThemeEngine(QObject):
             border: 1px solid {t['border']};
             border-radius: {radius}px;
             padding: 4px 8px;
-            font-size: 9pt;
+            font-size: 10pt;
         }}
 
         /* ── 状态栏 ── */
         QStatusBar {{
             background-color: {t['toolbar_bg']};
             border-top: 1px solid {t['border_deep']};
-            font-size: 9pt;
+            font-size: 10pt;
             color: {t['text_tertiary']};
             padding: 2px 12px;
         }}
@@ -669,9 +678,9 @@ class ThemeEngine(QObject):
                     color: {t['primary']};
                     border: 1px solid {t['primary']};
                     border-radius: {r}px;
-                    font-size: 10pt;
+                    font-size: 11pt;
                     font-weight: bold;
-                    padding: 8px 20px;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['selection_bg']};
@@ -690,9 +699,9 @@ class ThemeEngine(QObject):
                     color: {t['ai_text']};
                     border: 1px solid {t['ai_border']};
                     border-radius: {r}px;
-                    font-size: 10pt;
+                    font-size: 11pt;
                     font-weight: bold;
-                    padding: 8px 16px;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['selection_bg']};
@@ -711,8 +720,8 @@ class ThemeEngine(QObject):
                     color: {t['danger']};
                     border: 1px solid {t['danger']};
                     border-radius: {r}px;
-                    font-size: 9pt;
-                    padding: 8px 16px;
+                    font-size: 10pt;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['danger_bg']};
@@ -731,8 +740,8 @@ class ThemeEngine(QObject):
                     color: {t['success']};
                     border: 1px solid {t['success']};
                     border-radius: {r}px;
-                    font-size: 10pt;
-                    padding: 8px 20px;
+                    font-size: 11pt;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['success_bg']};
@@ -751,8 +760,8 @@ class ThemeEngine(QObject):
                     color: {t['warning']};
                     border: 1px solid {t['warning']};
                     border-radius: {r}px;
-                    font-size: 9pt;
-                    padding: 8px 16px;
+                    font-size: 10pt;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['warning_bg']};
@@ -770,9 +779,9 @@ class ThemeEngine(QObject):
                     background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {r}px;
-                    font-size: 10pt;
+                    font-size: 11pt;
                     color: {t['text_secondary']};
-                    padding: 8px 16px;
+                    padding: 5px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['selection_bg']};
@@ -790,8 +799,8 @@ class ThemeEngine(QObject):
                     background-color: transparent;
                     border: none;
                     border-radius: {t['radius_xxl']}px;
-                    padding: 8px 14px;
-                    font-size: 10pt;
+                    padding: 5px 8px;
+                    font-size: 11pt;
                     color: {t['text_secondary']};
                 }}
                 QPushButton:hover {{
@@ -809,9 +818,9 @@ class ThemeEngine(QObject):
                     background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_sm']}px;
-                    font-size: 11px;
+                    font-size: 10pt;
                     color: {t['text_secondary']};
-                    padding: 2px 8px;
+                    padding: 3px 8px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['selection_bg']};
@@ -829,7 +838,7 @@ class ThemeEngine(QObject):
                     background-color: {t['danger_bg']};
                     border: 1px solid {t['danger']};
                     border-radius: {r}px;
-                    font-size: 9pt;
+                    font-size: 10pt;
                     color: {t['danger']};
                     font-weight: bold;
                 }}
@@ -842,7 +851,7 @@ class ThemeEngine(QObject):
                     background-color: {t['warning_bg']};
                     border: 1px solid {t['warning']};
                     border-radius: {r}px;
-                    font-size: 9pt;
+                    font-size: 10pt;
                     color: {t['warning']};
                     font-weight: bold;
                 }}
@@ -852,7 +861,7 @@ class ThemeEngine(QObject):
                     background-color: {t['success_bg']};
                     border: 1px solid {t['success']};
                     border-radius: {r}px;
-                    font-size: 9pt;
+                    font-size: 10pt;
                     color: {t['success']};
                     font-weight: bold;
                 }}

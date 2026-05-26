@@ -1335,23 +1335,25 @@ class DeviceFormDialog(QDialog):
 
     def _apply_styles(self):
         t = ThemeEngine.get().current_theme
+        radius_md = t['radius_md']
+        radius_sm = t['radius_sm']
         style = f"""
-            QLabel {{ font-size: 10pt; color: {t['text_secondary']}; }}
+            QLabel {{ font-size: 11pt; color: {t['text_secondary']}; }}
             QLineEdit, QComboBox {{
                 border: 1px solid {t['border']};
-                border-radius: 4px;
-                padding: 6px 10px;
-                font-size: 10pt;
+                border-radius: {radius_md}px;
+                padding: 4px 8px;
+                font-size: 11pt;
                 background-color: {t['page_bg']};
             }}
             QLineEdit:focus, QComboBox:focus {{ border-color: {t['primary']}; }}
             QGroupBox {{
-                font-size: 10pt; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 6px;
+                font-size: 11pt; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: {radius_md}px;
                 margin-top: 8px; padding: 12px;
             }}
             QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 6px; }}
-            QPushButton {{ padding: 6px 20px; border-radius: 4px; font-size: 10pt; }}
+            QPushButton {{ padding: 5px 8px; border-radius: {radius_md}px; font-size: 11pt; }}
         """
         self.setStyleSheet(style)
 
@@ -1401,7 +1403,7 @@ class SingleDevicePage(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setContentsMargins(12, 6, 12, 6)
         layout.setSpacing(6)
 
         table_group = QGroupBox("设备清单")
@@ -1414,31 +1416,31 @@ class SingleDevicePage(QWidget):
 
         t = self._theme_engine.current_theme
         self.add_btn = QPushButton("+ 添加设备")
-        self.add_btn.setFixedSize(100, 26)
-        self.add_btn.setStyleSheet(self._toolbar_btn_style(t['primary'], t['text_primary']))
+        self.add_btn.setFixedSize(100, 30)
+        self.add_btn.setStyleSheet(self._toolbar_btn_style(t['page_bg'], t['text_secondary']))
         self.add_btn.clicked.connect(self.on_add_device)
         toolbar.addWidget(self.add_btn)
 
         self.edit_btn = QPushButton("✏️ 编辑")
-        self.edit_btn.setFixedSize(72, 26)
+        self.edit_btn.setFixedSize(72, 30)
         self.edit_btn.setStyleSheet(self._toolbar_btn_style(t['page_bg'], t['text_secondary']))
         self.edit_btn.clicked.connect(self.on_edit_device)
         toolbar.addWidget(self.edit_btn)
 
         self.del_btn = QPushButton("🗑️ 删除")
-        self.del_btn.setFixedSize(72, 26)
-        self.del_btn.setStyleSheet(self._toolbar_btn_style(t['warning_bg'], t['warning']))
+        self.del_btn.setFixedSize(72, 30)
+        self.del_btn.setStyleSheet(self._toolbar_btn_style(t['page_bg'], t['text_secondary']))
         self.del_btn.clicked.connect(self.on_delete_device)
         toolbar.addWidget(self.del_btn)
 
         self.clear_btn = QPushButton("清空列表")
-        self.clear_btn.setFixedSize(72, 26)
+        self.clear_btn.setFixedSize(72, 30)
         self.clear_btn.setStyleSheet(self._toolbar_btn_style(t['page_bg'], t['text_tertiary']))
         self.clear_btn.clicked.connect(self.on_clear_all)
         toolbar.addWidget(self.clear_btn)
 
         self.select_count_lbl = QLabel("")
-        self.select_count_lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+        self.select_count_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
         toolbar.addWidget(self.select_count_lbl)
         toolbar.addStretch()
         table_layout.addLayout(toolbar)
@@ -1463,15 +1465,15 @@ class SingleDevicePage(QWidget):
         self.table.setMaximumHeight(80)
         self.table.setStyleSheet(f"""
             QTableWidget {{
-                border: 1px solid {t['border']}; border-radius: 6px;
-                gridline-color: {t['border_deep']}; background-color: {t['card_bg']}; font-size: 9pt;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                gridline-color: {t['border_deep']}; background-color: {t['card_bg']}; font-size: 10pt;
             }}
             QTableWidget::item {{ padding: 2px 4px; }}
             QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
             QHeaderView::section {{
                 background-color: {t['toolbar_bg']}; border: none;
                 border-bottom: 1px solid {t['border']}; padding: 2px 6px;
-                font-size: 9pt; font-weight: bold; color: {t['text_secondary']};
+                font-size: 10pt; font-weight: bold; color: {t['text_secondary']};
             }}
         """)
         self.table.itemChanged.connect(self.on_item_changed)
@@ -1487,25 +1489,25 @@ class SingleDevicePage(QWidget):
         action_row.setSpacing(8)
 
         self.inspect_btn = QPushButton("▶ 批量巡检")
-        self.inspect_btn.setFixedSize(110, 34)
+        self.inspect_btn.setFixedSize(110, 30)
         self.inspect_btn.setStyleSheet(self._primary_btn_style())
         self.inspect_btn.clicked.connect(self.run_batch_inspect)
         action_row.addWidget(self.inspect_btn)
 
         self.backup_btn = QPushButton("💾 批量备份")
-        self.backup_btn.setFixedSize(110, 34)
+        self.backup_btn.setFixedSize(110, 30)
         self.backup_btn.setStyleSheet(self._secondary_btn_style())
         self.backup_btn.clicked.connect(self.run_batch_backup)
         action_row.addWidget(self.backup_btn)
 
         self.test_btn = QPushButton("🔗 测试连接")
-        self.test_btn.setFixedSize(100, 34)
+        self.test_btn.setFixedSize(100, 30)
         self.test_btn.setStyleSheet(self._test_btn_style())
         self.test_btn.clicked.connect(self.run_batch_test)
         action_row.addWidget(self.test_btn)
 
         self.cancel_btn = QPushButton("取消")
-        self.cancel_btn.setFixedSize(60, 34)
+        self.cancel_btn.setFixedSize(60, 30)
         self.cancel_btn.setStyleSheet(self._cancel_btn_style())
         self.cancel_btn.clicked.connect(self.on_cancel_task)
         self.cancel_btn.setVisible(False)
@@ -1515,20 +1517,20 @@ class SingleDevicePage(QWidget):
         self.progress_bar = QProgressBar()
         self.progress_bar.setTextVisible(True)
         self.progress_bar.setFormat("%v/%m")
-        self.progress_bar.setMaximumHeight(22)
+        self.progress_bar.setMaximumHeight(16)
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
-                border: 1px solid {t['border']}; border-radius: 4px;
-                text-align: center; height: 20px; background-color: {t['page_bg']}; font-size: 11px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                text-align: center; height: 16px; background-color: {t['page_bg']}; font-size: 10pt;
             }}
-            QProgressBar::chunk {{ background-color: {t['primary']}; border-radius: 3px; }}
+            QProgressBar::chunk {{ background-color: {t['primary']}; border-radius: {t['radius_sm']}px; }}
         """)
         action_row.addWidget(self.progress_bar, 1)
         layout.addLayout(action_row)
 
         t = self._theme_engine.current_theme
         self.status_label = QLabel("就绪，等待操作...")
-        self.status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding-left: 4px;")
+        self.status_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; padding-left: 4px;")
         layout.addWidget(self.status_label)
 
         self.result_tabs = QTabWidget()
@@ -1536,14 +1538,14 @@ class SingleDevicePage(QWidget):
         self.result_tabs.setTabPosition(QTabWidget.North)
         self.result_tabs.setStyleSheet(f"""
             QTabWidget::pane {{
-                border: 1px solid {t['border']}; border-radius: 6px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']}; top: -1px;
             }}
             QTabBar::tab {{
                 background-color: {t['page_bg']}; border: 1px solid {t['border']};
-                border-bottom: none; border-top-left-radius: 6px;
-                border-top-right-radius: 6px; padding: 6px 16px;
-                font-size: 10pt; color: {t['text_secondary']}; margin-right: 2px;
+                border-bottom: none; border-top-left-radius: {t['radius_lg']}px;
+                border-top-right-radius: {t['radius_lg']}px; padding: 5px 8px;
+                font-size: 11pt; color: {t['text_secondary']}; margin-right: 2px;
             }}
             QTabBar::tab:selected {{
                 background-color: {t['card_bg']}; color: {t['primary']};
@@ -1563,7 +1565,7 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         desc_label = QLabel("管理常用设备清单，支持批量巡检/备份/连接测试/AI分析。数据加密存储，跟随EXE便携使用。")
         desc_label.setWordWrap(True)
-        desc_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; padding: 4px 0;")
+        desc_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; padding: 4px 0;")
         layout.addWidget(desc_label)
 
         self.setLayout(layout)
@@ -1573,9 +1575,9 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QTextEdit {{
-                border: none; border-radius: 4px; padding: 10px;
+                border: none; border-radius: {t['radius_md']}px; padding: 10px;
                 font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 9pt; background-color: {t['input_bg']}; color: {t['text_secondary']};
+                font-size: 10pt; background-color: {t['input_bg']}; color: {t['text_secondary']};
                 selection-background-color: {t['selection_bg']}; selection-color: {t['text_main']};
             }}
         """
@@ -1584,11 +1586,11 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QListWidget {{
-                border: 1px solid {t['border']}; border-radius: 4px;
-                background-color: {t['input_bg']}; font-size: 9pt; outline: none;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                background-color: {t['input_bg']}; font-size: 10pt; outline: none;
             }}
             QListWidget::item {{
-                padding: 6px 10px; border-bottom: 1px solid {t['border_deep']};
+                padding: 4px 8px; border-bottom: 1px solid {t['border_deep']};
             }}
             QListWidget::item:hover {{ background-color: {t['selection_bg']}; }}
             QListWidget::item:selected {{
@@ -1600,8 +1602,8 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QComboBox {{
-                border: 1px solid {t['border']}; border-radius: 4px;
-                padding: 5px 10px; font-size: 9pt; background-color: {t['page_bg']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                padding: 4px 8px; font-size: 11pt; background-color: {t['page_bg']};
             }}
             QComboBox:focus {{ border-color: {t['primary']}; }}
             QComboBox::drop-down {{ border: none; width: 20px; }}
@@ -1623,10 +1625,10 @@ class SingleDevicePage(QWidget):
 
         bar = QHBoxLayout()
         self.log_clear_btn = QPushButton("清空日志")
-        self.log_clear_btn.setFixedSize(70, 24)
+        self.log_clear_btn.setFixedSize(70, 26)
         self.log_clear_btn.setStyleSheet(f"""
             QPushButton {{ background-color: transparent; border: 1px solid {t['border']};
-                border-radius: 3px; font-size: 11px; color: {t['text_tertiary']}; padding: 2px 8px; }}
+                border-radius: {t['radius_sm']}px; font-size: 10pt; color: {t['text_tertiary']}; padding: 2px 8px; }}
             QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
         """)
         self.log_clear_btn.clicked.connect(lambda: self.log_text.clear())
@@ -1634,18 +1636,21 @@ class SingleDevicePage(QWidget):
         bar.addStretch()
 
         self.log_diagnose_btn = QPushButton("🩺 AI故障诊断")
-        self.log_diagnose_btn.setFixedSize(100, 26)
+        self.log_diagnose_btn.setFixedSize(100, 30)
         self.log_diagnose_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['danger']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+            QPushButton:hover {{ background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']}; }}
         """)
         self.log_diagnose_btn.clicked.connect(lambda: self.run_ai_diagnose("log"))
         bar.addWidget(self.log_diagnose_btn)
 
         self.log_info_lbl = QLabel("")
-        self.log_info_lbl.setStyleSheet(f"font-size: 11px; color: {t['text_tertiary']};")
+        self.log_info_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
         bar.addWidget(self.log_info_lbl)
         l.addLayout(bar)
 
@@ -1678,19 +1683,19 @@ class SingleDevicePage(QWidget):
         backup_btn_row = QHBoxLayout()
         backup_btn_row.setSpacing(4)
         self.backup_refresh_btn = QPushButton("🔄 刷新")
-        self.backup_refresh_btn.setFixedSize(60, 22)
+        self.backup_refresh_btn.setFixedSize(60, 26)
         self.backup_refresh_btn.setStyleSheet(self._small_btn_style())
         self.backup_refresh_btn.clicked.connect(self.refresh_backup_list)
         backup_btn_row.addWidget(self.backup_refresh_btn)
 
         self.backup_open_btn = QPushButton("📂 打开")
-        self.backup_open_btn.setFixedSize(60, 22)
+        self.backup_open_btn.setFixedSize(60, 26)
         self.backup_open_btn.setStyleSheet(self._small_btn_style())
         self.backup_open_btn.clicked.connect(self.on_open_backup_file)
         backup_btn_row.addWidget(self.backup_open_btn)
 
         self.backup_del_btn = QPushButton("🗑 删除")
-        self.backup_del_btn.setFixedSize(60, 22)
+        self.backup_del_btn.setFixedSize(60, 26)
         self.backup_del_btn.setStyleSheet(self._small_danger_btn_style())
         self.backup_del_btn.clicked.connect(self.on_delete_backup_file)
         backup_btn_row.addWidget(self.backup_del_btn)
@@ -1712,17 +1717,20 @@ class SingleDevicePage(QWidget):
         info_bar = QHBoxLayout()
         t = self._theme_engine.current_theme
         self.backup_file_name_lbl = QLabel("未选择文件")
-        self.backup_file_name_lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+        self.backup_file_name_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
         info_bar.addWidget(self.backup_file_name_lbl)
         info_bar.addStretch()
 
         self.ai_inspect_btn = QPushButton("🔍 AI合规巡检")
-        self.ai_inspect_btn.setFixedSize(100, 26)
+        self.ai_inspect_btn.setFixedSize(100, 30)
         self.ai_inspect_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['primary']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+            QPushButton:hover {{ background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']}; }}
         """)
         self.ai_inspect_btn.clicked.connect(self.run_ai_inspect)
         info_bar.addWidget(self.ai_inspect_btn)
@@ -1761,19 +1769,19 @@ class SingleDevicePage(QWidget):
         report_btn_row = QHBoxLayout()
         report_btn_row.setSpacing(4)
         self.report_refresh_btn = QPushButton("🔄 刷新")
-        self.report_refresh_btn.setFixedSize(60, 22)
+        self.report_refresh_btn.setFixedSize(60, 26)
         self.report_refresh_btn.setStyleSheet(self._small_btn_style())
         self.report_refresh_btn.clicked.connect(self.refresh_report_list)
         report_btn_row.addWidget(self.report_refresh_btn)
 
         self.report_open_btn = QPushButton("📂 打开")
-        self.report_open_btn.setFixedSize(60, 22)
+        self.report_open_btn.setFixedSize(60, 26)
         self.report_open_btn.setStyleSheet(self._small_btn_style())
         self.report_open_btn.clicked.connect(self.on_open_report_file)
         report_btn_row.addWidget(self.report_open_btn)
 
         self.report_del_btn = QPushButton("🗑 删除")
-        self.report_del_btn.setFixedSize(60, 22)
+        self.report_del_btn.setFixedSize(60, 26)
         self.report_del_btn.setStyleSheet(self._small_danger_btn_style())
         self.report_del_btn.clicked.connect(self.on_delete_report_file)
         report_btn_row.addWidget(self.report_del_btn)
@@ -1795,17 +1803,20 @@ class SingleDevicePage(QWidget):
         info_bar = QHBoxLayout()
         t = self._theme_engine.current_theme
         self.report_title_lbl = QLabel("未选择报告")
-        self.report_title_lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+        self.report_title_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
         info_bar.addWidget(self.report_title_lbl)
         info_bar.addStretch()
 
         self.report_ai_btn = QPushButton("🩺 AI故障诊断")
-        self.report_ai_btn.setFixedSize(100, 26)
+        self.report_ai_btn.setFixedSize(100, 30)
         self.report_ai_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['danger']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+            QPushButton:hover {{ background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']}; }}
         """)
         self.report_ai_btn.clicked.connect(lambda: self.run_ai_diagnose("report"))
         self.report_ai_btn.setEnabled(False)
@@ -1835,19 +1846,19 @@ class SingleDevicePage(QWidget):
         diag_btn_row = QHBoxLayout()
         diag_btn_row.setSpacing(4)
         self.diagnosis_refresh_btn = QPushButton("🔄 刷新")
-        self.diagnosis_refresh_btn.setFixedSize(60, 22)
+        self.diagnosis_refresh_btn.setFixedSize(60, 26)
         self.diagnosis_refresh_btn.setStyleSheet(self._small_btn_style())
         self.diagnosis_refresh_btn.clicked.connect(self.refresh_diagnosis_list)
         diag_btn_row.addWidget(self.diagnosis_refresh_btn)
 
         self.diagnosis_open_btn = QPushButton("📂 打开")
-        self.diagnosis_open_btn.setFixedSize(60, 22)
+        self.diagnosis_open_btn.setFixedSize(60, 26)
         self.diagnosis_open_btn.setStyleSheet(self._small_btn_style())
         self.diagnosis_open_btn.clicked.connect(self.on_open_diagnosis_file)
         diag_btn_row.addWidget(self.diagnosis_open_btn)
 
         self.diagnosis_del_btn = QPushButton("🗑 删除")
-        self.diagnosis_del_btn.setFixedSize(60, 22)
+        self.diagnosis_del_btn.setFixedSize(60, 26)
         self.diagnosis_del_btn.setStyleSheet(self._small_danger_btn_style())
         self.diagnosis_del_btn.clicked.connect(self.on_delete_diagnosis_file)
         diag_btn_row.addWidget(self.diagnosis_del_btn)
@@ -1869,7 +1880,7 @@ class SingleDevicePage(QWidget):
         info_bar = QHBoxLayout()
         t = self._theme_engine.current_theme
         self.diagnosis_title_lbl = QLabel("未选择报告")
-        self.diagnosis_title_lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+        self.diagnosis_title_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
         info_bar.addWidget(self.diagnosis_title_lbl)
         info_bar.addStretch()
 
@@ -1897,19 +1908,19 @@ class SingleDevicePage(QWidget):
         comp_btn_row = QHBoxLayout()
         comp_btn_row.setSpacing(4)
         self.compliance_refresh_btn = QPushButton("🔄 刷新")
-        self.compliance_refresh_btn.setFixedSize(60, 22)
+        self.compliance_refresh_btn.setFixedSize(60, 26)
         self.compliance_refresh_btn.setStyleSheet(self._small_btn_style())
         self.compliance_refresh_btn.clicked.connect(self.refresh_compliance_list)
         comp_btn_row.addWidget(self.compliance_refresh_btn)
 
         self.compliance_open_btn = QPushButton("📂 打开")
-        self.compliance_open_btn.setFixedSize(60, 22)
+        self.compliance_open_btn.setFixedSize(60, 26)
         self.compliance_open_btn.setStyleSheet(self._small_btn_style())
         self.compliance_open_btn.clicked.connect(self.on_open_compliance_file)
         comp_btn_row.addWidget(self.compliance_open_btn)
 
         self.compliance_del_btn = QPushButton("🗑 删除")
-        self.compliance_del_btn.setFixedSize(60, 22)
+        self.compliance_del_btn.setFixedSize(60, 26)
         self.compliance_del_btn.setStyleSheet(self._small_danger_btn_style())
         self.compliance_del_btn.clicked.connect(self.on_delete_compliance_file)
         comp_btn_row.addWidget(self.compliance_del_btn)
@@ -1931,20 +1942,20 @@ class SingleDevicePage(QWidget):
         info_bar = QHBoxLayout()
         t = self._theme_engine.current_theme
         self.compliance_title_lbl = QLabel("未选择报告")
-        self.compliance_title_lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+        self.compliance_title_lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
         info_bar.addWidget(self.compliance_title_lbl)
         info_bar.addStretch()
 
         self.compliance_refine_btn = QPushButton("🩺 AI精审")
-        self.compliance_refine_btn.setFixedSize(80, 26)
-        # 紫色按钮使用 accent 色（Raycast 橙/其他主题使用 accent）
-        purple = t['accent']
-        purple_hover = t['accent_hover']
+        self.compliance_refine_btn.setFixedSize(80, 30)
         self.compliance_refine_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {purple}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {purple_hover}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+            QPushButton:hover {{ background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']}; }}
         """)
         self.compliance_refine_btn.clicked.connect(lambda: self.run_ai_diagnose("compliance"))
         self.compliance_refine_btn.setEnabled(False)
@@ -1987,9 +1998,9 @@ class SingleDevicePage(QWidget):
             self.result_tabs.setStyleSheet(self._result_tabs_style())
         # 工具栏按钮
         for attr, style_fn in [
-            ('add_btn', self._primary_btn_style),
+            ('add_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
             ('edit_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
-            ('del_btn', lambda: self._toolbar_btn_style(t['warning_bg'], t['warning'])),
+            ('del_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
             ('clear_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_tertiary'])),
         ]:
             btn = getattr(self, attr, None)
@@ -2011,11 +2022,11 @@ class SingleDevicePage(QWidget):
         for attr in ('status_label', 'select_count_lbl'):
             lbl = getattr(self, attr, None)
             if lbl is not None:
-                lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+                lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
         # 描述标签
         if hasattr(self, 'desc_label'):
             self.desc_label.setStyleSheet(
-                f"font-size: 9pt; color: {t['text_tertiary']}; padding: 4px 0;")
+                f"font-size: 10pt; color: {t['text_tertiary']}; padding: 4px 0;")
         # 刷新所有 Tab 内容
         self._refresh_all_tabs()
 
@@ -2051,16 +2062,16 @@ class SingleDevicePage(QWidget):
             for lbl in page.findChildren(QLabel):
                 obj_name = lbl.objectName()
                 if any(kw in obj_name for kw in ('_title_lbl', '_name_lbl')):
-                    lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+                    lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
                 else:
-                    lbl.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+                    lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
 
     def _group_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QGroupBox {{
-                font-size: 10pt; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 8px;
+                font-size: 11pt; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_lg']}px;
                 margin-top: 4px; padding: 4px 10px; background-color: {t['card_bg']};
             }}
             QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 4px; }}
@@ -2071,33 +2082,30 @@ class SingleDevicePage(QWidget):
         return f"""
             QPushButton {{
                 background-color: {bg}; color: {fg}; border: 1px solid {t['border']};
-                border-radius: 4px; font-size: 9pt;
+                border-radius: {t['radius_md']}px; font-size: 10pt;
             }}
-            QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
-            }}
+            QPushButton:hover {{ border-color: {t['primary']}; }}
         """
 
     def _primary_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: transparent; color: {t['primary']};
+                background-color: {t['primary']}; color: {t['text_primary']};
                 border: 1px solid {t['primary']};
-                border-radius: 4px; font-size: 10pt; font-weight: bold;
-                padding: 8px 20px;
+                border-radius: {t['radius_md']}px; font-size: 11pt; font-weight: bold;
+                padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border: 1px solid {t['primary_hover']};
-                color: {t['primary_hover']};
+                background-color: {t['primary_hover']};
+                border-color: {t['primary_hover']};
+            }}
+            QPushButton:pressed {{
+                background-color: {t['primary_pressed']};
             }}
             QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
+                background-color: {t['border_deep']}; border-color: {t['border']};
+                color: {t['text_tertiary']};
             }}
         """
 
@@ -2105,36 +2113,26 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: transparent; color: {t['text_secondary']};
-                border: 1px solid {t['border']};
-                border-radius: 4px; font-size: 10pt;
-                padding: 8px 16px;
+                background-color: {t['page_bg']}; border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 11pt;
             }}
-            QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
-            }}
-            QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
-            }}
+            QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
         """
 
     def _table_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QTableWidget {{
-                border: 1px solid {t['border']}; border-radius: 6px;
-                gridline-color: {t['border_deep']}; background-color: {t['card_bg']}; font-size: 9pt;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                gridline-color: {t['border_deep']}; background-color: {t['card_bg']}; font-size: 10pt;
             }}
             QTableWidget::item {{ padding: 2px 4px; }}
             QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
             QHeaderView::section {{
                 background-color: {t['toolbar_bg']}; border: none;
                 border-bottom: 1px solid {t['border']}; padding: 2px 6px;
-                font-size: 9pt; font-weight: bold; color: {t['text_secondary']};
+                font-size: 10pt; font-weight: bold; color: {t['text_secondary']};
             }}
         """
 
@@ -2142,14 +2140,14 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QTabWidget::pane {{
-                border: 1px solid {t['border']}; border-radius: 6px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']}; top: -1px;
             }}
             QTabBar::tab {{
                 background-color: {t['page_bg']}; border: 1px solid {t['border']};
-                border-bottom: none; border-top-left-radius: 6px;
-                border-top-right-radius: 6px; padding: 6px 16px;
-                font-size: 10pt; color: {t['text_secondary']}; margin-right: 2px;
+                border-bottom: none; border-top-left-radius: {t['radius_lg']}px;
+                border-top-right-radius: {t['radius_lg']}px; padding: 5px 8px;
+                font-size: 11pt; color: {t['text_secondary']}; margin-right: 2px;
             }}
             QTabBar::tab:selected {{
                 background-color: {t['card_bg']}; color: {t['primary']};
@@ -2162,29 +2160,27 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QProgressBar {{
-                border: 1px solid {t['border']}; border-radius: 4px;
-                text-align: center; height: 20px; background-color: {t['page_bg']}; font-size: 11px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
+                text-align: center; height: 20px; background-color: {t['page_bg']}; font-size: 10pt;
             }}
-            QProgressBar::chunk {{ background-color: {t['primary']}; border-radius: 3px; }}
+            QProgressBar::chunk {{ background-color: {t['primary']}; border-radius: {t['radius_sm']}px; }}
         """
 
     def _ai_small_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: transparent; color: {t['primary']};
-                border: 1px solid {t['primary']};
-                border-radius: 4px; font-size: 9pt; font-weight: bold;
+                background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border: 1px solid {t['primary_hover']};
-                color: {t['primary_hover']};
+                background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']};
             }}
             QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
+                background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']};
             }}
         """
 
@@ -2192,64 +2188,44 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: transparent; color: {t['success']};
-                border: 1px solid {t['success']};
-                border-radius: 4px; font-size: 10pt;
-                padding: 8px 20px;
+                background-color: {t['page_bg']}; color: {t['text_secondary']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 11pt;
             }}
             QPushButton:hover {{
-                background-color: {t['success_bg']};
-                border: 1px solid {t['success_hover']};
-                color: {t['success_hover']};
+                background-color: {t['hover_bg']};
+                border-color: {t['primary']}; color: {t['primary']};
             }}
-            QPushButton:disabled {{
-                background-color: transparent;
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
-            }}
+            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
         """
 
     def _cancel_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: transparent; color: {t['warning']};
-                border: 1px solid {t['warning']}; border-radius: 4px; font-size: 9pt;
-                padding: 8px 16px;
+                background-color: {t['page_bg']}; color: {t['text_secondary']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px; font-size: 10pt;
             }}
             QPushButton:hover {{
-                background-color: {t['warning_bg']};
-                border-color: {t['warning_hover']};
-                color: {t['warning_hover']};
+                background-color: {t['hover_bg']};
+                border-color: {t['primary']}; color: {t['primary']};
             }}
         """
 
     def _small_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
-            QPushButton {{
-                background-color: transparent; border: 1px solid {t['border']};
-                border-radius: 3px; font-size: 11px; color: {t['text_secondary']}; padding: 2px 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {t['selection_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
-            }}
+            QPushButton {{ background-color: {t['page_bg']}; border: 1px solid {t['border']};
+                border-radius: {t['radius_sm']}px; font-size: 10pt; color: {t['text_secondary']}; padding: 2px 8px; }}
+            QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
         """
 
     def _small_danger_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
-            QPushButton {{
-                background-color: transparent; border: 1px solid {t['danger']};
-                border-radius: 3px; font-size: 11px; color: {t['danger']}; padding: 2px 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {t['danger_bg']};
-                border-color: {t['danger_hover']};
-                color: {t['danger_hover']};
-            }}
+            QPushButton {{ background-color: {t['page_bg']}; border: 1px solid {t['danger']};
+                border-radius: {t['radius_sm']}px; font-size: 10pt; color: {t['danger']}; padding: 2px 8px; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']}; border-color: {t['danger']}; color: {t['danger']}; }}
         """
 
     def _get_selected_devices(self) -> tuple:
@@ -2547,8 +2523,9 @@ class SingleDevicePage(QWidget):
         try:
             t = self._theme_engine.current_theme
             self.ai_inspect_btn.setStyleSheet(f"""
-                QPushButton {{ background-color: {t['warning']}; color: {t['text_primary']}; border: none;
-                    border-radius: 4px; font-size: 9pt; font-weight: bold; }}
+                QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_tertiary']};
+                    border: 1px solid {t['border']};
+                    border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
             """)
             self.ai_inspect_btn.setText("⏳ 分析中...")
             self.ai_inspect_btn.setEnabled(False)
@@ -2597,10 +2574,13 @@ class SingleDevicePage(QWidget):
     def _restore_inspect_btn(self):
         t = self._theme_engine.current_theme
         self.ai_inspect_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['primary']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+            QPushButton:hover {{ background-color: {t['card_bg']};
+                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                color: {t['text_tertiary']}; }}
         """)
         self.ai_inspect_btn.setText("🔍 AI合规巡检")
         self.ai_inspect_btn.setEnabled(True)
@@ -2661,9 +2641,11 @@ class SingleDevicePage(QWidget):
                 active_btn.setEnabled(False)
                 active_btn.setText("⏳ 诊断中...")
                 active_btn.setStyleSheet(f"""
-                    QPushButton {{ background-color: {t['warning']}; color: {t['text_primary']}; border: none;
-                        border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-                    QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_tertiary']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+                    QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                        color: {t['text_tertiary']}; }}
                 """)
             self.result_tabs.setCurrentIndex(TAB_LOG)
             self.log_append("=" * 60)
@@ -2706,22 +2688,31 @@ class SingleDevicePage(QWidget):
             t = self._theme_engine.current_theme
             style_map = {
                 "report": f"""
-                    QPushButton {{ background-color: {t['danger']}; color: {t['text_primary']}; border: none;
-                        border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-                    QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+                    QPushButton:hover {{ background-color: {t['card_bg']};
+                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                        color: {t['text_tertiary']}; }}
                 """,
                 "compliance": f"""
-                    QPushButton {{ background-color: {t['accent']}; color: {t['text_primary']}; border: none;
-                        border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['accent_hover']}; }}
-                    QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+                    QPushButton:hover {{ background-color: {t['card_bg']};
+                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                        color: {t['text_tertiary']}; }}
                 """,
                 "log": f"""
-                    QPushButton {{ background-color: {t['danger']}; color: {t['text_primary']}; border: none;
-                        border-radius: 4px; font-size: 9pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-                    QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
+                        border: 1px solid {t['border']};
+                        border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
+                    QPushButton:hover {{ background-color: {t['card_bg']};
+                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
+                        color: {t['text_tertiary']}; }}
                 """,
             }
             text_map = {
@@ -3103,15 +3094,15 @@ class SingleDevicePage(QWidget):
                 html += f"<p style='color: {t['text_tertiary']}; font-weight: bold; margin: 6px 0;'>{self._escape_html(line)}</p>"
             elif "Verdict:" in stripped or "判定:" in stripped:
                 if "PASS" in stripped or "通过" in stripped:
-                    html += f"<p style='color: {t['success']}; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: {t['success_bg']}; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: {t['success']}; font-weight: bold; font-size: 11pt; margin-top: 12px; padding: 10px; background: {t['success_bg']}; border-radius: {t['radius_md']}px;'>{self._escape_html(line)}</p>"
                 elif "BLOCK" in stripped or "阻止" in stripped:
-                    html += f"<p style='color: {t['danger']}; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: {t['danger_bg']}; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: {t['danger']}; font-weight: bold; font-size: 11pt; margin-top: 12px; padding: 10px; background: {t['danger_bg']}; border-radius: {t['radius_md']}px;'>{self._escape_html(line)}</p>"
                 elif "WARNING" in stripped or "警告" in stripped:
-                    html += f"<p style='color: {t['warning']}; font-weight: bold; font-size: 10pt; margin-top: 12px; padding: 10px; background: {t['warning_bg']}; border-radius: 4px;'>{self._escape_html(line)}</p>"
+                    html += f"<p style='color: {t['warning']}; font-weight: bold; font-size: 11pt; margin-top: 12px; padding: 10px; background: {t['warning_bg']}; border-radius: {t['radius_md']}px;'>{self._escape_html(line)}</p>"
                 else:
                     html += f"<p style='margin: 4px 0;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("#"):
-                html += f"<p style='color: {t['primary']}; font-weight: bold; font-size: 10pt; margin-top: 10px;'>{self._escape_html(line)}</p>"
+                html += f"<p style='color: {t['primary']}; font-weight: bold; font-size: 11pt; margin-top: 10px;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("|"):
                 html += f"<p style='color: {t['text_secondary']}; margin: 2px 0; font-family: Consolas, monospace;'>{self._escape_html(line)}</p>"
             elif stripped.startswith("---"):
@@ -3191,6 +3182,6 @@ class SingleDevicePage(QWidget):
     def _make_placeholder_item(self, text: str) -> QListWidgetItem:
         t = self._theme_engine.current_theme
         item = QListWidgetItem(text)
-        item.setForeground(QColor(t['border_deep']))
+        item.setForeground(QColor(t['text_tertiary']))
         item.setFlags(Qt.NoItemFlags)
         return item

@@ -258,29 +258,31 @@ class AIAnalysisPage(QWidget):
 
     def _btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
                 background-color: {t['hover_bg']};
                 color: {t['text_secondary']};
                 border: 1px solid {t['border']};
-                border-radius: 4px;
-                font-size: 9pt;
-                padding: 5px 12px;
+                border-radius: {r_md}px;
+                font-size: 10pt;
+                padding: 4px 8px;
             }}
             QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
         """
 
     def _ai_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
                 background-color: {t['ai_bg']};
                 color: {t['ai_text']};
                 border: 1px solid {t['ai_border']};
-                border-radius: 4px;
-                font-size: 10pt;
+                border-radius: {r_md}px;
+                font-size: 11pt;
                 font-weight: bold;
-                padding: 8px 16px;
+                padding: 5px 8px;
             }}
             QPushButton:hover {{ background-color: {t['selection_bg']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; color: {t['text_disabled']}; border-color: {t['border']}; }}
@@ -288,28 +290,40 @@ class AIAnalysisPage(QWidget):
 
     def _primary_btn_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QPushButton {{
                 background-color: {t['primary']};
                 color: {t['text_primary']};
-                border: none;
-                border-radius: 4px;
-                font-size: 10pt;
+                border: 1px solid {t['primary']};
+                border-radius: {r_md}px;
+                font-size: 11pt;
                 font-weight: bold;
-                padding: 8px 20px;
+                padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['primary_hover']};
+                border-color: {t['primary_hover']};
+            }}
+            QPushButton:pressed {{
+                background-color: {t['primary_pressed']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['border_deep']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """
 
     def _list_style(self) -> str:
         t = self._theme_engine.current_theme
+        r_md = t['radius_md']
         return f"""
             QListWidget {{
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {r_md}px;
                 background-color: {t['card_bg']};
-                font-size: 10pt;
+                font-size: 11pt;
                 outline: none;
             }}
             QListWidget::item {{ padding: 5px 8px; }}
@@ -335,7 +349,7 @@ class AIAnalysisPage(QWidget):
     def init_ui(self):
         main_layout = QHBoxLayout()
         main_layout.setContentsMargins(16, 16, 16, 16)
-        main_layout.setSpacing(10)
+        main_layout.setSpacing(12)
 
         splitter = QSplitter(Qt.Horizontal)
 
@@ -549,13 +563,14 @@ class AIAnalysisPage(QWidget):
 
     def _group_style(self):
         t = self._theme_engine.current_theme
+        r_lg = t['radius_lg']
         return f"""
             QGroupBox {{
-                font-size: 10pt;
+                font-size: 11pt;
                 font-weight: bold;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
-                border-radius: 8px;
+                border-radius: {r_lg}px;
                 margin-top: 10px;
                 padding: 12px;
                 background-color: {t['card_bg']};
@@ -848,38 +863,40 @@ class AIAnalysisPage(QWidget):
             # 通过 findChildren 查找标题和描述标签
             for title_label in self.findChildren(QLabel):
                 if title_label.text() == "AI专家工作站":
-                    title_label.setStyleSheet(f"font-size: 15pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
+                    title_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
                 elif title_label.text().startswith("深度分析、多文件对比"):
-                    title_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+                    title_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
 
         # Agent快捷指令标签
         for agent_label in self.findChildren(QLabel):
             if agent_label.text() == "Agent快捷指令：":
-                agent_label.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: bold;")
+                agent_label.setStyleSheet(f"font-size: 11pt; color: {t['text_secondary']}; font-weight: bold;")
 
         # 所有 Prompt编辑区标签
         for prompt_label in self.findChildren(QLabel):
             if prompt_label.text() == "Prompt编辑区（可直接修改后发送）：":
-                prompt_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']}; font-weight: bold;")
+                prompt_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
 
         # 状态标签
-        self.status_label.setStyleSheet(f"font-size: 9pt; color: {t['text_tertiary']};")
+        self.status_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
 
         # 刷新 QGroupBox 样式（标题颜色）
         for group_box in self.findChildren(QGroupBox):
             group_box.setStyleSheet(self._group_style())
 
         # 刷新 TabWidget 样式
+        r_md = t['radius_md']
+        r_sm = t['radius_sm']
         self.tab_widget.setStyleSheet(f"""
             QTabWidget::pane {{
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {r_md}px;
                 background-color: {t['card_bg']};
             }}
             QTabBar::tab {{
                 border: 1px solid {t['border']};
                 padding: 8px 20px;
-                font-size: 10pt;
+                font-size: 11pt;
                 background-color: {t['card_bg']};
                 margin-right: 2px;
             }}
@@ -893,15 +910,16 @@ class AIAnalysisPage(QWidget):
         """)
 
         # 刷新 QTextEdit 样式（Prompt编辑区和结果区）
+        r_md = t['radius_md']
         for text_edit in self.findChildren(QTextEdit):
             if text_edit.isReadOnly():
                 # 结果区
                 text_edit.setStyleSheet(f"""
                     QTextEdit {{
                         border: 1px solid {t['border']};
-                        border-radius: 4px;
+                        border-radius: {r_md}px;
                         padding: 10px;
-                        font-size: 10pt;
+                        font-size: 11pt;
                         background-color: {t['card_bg']};
                     }}
                 """)
@@ -910,23 +928,25 @@ class AIAnalysisPage(QWidget):
                 text_edit.setStyleSheet(f"""
                     QTextEdit {{
                         border: 1px solid {t['accent']};
-                        border-radius: 4px;
+                        border-radius: {r_md}px;
                         padding: 10px;
                         font-family: 'Consolas', 'Courier New', monospace;
-                        font-size: 10pt;
+                        font-size: 11pt;
                         background-color: {t['card_bg']};
                     }}
                     QTextEdit:focus {{ border: 1px solid {t['accent']}; }}
                 """)
 
         # 刷新 QListWidget 样式
+        r_md = t['radius_md']
+        r_sm = t['radius_sm']
         for list_widget in self.findChildren(QListWidget):
             list_widget.setStyleSheet(f"""
                 QListWidget {{
                     border: 1px solid {t['border']};
-                    border-radius: 4px;
+                    border-radius: {r_md}px;
                     background-color: {t['card_bg']};
-                    font-size: 10pt;
+                    font-size: 11pt;
                     outline: none;
                 }}
                 QListWidget::item {{ padding: 5px 8px; }}
@@ -938,12 +958,12 @@ class AIAnalysisPage(QWidget):
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
                 border: 1px solid {t['border']};
-                border-radius: 2px;
+                border-radius: {r_sm}px;
                 text-align: center;
                 background-color: {t['card_bg']};
-                font-size: 10px;
+                font-size: 10pt;
             }}
-            QProgressBar::chunk {{ background-color: {t['accent']}; border-radius: 2px; }}
+            QProgressBar::chunk {{ background-color: {t['accent']}; border-radius: {r_sm}px; }}
         """)
 
     def showEvent(self, event):

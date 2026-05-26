@@ -29,14 +29,14 @@ class DeviceFormDialog(QDialog):
         layout.setSpacing(16)
 
         title = QLabel("新增设备" if not self.device else "编辑设备")
-        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
+        title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         form_group = QGroupBox("设备信息")
         form_group.setStyleSheet(f"""
             QGroupBox {{
-                font-size: 14px; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 6px;
+                font-size: 14pt; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
             }}
             QGroupBox::title {{
@@ -49,8 +49,9 @@ class DeviceFormDialog(QDialog):
 
         input_style = f"""
             QLineEdit, QComboBox {{
-                border: 1px solid {t['input_border']}; border-radius: 4px;
-                padding: 8px 12px; font-size: 14px; background-color: {t['card_bg']};
+                border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;
+                padding: 4px 8px; font-size: 11pt; background-color: {t['card_bg']};
+                min-height: 26px;
             }}
             QLineEdit:focus, QComboBox:focus {{
                 border: 1px solid {t['primary']};
@@ -114,11 +115,11 @@ class DeviceFormDialog(QDialog):
         btn_layout.addStretch()
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 38)
+        cancel_btn.setFixedSize(100, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
-                border-radius: 4px; font-size: 14px; color: {t['text_secondary']};
+                border-radius: {t['radius_md']}px; font-size: 11pt; color: {t['text_secondary']}; padding: 6px;
             }}
             QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['primary']}; }}
         """)
@@ -126,13 +127,23 @@ class DeviceFormDialog(QDialog):
         btn_layout.addWidget(cancel_btn)
 
         save_btn = QPushButton("保存")
-        save_btn.setFixedSize(100, 38)
+        save_btn.setFixedSize(100, 30)
         save_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 14px;
+                background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 12pt; padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         save_btn.clicked.connect(self._validate_and_accept)
         btn_layout.addWidget(save_btn)

@@ -115,14 +115,14 @@ class DeviceDiscoveryDialog(QDialog):
         layout.setSpacing(16)
 
         title = QLabel("批量设备发现")
-        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {t['text_main']};")
+        title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
         layout.addWidget(title)
 
         scan_group = QGroupBox("扫描设置")
         scan_group.setStyleSheet(f"""
             QGroupBox {{
-                font-size: 14px; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 6px;
+                font-size: 14pt; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
             }}
             QGroupBox::title {{
@@ -134,8 +134,9 @@ class DeviceDiscoveryDialog(QDialog):
 
         input_style = f"""
             QLineEdit, QComboBox {{
-                border: 1px solid {t['input_border']}; border-radius: 4px;
-                padding: 8px 12px; font-size: 14px; background-color: {t['card_bg']};
+                border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;
+                padding: 4px 8px; font-size: 11pt; background-color: {t['card_bg']};
+                min-height: 26px;
             }}
             QLineEdit:focus, QComboBox:focus {{ border: 1px solid {t['primary']}; }}
         """
@@ -172,28 +173,46 @@ class DeviceDiscoveryDialog(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
         self.scan_btn = QPushButton("开始扫描")
-        self.scan_btn.setFixedSize(120, 38)
+        self.scan_btn.setFixedSize(120, 30)
         self.scan_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 14px;
+                background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         self.scan_btn.clicked.connect(self._start_scan)
         btn_layout.addWidget(self.scan_btn)
 
         self.stop_btn = QPushButton("停止")
-        self.stop_btn.setFixedSize(80, 38)
+        self.stop_btn.setFixedSize(80, 30)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['danger']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 14px;
+                background-color: {t['hover_bg']}; color: {t['danger']};
+                border: 1px solid {t['danger']};
+                border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['danger_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['danger_hover']};
+                color: {t['danger_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         self.stop_btn.clicked.connect(self._stop_scan)
         btn_layout.addWidget(self.stop_btn)
@@ -201,11 +220,11 @@ class DeviceDiscoveryDialog(QDialog):
         self.progress_bar = QProgressBar()
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
-                border: 1px solid {t['border']}; border-radius: 4px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 text-align: center; height: 22px; background-color: {t['card_bg']};
             }}
             QProgressBar::chunk {{
-                background-color: {t['primary']}; border-radius: 3px;
+                background-color: {t['primary']}; border-radius: {t['radius_sm']}px;
             }}
         """)
         btn_layout.addWidget(self.progress_bar)
@@ -213,7 +232,7 @@ class DeviceDiscoveryDialog(QDialog):
         scan_layout.addLayout(btn_layout)
 
         self.status_label = QLabel("就绪，请设置IP范围后点击扫描")
-        self.status_label.setStyleSheet(f"font-size: 13px; color: {t['text_tertiary']};")
+        self.status_label.setStyleSheet(f"font-size: 13pt; color: {t['text_tertiary']};")
         scan_layout.addWidget(self.status_label)
 
         scan_group.setLayout(scan_layout)
@@ -222,8 +241,8 @@ class DeviceDiscoveryDialog(QDialog):
         result_group = QGroupBox("发现结果")
         result_group.setStyleSheet(f"""
             QGroupBox {{
-                font-size: 14px; font-weight: bold; color: {t['text_main']};
-                border: 1px solid {t['border']}; border-radius: 6px;
+                font-size: 14pt; font-weight: bold; color: {t['text_main']};
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
             }}
             QGroupBox::title {{
@@ -240,7 +259,7 @@ class DeviceDiscoveryDialog(QDialog):
         self.result_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.result_table.setStyleSheet(f"""
             QTableWidget {{
-                border: 1px solid {t['border']}; border-radius: 4px;
+                border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']}; gridline-color: {t['hover_bg']};
             }}
             QTableWidget::item {{ padding: 4px; }}
@@ -256,22 +275,31 @@ class DeviceDiscoveryDialog(QDialog):
         add_layout.setSpacing(12)
 
         self.select_all_cb = QCheckBox("全选")
-        self.select_all_cb.setStyleSheet(f"font-size: 13px;")
+        self.select_all_cb.setStyleSheet(f"font-size: 13pt;")
         self.select_all_cb.stateChanged.connect(self._toggle_select_all)
         add_layout.addWidget(self.select_all_cb)
 
         add_layout.addStretch()
 
         self.add_selected_btn = QPushButton("添加选中设备到清单")
-        self.add_selected_btn.setFixedSize(180, 38)
+        self.add_selected_btn.setFixedSize(180, 30)
         self.add_selected_btn.setEnabled(False)
         self.add_selected_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['success']}; color: {t['text_primary']}; border: none;
-                border-radius: 4px; font-size: 14px;
+                background-color: {t['hover_bg']}; color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
-            QPushButton:hover {{ background-color: {t['success_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         self.add_selected_btn.clicked.connect(self._add_selected)
         add_layout.addWidget(self.add_selected_btn)
@@ -281,11 +309,11 @@ class DeviceDiscoveryDialog(QDialog):
         layout.addWidget(result_group)
 
         close_btn = QPushButton("关闭")
-        close_btn.setFixedSize(100, 38)
+        close_btn.setFixedSize(100, 30)
         close_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
-                border-radius: 4px; font-size: 14px;
+                border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{ border: 1px solid {t['primary']}; }}
         """)
