@@ -58,46 +58,68 @@ TAB_COMPLIANCE = 3
 def _btn_style(t: dict) -> str:
     return f"""
         QPushButton {{
-            background-color: {t['page_bg']};
+            background-color: transparent;
             color: {t['text_secondary']};
             border: 1px solid {t['border']};
             border-radius: 4px;
             font-size: 9pt;
             padding: 5px 12px;
         }}
-        QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
+        QPushButton:hover {{
+            background-color: {t['selection_bg']};
+            border-color: {t['primary']};
+            color: {t['primary']};
+        }}
+        QPushButton:disabled {{
+            background-color: transparent;
+            border-color: {t['border']};
+            color: {t['text_disabled']};
+        }}
     """
 
 
 def _ai_btn_style(t: dict) -> str:
     return f"""
         QPushButton {{
-            background-color: {t['selection_bg']};
-            color: {t['primary']};
-            border: 1px solid {t['primary']};
+            background-color: transparent;
+            color: {t['ai_text']};
+            border: 1px solid {t['ai_border']};
             border-radius: 4px;
             font-size: 10pt;
             font-weight: bold;
             padding: 8px 16px;
         }}
-        QPushButton:hover {{ background-color: {t['primary_light']}; }}
-        QPushButton:disabled {{ background-color: {t['page_bg']}; color: {t['border_deep']}; border-color: {t['border']}; }}
+        QPushButton:hover {{
+            background-color: {t['selection_bg']};
+            border-color: {t['ai_text']};
+            color: {t['ai_text']};
+        }}
+        QPushButton:disabled {{ background-color: transparent; color: {t['text_disabled']}; border-color: {t['border']}; }}
     """
 
 
 def _primary_btn_style(t: dict) -> str:
     return f"""
         QPushButton {{
-            background-color: {t['primary']};
-            color: {t['text_primary']};
-            border: none;
+            background-color: transparent;
+            color: {t['primary']};
+            border: 1px solid {t['primary']};
             border-radius: 4px;
             font-size: 10pt;
             font-weight: bold;
             padding: 6px 16px;
         }}
-        QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-        QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+        QPushButton:hover {{
+            background-color: {t['selection_bg']};
+            border: 1px solid {t['primary_hover']};
+            color: {t['primary_hover']};
+        }}
+        QPushButton:disabled {{
+            background-color: transparent;
+            border: 1px solid {t['border']};
+            color: {t['text_disabled']};
+            color: {t['text_disabled']};
+        }}
     """
 
 

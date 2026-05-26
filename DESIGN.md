@@ -129,135 +129,180 @@ NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体
 
 ### 4.1 按钮（QPushButton）
 
-#### 主按钮（Primary Action）
+> **V0.3.7 按钮透明规范**：所有按钮默认背景透明，仅边框+文字可见；悬停时背景变为浅色，边框/文字变亮。
+> 使用 ThemeEngine Token 动态配色，禁止硬编码色值。
+
+#### A — 主按钮（Primary）
 ```css
+/* 使用 Token: primary, selection_bg, primary_hover, border, text_disabled */
 QPushButton {
-    background-color: #3B7CFF;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
+    background-color: transparent;
+    color: {primary};
+    border: 1px solid {primary};
+    border-radius: {radius_md}px;
     font-size: 10pt;
+    font-weight: bold;
+    padding: 8px 20px;
 }
-QPushButton:hover { background-color: #2962D9; }
-QPushButton:pressed { background-color: #1E4BB8; }
-QPushButton:disabled { background-color: #4A5266; color: #7A8296; }
+QPushButton:hover {
+    background-color: {selection_bg};
+    border: 1px solid {primary_hover};
+    color: {primary_hover};
+}
+QPushButton:disabled {
+    background-color: transparent;
+    border: 1px solid {border};
+    color: {text_disabled};
+}
 ```
 - **尺寸**：高度 32~40px，宽度根据内容自适应或固定 80~120px
-- **场景**：生成配置、保存、关闭、执行任务等主要操作
+- **场景**：生成配置、保存、执行任务、AI分析等主要操作
+- **效果**：默认透明+主题色边框 → 悬停浅色背景+深色边框
 
-#### 次要按钮（Secondary Action）
+#### B — 次要边框按钮（Secondary）
 ```css
+/* 使用 Token: text_secondary, border, selection_bg, primary, text_disabled */
 QPushButton {
-    background-color: #2A3142;
-    border: 1px solid #2E3648;
-    border-radius: 4px;
+    background-color: transparent;
+    color: {text_secondary};
+    border: 1px solid {border};
+    border-radius: {radius_md}px;
     font-size: 10pt;
-    color: #B0B8C8;
+    padding: 8px 16px;
 }
-QPushButton:hover { border: 1px solid #3B7CFF; color: #E8ECF1; }
+QPushButton:hover {
+    background-color: {selection_bg};
+    border: 1px solid {primary};
+    color: {primary};
+}
+QPushButton:disabled {
+    background-color: transparent;
+    border: 1px solid {border};
+    color: {text_disabled};
+}
 ```
 - **尺寸**：高度 32~40px，宽度 80~120px
-- **场景**：取消、返回、复制、导出、重置等非破坏性操作
+- **场景**：取消、刷新、编辑、导入、导出等非破坏性操作
+- **效果**：默认透明+灰色边框 → 悬停浅色背景+主题色边框
 
-#### AI 按钮
+#### C — 语义按钮（Semantic）
 ```css
+/* Danger — 使用 Token: danger, danger_bg, danger_hover */
 QPushButton {
-    background-color: #1A3A6E;
-    color: #4D90FF;
-    border: 1px solid #3B7CFF;
-    border-radius: 4px;
+    background-color: transparent;
+    color: {danger};
+    border: 1px solid {danger};
+    border-radius: {radius_md}px;
+    font-size: 9pt;
+    padding: 8px 16px;
+}
+QPushButton:hover {
+    background-color: {danger_bg};
+    border: 1px solid {danger_hover};
+    color: {danger_hover};
+}
+
+/* Success — 使用 Token: success, success_bg, success_hover */
+QPushButton {
+    background-color: transparent;
+    color: {success};
+    border: 1px solid {success};
+    border-radius: {radius_md}px;
+    font-size: 10pt;
+    padding: 8px 20px;
+}
+QPushButton:hover {
+    background-color: {success_bg};
+    border: 1px solid {success_hover};
+    color: {success_hover};
+}
+
+/* Warning — 使用 Token: warning, warning_bg, warning_hover */
+QPushButton {
+    background-color: transparent;
+    color: {warning};
+    border: 1px solid {warning};
+    border-radius: {radius_md}px;
+    font-size: 9pt;
+    padding: 8px 16px;
+}
+QPushButton:hover {
+    background-color: {warning_bg};
+    border: 1px solid {warning_hover};
+    color: {warning_hover};
+}
+```
+- **尺寸**：高度 24~36px，宽度 60~100px
+- **场景**：删除(红)、测试连接(绿)、取消(黄)等语义操作
+- **关键**：使用 `*_bg` Token 替代手动透明度，三主题自适应
+
+#### D — AI 按钮
+```css
+/* 使用 Token: ai_text, ai_border, selection_bg, text_disabled */
+QPushButton {
+    background-color: transparent;
+    color: {ai_text};
+    border: 1px solid {ai_border};
+    border-radius: {radius_md}px;
     font-size: 10pt;
     font-weight: bold;
     padding: 8px 16px;
 }
-QPushButton:hover { background-color: #234888; }
+QPushButton:hover {
+    background-color: {selection_bg};
+    border-color: {ai_text};
+    color: {ai_text};
+}
 QPushButton:disabled {
-    background-color: #2A3142;
-    color: #4A5266;
-    border-color: #2E3648;
+    background-color: transparent;
+    color: {text_disabled};
+    border-color: {border};
 }
 ```
 - **场景**：所有 AI 分析按钮（AI合规巡检、AI故障诊断、AI精审）
 
-#### 危险按钮（Danger Action）
+#### E — 工具栏小按钮（Toolbar Small）
 ```css
+/* 使用 Token: text_secondary, border, selection_bg, primary */
 QPushButton {
-    background-color: #FF5C5C;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    font-size: 9pt;
-}
-QPushButton:hover { background-color: #CC3E3E; }
-QPushButton:disabled { background-color: #4A5266; color: #7A8296; }
-```
-- **尺寸**：高度 24~36px，宽度 60~100px
-- **场景**：删除设备、删除配置等破坏性操作
-
-#### 诊断按钮（Diagnose）
-```css
-QPushButton {
-    background-color: #FF5C5C;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    font-size: 9pt;
-    font-weight: bold;
-}
-QPushButton:hover { background-color: #CC3E3E; }
-```
-
-#### AI 精审按钮（Compliance）
-```css
-QPushButton {
-    background-color: #9B6CEF;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    font-size: 9pt;
-    font-weight: bold;
-}
-QPushButton:hover { background-color: #7A4FC7; }
-```
-
-#### 工具栏小按钮（Toolbar Small）
-```css
-QPushButton {
-    background-color: #2A3142;
-    border: 1px solid #2E3648;
-    border-radius: 3px;
+    background-color: transparent;
+    border: 1px solid {border};
+    border-radius: {radius_sm}px;
     font-size: 11px;
-    color: #B0B8C8;
+    color: {text_secondary};
     padding: 2px 8px;
 }
-QPushButton:hover { border-color: #3B7CFF; color: #4D90FF; }
+QPushButton:hover {
+    background-color: {selection_bg};
+    border-color: {primary};
+    color: {primary};
+}
 ```
 - **尺寸**：高度 22~26px，宽度 60~70px
 - **场景**：文件列表上方的刷新/打开/删除三件套
 
-#### 导航按钮（Navigation）
+#### F — 导航按钮（Navigation）
 ```css
+/* 无边框设计，保持透明背景 */
 QPushButton {
     background-color: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: {radius_lg}px;
     padding: 6px 16px;
     font-size: 10pt;
-    color: #B0B8C8;
+    color: {text_secondary};
 }
 QPushButton:hover {
-    background-color: #2A3142;
-    color: #E8ECF1;
+    background-color: {hover_bg};
+    color: {text_main};
 }
 QPushButton[active="true"] {
-    background-color: #1A3A6E;
-    color: #4D90FF;
+    background-color: {selection_bg};
+    color: {primary_light};
     font-weight: bold;
 }
 ```
 - **尺寸**：高度 40px，宽度自适应
-
-#### 状态指示按钮（Activation Status）
 
 | 状态 | 背景 | 边框 | 文字色 |
 |------|------|------|--------|
@@ -601,13 +646,30 @@ QFrame { color: #383F50; max-height: 1px; }
 
 ### 6.1 按钮状态
 
-| 状态 | 视觉反馈 |
-|------|---------|
-| **默认** | 各按钮各自的基础色 |
-| **hover** | 背景色变深或边框变蓝（`#165DFF`） |
-| **pressed** | 背景色更深（仅部分按钮定义） |
-| **disabled** | 背景 `#C9CDD4`，文字变灰 |
-| **active**（自定义属性） | 蓝色背景 + 白色文字 + 加粗 |
+| 状态 | 视觉反馈 | Token 参考 |
+|------|---------|-----------|
+| **默认** | 实心按钮：背景色 + 同色系深色边框；次要按钮：card_bg + 灰色边框 | `primary`+`primary_hover` / `card_bg`+`border` |
+| **hover** | 实心按钮：背景变深 + 边框变亮；次要/语义按钮：边框变为主题色 + 文字变主题色 | `primary_hover`+`primary_light` / `selection_bg`+`primary` |
+| **pressed** | 背景色更深（仅部分按钮定义） | `primary_pressed` |
+| **disabled** | 背景 `border_deep`，边框 `border`，文字 `text_disabled` | 三主题自适应 |
+| **active**（自定义属性） | 选中态：`selection_bg` 背景 + `primary_light` 文字 + 加粗 | 导航按钮专用 |
+
+### 6.2 按钮边框规范（V0.3.7）
+
+| 按钮类型 | 默认背景 | 默认边框 | 悬停背景 | 悬停边框 | 文字默认 | 文字悬停 |
+|---------|---------|---------|---------|---------|---------|---------|
+| A 主按钮 | `transparent` | `1px solid {primary}` | `{selection_bg}` | `1px solid {primary_hover}` | `{primary}` | `{primary_hover}` |
+| B 次要按钮 | `transparent` | `1px solid {border}` | `{selection_bg}` | `1px solid {primary}` | `{text_secondary}` | `{primary}` |
+| C 语义按钮 | `transparent` | `1px solid {语义色}` | `{语义色_bg}` | `1px solid {语义色_hover}` | 语义色本身 | 语义色_hover |
+| D 工具栏小按钮 | `transparent` | `1px solid {border}` | `{selection_bg}` | `1px solid {primary}` | `{text_secondary}` | `{primary}` |
+| E AI 按钮 | `transparent` | `1px solid {ai_border}` | `{selection_bg}` | `1px solid {ai_text}` | `{ai_text}` | `{ai_text}` |
+| F 导航按钮 | `transparent` | 无边框 | `{hover_bg}` | 无边框 | `{text_secondary}` | `{text_main}` |
+
+**核心原则**：
+- 所有按钮默认背景透明（导航按钮除外），仅边框+文字可见
+- 悬停时背景变为浅色（`selection_bg` 或 `*_bg`），边框/文字变亮
+- 使用 `*_bg` Token 替代手动透明度（如 `{danger}22`），确保三主题自适应
+- 禁止在按钮样式中使用 `border: none`（导航按钮除外）
 
 ### 6.2 输入框状态
 

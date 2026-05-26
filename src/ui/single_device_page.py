@@ -2073,29 +2073,53 @@ class SingleDevicePage(QWidget):
                 background-color: {bg}; color: {fg}; border: 1px solid {t['border']};
                 border-radius: 4px; font-size: 9pt;
             }}
-            QPushButton:hover {{ border-color: {t['primary']}; }}
+            QPushButton:hover {{
+                background-color: {t['selection_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
         """
 
     def _primary_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
+                background-color: transparent; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: 4px; font-size: 10pt; font-weight: bold;
+                padding: 8px 20px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton:hover {{
+                background-color: {t['selection_bg']};
+                border: 1px solid {t['primary_hover']};
+                color: {t['primary_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                border: 1px solid {t['border']};
+                color: {t['text_disabled']};
+            }}
         """
 
     def _secondary_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']}; border: 1px solid {t['border']};
+                background-color: transparent; color: {t['text_secondary']};
+                border: 1px solid {t['border']};
                 border-radius: 4px; font-size: 10pt;
+                padding: 8px 16px;
             }}
-            QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['selection_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                border: 1px solid {t['border']};
+                color: {t['text_disabled']};
+            }}
         """
 
     def _table_style(self) -> str:
@@ -2148,50 +2172,84 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: {t['primary']}; color: {t['text_primary']}; border: none;
+                background-color: transparent; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: 4px; font-size: 9pt; font-weight: bold;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; color: {t['text_primary']}; }}
+            QPushButton:hover {{
+                background-color: {t['selection_bg']};
+                border: 1px solid {t['primary_hover']};
+                color: {t['primary_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                border: 1px solid {t['border']};
+                color: {t['text_disabled']};
+            }}
         """
 
     def _test_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: {t['success']}; color: {t['text_primary']}; border: none;
+                background-color: transparent; color: {t['success']};
+                border: 1px solid {t['success']};
                 border-radius: 4px; font-size: 10pt;
+                padding: 8px 20px;
             }}
-            QPushButton:hover {{ background-color: {t['success_hover']}; }}
-            QPushButton:disabled {{ background-color: {t['border_deep']}; }}
+            QPushButton:hover {{
+                background-color: {t['success_bg']};
+                border: 1px solid {t['success_hover']};
+                color: {t['success_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                border: 1px solid {t['border']};
+                color: {t['text_disabled']};
+            }}
         """
 
     def _cancel_btn_style(self) -> str:
         t = self._theme_engine.current_theme
-        warning_border = t['warning']
         return f"""
             QPushButton {{
-                background-color: {t['warning_bg']}; color: {t['warning']};
-                border: 1px solid {warning_border}; border-radius: 4px; font-size: 9pt;
+                background-color: transparent; color: {t['warning']};
+                border: 1px solid {t['warning']}; border-radius: 4px; font-size: 9pt;
+                padding: 8px 16px;
             }}
-            QPushButton:hover {{ background-color: {t['warning_bg']}; }}
+            QPushButton:hover {{
+                background-color: {t['warning_bg']};
+                border-color: {t['warning_hover']};
+                color: {t['warning_hover']};
+            }}
         """
 
     def _small_btn_style(self) -> str:
         t = self._theme_engine.current_theme
         return f"""
-            QPushButton {{ background-color: {t['page_bg']}; border: 1px solid {t['border']};
-                border-radius: 3px; font-size: 11px; color: {t['text_secondary']}; padding: 2px 8px; }}
-            QPushButton:hover {{ border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton {{
+                background-color: transparent; border: 1px solid {t['border']};
+                border-radius: 3px; font-size: 11px; color: {t['text_secondary']}; padding: 2px 8px;
+            }}
+            QPushButton:hover {{
+                background-color: {t['selection_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
         """
 
     def _small_danger_btn_style(self) -> str:
         t = self._theme_engine.current_theme
-        warning_border = t['warning']
         return f"""
-            QPushButton {{ background-color: {t['warning_bg']}; border: 1px solid {warning_border};
-                border-radius: 3px; font-size: 11px; color: {t['warning']}; padding: 2px 8px; }}
-            QPushButton:hover {{ background-color: {t['warning_bg']}; }}
+            QPushButton {{
+                background-color: transparent; border: 1px solid {t['danger']};
+                border-radius: 3px; font-size: 11px; color: {t['danger']}; padding: 2px 8px;
+            }}
+            QPushButton:hover {{
+                background-color: {t['danger_bg']};
+                border-color: {t['danger_hover']};
+                color: {t['danger_hover']};
+            }}
         """
 
     def _get_selected_devices(self) -> tuple:

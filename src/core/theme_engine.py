@@ -665,25 +665,28 @@ class ThemeEngine(QObject):
         _qss_map = {
             "primary_btn": f"""
                 QPushButton {{
-                    {'background: ' + t['gradient_primary'] + ';' if t.get('gradient_primary') else 'background-color: ' + t['primary'] + ';'}
-                    color: {t['text_primary']};
-                    border: none;
+                    background-color: transparent;
+                    color: {t['primary']};
+                    border: 1px solid {t['primary']};
                     border-radius: {r}px;
                     font-size: 10pt;
                     font-weight: bold;
                     padding: 8px 20px;
                 }}
                 QPushButton:hover {{
-                    {'background: ' + t['gradient_primary_hover'] + ';' if t.get('gradient_primary_hover') else 'background-color: ' + t['primary_hover'] + ';'}
+                    background-color: {t['selection_bg']};
+                    border: 1px solid {t['primary_hover']};
+                    color: {t['primary_hover']};
                 }}
                 QPushButton:disabled {{
-                    background: {t['border_deep']};
+                    background-color: transparent;
+                    border: 1px solid {t['border']};
                     color: {t['text_disabled']};
                 }}
             """,
             "ai_btn": f"""
                 QPushButton {{
-                    background-color: {t['ai_bg']};
+                    background-color: transparent;
                     color: {t['ai_text']};
                     border: 1px solid {t['ai_border']};
                     border-radius: {r}px;
@@ -691,50 +694,80 @@ class ThemeEngine(QObject):
                     font-weight: bold;
                     padding: 8px 16px;
                 }}
-                QPushButton:hover {{ background-color: {t['selection_bg']}; }}
+                QPushButton:hover {{
+                    background-color: {t['selection_bg']};
+                    border-color: {t['ai_text']};
+                    color: {t['ai_text']};
+                }}
                 QPushButton:disabled {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     color: {t['text_disabled']};
                     border-color: {t['border']};
                 }}
             """,
             "danger_btn": f"""
                 QPushButton {{
-                    background-color: {t['danger']};
-                    color: {t['text_primary']};
-                    border: none;
+                    background-color: transparent;
+                    color: {t['danger']};
+                    border: 1px solid {t['danger']};
                     border-radius: {r}px;
                     font-size: 9pt;
+                    padding: 8px 16px;
                 }}
-                QPushButton:hover {{ background-color: {t['danger_hover']}; }}
+                QPushButton:hover {{
+                    background-color: {t['danger_bg']};
+                    border: 1px solid {t['danger_hover']};
+                    color: {t['danger_hover']};
+                }}
                 QPushButton:disabled {{
-                    background-color: {t['border_deep']};
+                    background-color: transparent;
+                    border: 1px solid {t['border']};
                     color: {t['text_disabled']};
                 }}
             """,
             "success_btn": f"""
                 QPushButton {{
-                    background-color: {t['success']};
-                    color: {t['text_primary']};
-                    border: none;
+                    background-color: transparent;
+                    color: {t['success']};
+                    border: 1px solid {t['success']};
                     border-radius: {r}px;
                     font-size: 10pt;
+                    padding: 8px 20px;
                 }}
-                QPushButton:hover {{ background-color: {t['success_hover']}; }}
+                QPushButton:hover {{
+                    background-color: {t['success_bg']};
+                    border: 1px solid {t['success_hover']};
+                    color: {t['success_hover']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border: 1px solid {t['border']};
+                    color: {t['text_disabled']};
+                }}
             """,
             "warning_btn": f"""
                 QPushButton {{
-                    background-color: {t['warning']};
-                    color: {t['text_primary']};
-                    border: none;
+                    background-color: transparent;
+                    color: {t['warning']};
+                    border: 1px solid {t['warning']};
                     border-radius: {r}px;
                     font-size: 9pt;
+                    padding: 8px 16px;
                 }}
-                QPushButton:hover {{ background-color: {t['warning_hover']}; }}
+                QPushButton:hover {{
+                    background-color: {t['warning_bg']};
+                    border: 1px solid {t['warning_hover']};
+                    color: {t['warning_hover']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border: 1px solid {t['border']};
+                    color: {t['text_disabled']};
+                }}
             """,
             "secondary_btn": f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {r}px;
                     font-size: 10pt;
@@ -742,8 +775,14 @@ class ThemeEngine(QObject):
                     padding: 8px 16px;
                 }}
                 QPushButton:hover {{
+                    background-color: {t['selection_bg']};
                     border-color: {t['primary']};
-                    color: {t['text_main']};
+                    color: {t['primary']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border-color: {t['border']};
+                    color: {t['text_disabled']};
                 }}
             """,
             "nav_btn": f"""
@@ -767,7 +806,7 @@ class ThemeEngine(QObject):
             """,
             "toolbar_btn": f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_sm']}px;
                     font-size: 11px;
@@ -775,8 +814,14 @@ class ThemeEngine(QObject):
                     padding: 2px 8px;
                 }}
                 QPushButton:hover {{
+                    background-color: {t['selection_bg']};
                     border-color: {t['primary']};
-                    color: {t['primary_light']};
+                    color: {t['primary']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border-color: {t['border']};
+                    color: {t['text_disabled']};
                 }}
             """,
             "status_btn_trial": f"""
