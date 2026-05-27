@@ -38,6 +38,28 @@ test_*.py
 # Runtime generated config (user-specific)
 config/theme_config.json
 
+# Temp screenshots & debug scripts
+*.png
+*.bmp
+capture*.py
+*_login.py
+*_screenshot.py
+*_shoot.py
+*_find_windows.py
+_auto_login.py
+_pyauto_login.py
+partial_revert.py
+final_verify.py
+extract_manual.py
+test_batch_cmd_generator.py
+test_batch_cmd_logic.py
+exe_output.log
+layout_preview.html
+
+# Old manuals
+NetOps_V0.3.*_使用说明书*
+操作指引.md
+
 # OS
 Thumbs.db
 .DS_Store
