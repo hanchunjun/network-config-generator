@@ -238,6 +238,7 @@ class SystemSettingsPage(QWidget):
         text_tertiary = t["text_tertiary"]
         text_primary = t["text_primary"]
         border = t["border"]
+        border_deep = t["border_deep"]
         input_bg = t["input_bg"]
         hover_bg = t["hover_bg"]
         card_bg = t["card_bg"]
