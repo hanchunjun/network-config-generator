@@ -276,16 +276,24 @@ class AIAnalysisPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['ai_bg']};
-                color: {t['ai_text']};
-                border: 1px solid {t['ai_border']};
+                background-color: {t['page_bg']};
+                color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {r_md}px;
                 font-size: 11pt;
                 font-weight: bold;
                 padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {t['selection_bg']}; }}
-            QPushButton:disabled {{ background-color: {t['hover_bg']}; color: {t['text_disabled']}; border-color: {t['border']}; }}
+            QPushButton:hover {{
+                background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']};
+                color: {t['primary_hover']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                color: {t['text_disabled']};
+                border-color: {t['border']};
+            }}
         """
 
     def _primary_btn_style(self) -> str:

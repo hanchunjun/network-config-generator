@@ -1429,7 +1429,7 @@ class SingleDevicePage(QWidget):
 
         self.del_btn = QPushButton("🗑️ 删除")
         self.del_btn.setFixedSize(72, 30)
-        self.del_btn.setStyleSheet(self._toolbar_btn_style(t['page_bg'], t['text_secondary']))
+        self.del_btn.setStyleSheet(self._small_danger_btn_style())
         self.del_btn.clicked.connect(self.on_delete_device)
         toolbar.addWidget(self.del_btn)
 
@@ -1502,7 +1502,7 @@ class SingleDevicePage(QWidget):
 
         self.test_btn = QPushButton("🔗 测试连接")
         self.test_btn.setFixedSize(100, 30)
-        self.test_btn.setStyleSheet(self._test_btn_style())
+        self.test_btn.setStyleSheet(self._secondary_btn_style())
         self.test_btn.clicked.connect(self.run_batch_test)
         action_row.addWidget(self.test_btn)
 
@@ -1638,11 +1638,11 @@ class SingleDevicePage(QWidget):
         self.log_diagnose_btn = QPushButton("🩺 AI故障诊断")
         self.log_diagnose_btn.setFixedSize(100, 30)
         self.log_diagnose_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+            QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                 color: {t['text_tertiary']}; }}
         """)
@@ -1724,11 +1724,11 @@ class SingleDevicePage(QWidget):
         self.ai_inspect_btn = QPushButton("🔍 AI合规巡检")
         self.ai_inspect_btn.setFixedSize(100, 30)
         self.ai_inspect_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+            QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                 color: {t['text_tertiary']}; }}
         """)
@@ -1810,11 +1810,11 @@ class SingleDevicePage(QWidget):
         self.report_ai_btn = QPushButton("🩺 AI故障诊断")
         self.report_ai_btn.setFixedSize(100, 30)
         self.report_ai_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+            QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                 color: {t['text_tertiary']}; }}
         """)
@@ -1949,11 +1949,11 @@ class SingleDevicePage(QWidget):
         self.compliance_refine_btn = QPushButton("🩺 AI精审")
         self.compliance_refine_btn.setFixedSize(80, 30)
         self.compliance_refine_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+            QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                 color: {t['text_tertiary']}; }}
         """)
@@ -2000,7 +2000,7 @@ class SingleDevicePage(QWidget):
         for attr, style_fn in [
             ('add_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
             ('edit_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
-            ('del_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_secondary'])),
+            ('del_btn', self._small_danger_btn_style),
             ('clear_btn', lambda: self._toolbar_btn_style(t['page_bg'], t['text_tertiary'])),
         ]:
             btn = getattr(self, attr, None)
@@ -2012,7 +2012,7 @@ class SingleDevicePage(QWidget):
         if hasattr(self, 'backup_btn'):
             self.backup_btn.setStyleSheet(self._secondary_btn_style())
         if hasattr(self, 'test_btn'):
-            self.test_btn.setStyleSheet(self._test_btn_style())
+            self.test_btn.setStyleSheet(self._secondary_btn_style())
         if hasattr(self, 'cancel_btn'):
             self.cancel_btn.setStyleSheet(self._cancel_btn_style())
         # 进度条
@@ -2170,13 +2170,13 @@ class SingleDevicePage(QWidget):
         t = self._theme_engine.current_theme
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+                background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']};
+                background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']}; border-color: {t['border']};
@@ -2574,11 +2574,11 @@ class SingleDevicePage(QWidget):
     def _restore_inspect_btn(self):
         t = self._theme_engine.current_theme
         self.ai_inspect_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                border: 1px solid {t['border']};
+            QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                border: 1px solid {t['primary']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-            QPushButton:hover {{ background-color: {t['card_bg']};
-                border-color: {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ background-color: {t['hover_bg']};
+                border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
             QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                 color: {t['text_tertiary']}; }}
         """)
@@ -2688,29 +2688,29 @@ class SingleDevicePage(QWidget):
             t = self._theme_engine.current_theme
             style_map = {
                 "report": f"""
-                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                        border: 1px solid {t['border']};
+                    QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                        border: 1px solid {t['primary']};
                         border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['card_bg']};
-                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:hover {{ background-color: {t['hover_bg']};
+                        border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
                     QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                         color: {t['text_tertiary']}; }}
                 """,
                 "compliance": f"""
-                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                        border: 1px solid {t['border']};
+                    QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                        border: 1px solid {t['primary']};
                         border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['card_bg']};
-                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:hover {{ background-color: {t['hover_bg']};
+                        border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
                     QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                         color: {t['text_tertiary']}; }}
                 """,
                 "log": f"""
-                    QPushButton {{ background-color: {t['hover_bg']}; color: {t['text_main']};
-                        border: 1px solid {t['border']};
+                    QPushButton {{ background-color: {t['page_bg']}; color: {t['primary']};
+                        border: 1px solid {t['primary']};
                         border-radius: {t['radius_md']}px; font-size: 10pt; font-weight: bold; }}
-                    QPushButton:hover {{ background-color: {t['card_bg']};
-                        border-color: {t['primary']}; color: {t['primary']}; }}
+                    QPushButton:hover {{ background-color: {t['hover_bg']};
+                        border-color: {t['primary_hover']}; color: {t['primary_hover']}; }}
                     QPushButton:disabled {{ background-color: {t['hover_bg']}; border-color: {t['border']};
                         color: {t['text_tertiary']}; }}
                 """,

@@ -238,19 +238,7 @@ class ProjectManagerPage(QWidget):
 
         self.delete_project_btn = QPushButton("删除")
         self.delete_project_btn.setFixedSize(56, 30)
-        t = self._theme_engine.current_theme
-        self.delete_project_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {t['hover_bg']};
-                border: 1px solid {t['border']};
-                border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
-            }}
-            QPushButton:hover {{
-                background-color: {t['card_bg']};
-                border-color: {t['danger']};
-                color: {t['danger']};
-            }}
-        """)
+        self.delete_project_btn.setStyleSheet(self._danger_btn_style())
         self.delete_project_btn.clicked.connect(self.delete_project)
         console_layout.addWidget(self.delete_project_btn)
 
@@ -552,12 +540,12 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
-                border: 1px solid {t['border']};
-                border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
+                background-color: {t['page_bg']};
+                border: 1px solid {t['danger']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['danger']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: {t['hover_bg']};
                 border-color: {t['danger']};
                 color: {t['danger']};
             }}
@@ -1442,14 +1430,14 @@ class ProjectManagerPage(QWidget):
             ('delete_project_btn', self._danger_btn_style),
             ('add_row_btn', self._primary_btn_style),
             ('edit_btn', self._secondary_btn_style),
-            ('del_row_btn', self._secondary_btn_style),
+            ('del_row_btn', self._danger_btn_style),
             ('save_device_btn', self._primary_btn_style),
             ('import_btn', self._secondary_btn_style),
             ('export_btn', self._secondary_btn_style),
             ('template_btn', self._secondary_btn_style),
-            ('template_lib_btn', self._accent_btn_style),
-            ('discover_btn', self._success_btn_style),
-            ('test_conn_btn', self._warning_btn_style),
+            ('template_lib_btn', self._secondary_btn_style),
+            ('discover_btn', self._secondary_btn_style),
+            ('test_conn_btn', self._secondary_btn_style),
             ('history_btn', self._secondary_btn_style),
         ]:
             btn = getattr(self, attr, None)

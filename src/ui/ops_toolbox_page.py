@@ -70,11 +70,30 @@ def _btn_style(t: dict) -> str:
     """
 
 
+def _danger_btn_style(t: dict) -> str:
+    r = t['radius_md']
+    return f"""
+        QPushButton {{
+            background-color: {t['page_bg']};
+            color: {t['danger']};
+            border: 1px solid {t['danger']};
+            border-radius: {r}px;
+            font-size: 10pt;
+            padding: 4px 8px;
+        }}
+        QPushButton:hover {{
+            background-color: {t['hover_bg']};
+            border-color: {t['danger']};
+            color: {t['danger']};
+        }}
+    """
+
+
 def _ai_btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['selection_bg']};
+            background-color: {t['page_bg']};
             color: {t['primary']};
             border: 1px solid {t['primary']};
             border-radius: {r}px;
@@ -83,13 +102,13 @@ def _ai_btn_style(t: dict) -> str:
             padding: 5px 8px;
         }}
         QPushButton:hover {{
-            background-color: {t['selection_bg']};
+            background-color: {t['hover_bg']};
             border-color: {t['primary_hover']};
             color: {t['primary_hover']};
         }}
         QPushButton:disabled {{
-            background-color: {t['page_bg']};
-            color: {t['border_deep']};
+            background-color: {t['hover_bg']};
+            color: {t['text_disabled']};
             border-color: {t['border']};
         }}
     """
@@ -737,7 +756,7 @@ class FileResultTab(QWidget):
         self.open_btn.clicked.connect(self._open_file)
         btn_row.addWidget(self.open_btn)
         self.del_btn = QPushButton("🗑 删除")
-        self.del_btn.setStyleSheet(_btn_style(t))
+        self.del_btn.setStyleSheet(_danger_btn_style(t))
         self.del_btn.clicked.connect(self._delete_file)
         btn_row.addWidget(self.del_btn)
         btn_row.addStretch()
@@ -1121,10 +1140,13 @@ class OpsToolboxPage(QWidget):
     def _refresh_file_tab(self, tab) -> None:
         """刷新单个 FileResultTab 的样式"""
         t = self._theme_engine.current_theme
-        for attr in ('refresh_btn', 'open_btn', 'del_btn'):
+        for attr in ('refresh_btn', 'open_btn'):
             btn = getattr(tab, attr, None)
             if btn is not None:
                 btn.setStyleSheet(_btn_style(t))
+        del_btn = getattr(tab, 'del_btn', None)
+        if del_btn is not None:
+            del_btn.setStyleSheet(_danger_btn_style(t))
         if hasattr(tab, 'file_list'):
             tab.file_list.setStyleSheet(_list_style(t))
         if hasattr(tab, 'preview_text'):
