@@ -142,38 +142,9 @@ NetOps 支持三套 UI 主题一键切换，每套主题拥有独立的配色体
 
 ### 4.1 按钮（QPushButton）
 
-> **V0.3.7 统一规范**：所有按钮按下表四类严格区分，禁止在此之外使用 success/warning/accent 功能色作为按钮背景。
-> - **主操作按钮**：`primary` 实色背景 + `primary` 边框（主要操作，如生成、保存、执行）
-> - **次要按钮**：`transparent`/`page_bg` 背景 + `border` 边框（常规操作，如添加、编辑、清空、测试连接、取消）
-> - **危险/删除按钮**：`transparent`/`page_bg` 背景 + `danger` 边框（破坏性操作，如删除设备/配置/模板）
-> - **AI/精审按钮**：`transparent`/`page_bg` 背景 + `primary`/紫色 边框（AI分析类操作）
+> **V0.3.7 统一规范**：所有按钮使用统一样式——透明背景 + 中性灰边框。禁止在按钮中使用 `primary`、`danger`、`success`、`warning`、`accent` 等功能色作为背景色或边框色。功能色仅用于文字颜色、状态图标、结果背景等非按钮场景。
 
-#### 主按钮（Primary Action）
-```css
-QPushButton {
-    background-color: #3B7CFF;
-    color: #FFFFFF;
-    border: 1px solid #3B7CFF;
-    border-radius: 5px;
-    font-size: 11pt;
-    padding: 5px 8px;
-}
-QPushButton:hover {
-    background-color: #2962D9;
-    border: 1px solid #2962D9;
-}
-QPushButton:pressed { background-color: #1E4BB8; }
-QPushButton:disabled {
-    background-color: #4A5266;
-    border: 1px solid #2E3648;
-    color: #7A8296;
-}
-```
-- **尺寸**：固定高度 30px（上下内边距各 5px，边框 1px × 2，文字 18px），宽度自适应或 80~140px
-- **场景**：生成配置、保存、关闭、执行任务等主要操作
-- **V0.3.7**：padding 统一 `5px 8px`，固定高度 30px
-
-#### 次要按钮（Secondary Action）
+#### 标准按钮（所有按钮统一）
 ```css
 QPushButton {
     background-color: transparent;
@@ -184,110 +155,22 @@ QPushButton {
     padding: 5px 8px;
 }
 QPushButton:hover {
-    background-color: rgba(0,122,204,0.08);
-    border: 1px solid #3B7CFF;
-    color: #3B7CFF;
+    background-color: rgba(255,255,255,0.05);
+    border-color: #4A5266;
+    color: #E8ECF1;
+}
+QPushButton:pressed {
+    background-color: rgba(255,255,255,0.08);
 }
 QPushButton:disabled {
-    background-color: transparent;
     border-color: #2E3648;
-    color: #7A8296;
+    color: #4A5266;
 }
 ```
-- **尺寸**：固定高度 30px（上下内边距各 5px，边框 1px × 2，文字 18px），宽度 80~120px
-- **场景**：取消、返回、复制、导出、重置等非破坏性操作
-- **V0.3.7**：padding 统一 `5px 8px`，固定高度 30px
+- **尺寸**：固定高度 30px（padding 5+5 + 边框 1×2 + 文字 18px = 30px），宽度自适应或 80~140px
+- **场景**：所有按钮（生成、保存、执行、添加、删除、AI分析、复制、导出、刷新、打开等）
 
-#### AI 按钮
-```css
-QPushButton {
-    background-color: transparent;
-    color: #4D90FF;
-    border: 1px solid #3B7CFF;
-    border-radius: 5px;
-    font-size: 11pt;
-    font-weight: bold;
-    padding: 5px 8px;
-}
-QPushButton:hover {
-    background-color: rgba(0,122,204,0.08);
-    border-color: #4D90FF;
-    color: #4D90FF;
-}
-QPushButton:disabled {
-    background-color: transparent;
-    color: #7A8296;
-    border-color: #2E3648;
-}
-```
-- **尺寸**：高度 28px，宽度自适应
-- **场景**：所有 AI 分析按钮（AI合规巡检、AI故障诊断、AI精审）
-- **V0.3.7**：字号 10pt→11pt，高度→28px
-
-#### 危险按钮（Danger Action）
-```css
-QPushButton {
-    background-color: transparent;
-    color: #FF5C5C;
-    border: 1px solid #FF5C5C;
-    border-radius: 5px;
-    font-size: 10pt;
-    padding: 5px 8px;
-}
-QPushButton:hover {
-    background-color: rgba(255,92,92,0.08);
-    border: 1px solid #CC3E3E;
-    color: #CC3E3E;
-}
-QPushButton:disabled {
-    background-color: transparent;
-    border: 1px solid #2E3648;
-    color: #7A8296;
-}
-```
-- **尺寸**：高度 24px，宽度 60~100px
-- **场景**：删除设备、删除配置等破坏性操作
-- **V0.3.7**：字号 9pt→10pt，高度 24~36px→24px
-
-#### 诊断按钮（Diagnose）
-```css
-QPushButton {
-    background-color: transparent;
-    color: #FF5C5C;
-    border: 1px solid #FF5C5C;
-    border-radius: 5px;
-    font-size: 10pt;
-    font-weight: bold;
-    padding: 5px 8px;
-}
-QPushButton:hover {
-    background-color: rgba(255,92,92,0.08);
-    border: 1px solid #CC3E3E;
-    color: #CC3E3E;
-}
-```
-
-#### AI 精审按钮（Compliance）
-```css
-QPushButton {
-    background-color: transparent;
-    color: #9B6CEF;
-    border: 1px solid #9B6CEF;
-    border-radius: 5px;
-    font-size: 10pt;
-    font-weight: bold;
-    padding: 5px 8px;
-}
-QPushButton:hover {
-    background-color: rgba(155,108,239,0.08);
-    border: 1px solid #7A4FC7;
-    color: #7A4FC7;
-}
-```
-- **尺寸**：高度 24px
-- **V0.3.7**：字号 9pt→10pt，高度→24px
-
-#### 工具栏小按钮（Toolbar Small）
+#### 工具栏小按钮
 ```css
 QPushButton {
     background-color: transparent;
@@ -298,19 +181,17 @@ QPushButton {
     padding: 2px 8px;
 }
 QPushButton:hover {
-    background-color: rgba(0,122,204,0.08);
-    border-color: #3B7CFF;
-    color: #3B7CFF;
+    background-color: rgba(255,255,255,0.05);
+    border-color: #4A5266;
+    color: #E8ECF1;
 }
 QPushButton:disabled {
-    background-color: transparent;
     border-color: #2E3648;
-    color: #7A8296;
+    color: #4A5266;
 }
 ```
-- **尺寸**：高度 24px，宽度根据内容自适应
-- **场景**：文件列表上方的刷新/打开/删除三件套
-- **V0.3.7**：字号 11px→10pt，高度 22~26px→24px
+- **尺寸**：高度 26px（padding 3+3 + 边框 1×2 + 文字 18px = 26px），宽度自适应
+- **场景**：文件列表上方的刷新/打开/删除三件套等工具栏区域
 
 #### 导航按钮（Navigation）
 ```css
@@ -333,7 +214,6 @@ QPushButton[active="true"] {
 }
 ```
 - **尺寸**：高度 28px，宽度自适应
-- **V0.3.7**：字号 10pt→11pt，高度 40px→28px
 
 #### 状态指示按钮（Activation Status）
 
@@ -349,10 +229,8 @@ QPushButton {
     font-size: 10pt;
     font-weight: bold;
 }
-/* hover 对应加深背景/边框 */
 ```
 - **尺寸**：`setFixedSize(90, 28)`
-- **V0.3.7**：字号 9pt→10pt，高度 32px→28px
 
 ### 4.2 输入框（QLineEdit）
 
@@ -798,7 +676,7 @@ QFrame { color: #383F50; max-height: 1px; }
 ### ✅ 推荐行为
 
 1. **颜色**：新增颜色必须从本规范色盘中选取，如需新色须先更新本文件
-2. **按钮**：严格按四类规范 — 主按钮 `primary` 实色，次要按钮 `transparent`+`border` 边框，危险按钮 `transparent`+`danger` 边框，AI按钮 `transparent`+`primary`/紫色边框；禁止用 success/warning/accent 功能色作按钮背景
+2. **按钮**：所有按钮统一使用 `transparent` 背景 + `border` 中性灰边框，hover 时边框加深为 `border_deep`；禁止在按钮中使用 `primary`、`danger`、`success`、`warning`、`accent` 等功能色作为背景色或边框色
 3. **输入框**：统一高度 32px，focus 时边框变蓝
 4. **表格**：统一行高 36px，交替行背景，禁止直接编辑
 5. **间距**：页面级边距 12~16px，组件间距 4~12px
@@ -831,7 +709,7 @@ QFrame { color: #383F50; max-height: 1px; }
 
 > 「请根据项目根目录的 `DESIGN.md` 规范，开发 **[功能名称]** 界面。要求：
 > 1. 组件样式（按钮、输入框、表格、分组框、标签等）必须严格遵循 DESIGN.md 中的 QSS 样式模板
-> 2. 色彩必须从 DESIGN.md 色盘中选取，禁止自创颜色；**按钮用色严格按四类规范**：主按钮 `primary` 实色、次要按钮 `transparent`+`border` 边框、危险按钮 `transparent`+`danger` 边框、AI按钮 `transparent`+`primary`/紫色边框；**禁止用 success/warning/accent 功能色作为按钮背景**
+> 2. 色彩必须从 DESIGN.md 色盘中选取，禁止自创颜色；**按钮用色统一规范**：所有按钮 `transparent` 背景 + `border` 中性灰边框，hover 边框加深；**禁止在按钮中使用 primary/danger/success/warning/accent 等功能色作为背景色或边框色**
 > 3. 字体层级遵循 L1~L4 字号规范
 > 4. 间距与边距遵循布局标准（页面边距 12~16px，组件间距 4~12px）
 > 5. 圆角规范：按钮/输入框 5px（md），小按钮/工具栏 3px（sm），GroupBox/卡片 8px（lg）
@@ -844,8 +722,9 @@ QFrame { color: #383F50; max-height: 1px; }
 > 「请根据项目根目录的 `DESIGN.md` 规范，对 **[页面名称]** 界面进行标准化整改。要求：
 > 1. 逐项比对 DESIGN.md 中的样式规范
 > 2. 修正所有不符合规范的色值、字号、间距、圆角
-> 3. 补齐缺失的 hover/focus/disabled 状态
-> 4. 整改完成后列出修改项清单。」
+> 3. 修正所有按钮样式：背景必须为 transparent，边框必须为 border 中性灰，禁止 primary/danger 等功能色
+> 4. 补齐缺失的 hover/focus/disabled 状态
+> 5. 整改完成后列出修改项清单。」
 
 ## 八之三、V0.3.7 控件紧凑化变更记录
 

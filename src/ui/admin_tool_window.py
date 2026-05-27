@@ -24,7 +24,7 @@ import sys
 from typing import Optional
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QLineEdit, QTextEdit, QTableWidget,
@@ -84,14 +84,14 @@ class AdminToolWindow(QMainWindow):
         main_layout.addWidget(title)
 
         subtitle = QLabel("台账加密存储 · 独立数据目录 · 备份恢复 · 仅限管理员本地使用")
-        subtitle.setFont(QFont("Microsoft YaHei", 9))
+        subtitle.setFont(QFont("Microsoft YaHei", 10))
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet(f"color: {t['text_tertiary']};")
         main_layout.addWidget(subtitle)
 
         # ── 数据目录提示 ──
         dir_label = QLabel(f"📁 数据目录：{get_admin_data_dir()}")
-        dir_label.setFont(QFont("Consolas", 8))
+        dir_label.setFont(QFont("Consolas", 10))
         dir_label.setStyleSheet(f"color: {t['border_deep']}; padding: 2px 8px;")
         dir_label.setWordWrap(True)
         main_layout.addWidget(dir_label)
@@ -109,7 +109,7 @@ class AdminToolWindow(QMainWindow):
 
         # ── 制码区 ──
         machine_group = QGroupBox("激活码生成")
-        machine_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        machine_group.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         mg_layout = QVBoxLayout(machine_group)
         mg_layout.setSpacing(8)
 
@@ -119,15 +119,16 @@ class AdminToolWindow(QMainWindow):
         self._machine_input = QLineEdit()
         self._machine_input.setPlaceholderText("粘贴用户发来的32位机器码")
         self._machine_input.setFont(QFont("Consolas", 11))
-        self._machine_input.setMinimumHeight(36)
+        self._machine_input.setMinimumHeight(28)
         input_layout.addWidget(self._machine_input, stretch=1)
         mg_layout.addLayout(input_layout)
 
         gen_btn = QPushButton("⚡ 一键生成激活码")
-        gen_btn.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
-        gen_btn.setMinimumHeight(40)
+        gen_btn.setFont(QFont("Microsoft YaHei", 12, QFont.Bold))
+        gen_btn.setMinimumHeight(28)
         gen_btn.setCursor(Qt.PointingHandCursor)
         gen_btn.clicked.connect(self._on_generate)
+        gen_btn.setStyleSheet(f"padding: 5px 8px;")
         mg_layout.addWidget(gen_btn)
 
         result_layout = QHBoxLayout()
@@ -136,10 +137,11 @@ class AdminToolWindow(QMainWindow):
         self._code_result.setReadOnly(True)
         self._code_result.setFont(QFont("Consolas", 14, QFont.Bold))
         self._code_result.setAlignment(Qt.AlignCenter)
-        self._code_result.setMinimumHeight(40)
+        self._code_result.setMinimumHeight(28)
         result_layout.addWidget(self._code_result, stretch=1)
         copy_code_btn = QPushButton("📋 复制")
-        copy_code_btn.setFixedSize(80, 40)
+        copy_code_btn.setFixedSize(80, 30)
+        copy_code_btn.setFont(QFont("Microsoft YaHei", 10))
         copy_code_btn.setCursor(Qt.PointingHandCursor)
         copy_code_btn.clicked.connect(self._copy_code)
         result_layout.addWidget(copy_code_btn)
@@ -172,17 +174,18 @@ class AdminToolWindow(QMainWindow):
             "30天（月度）",
             "7天（周度）",
         ])
-        self._validity_combo.setMinimumHeight(30)
+        self._validity_combo.setMinimumHeight(28)
         validity_layout.addWidget(self._validity_combo)
         validity_layout.addStretch()
         # 生成时间标签
         self._gen_time_label = QLabel("")
-        self._gen_time_label.setFont(QFont("Microsoft YaHei", 9))
+        self._gen_time_label.setFont(QFont("Microsoft YaHei", 10))
         validity_layout.addWidget(self._gen_time_label)
         mg_layout.addLayout(validity_layout)
 
         save_btn = QPushButton("💾 保存台账")
-        save_btn.setMinimumHeight(36)
+        save_btn.setMinimumHeight(28)
+        save_btn.setFont(QFont("Microsoft YaHei", 10))
         save_btn.setCursor(Qt.PointingHandCursor)
         save_btn.clicked.connect(self._on_save_record)
         mg_layout.addWidget(save_btn)
@@ -191,7 +194,7 @@ class AdminToolWindow(QMainWindow):
 
         # ── 黑名单 ──
         bl_group = QGroupBox("方案B：黑名单管理")
-        bl_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        bl_group.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         bl_layout = QHBoxLayout(bl_group)
         bl_layout.setSpacing(8)
 
@@ -227,7 +230,7 @@ class AdminToolWindow(QMainWindow):
 
         # ── 台账表格 ──
         record_group = QGroupBox("授权台账（加密存储）")
-        record_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        record_group.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         rg_layout = QVBoxLayout(record_group)
 
         self._records_table = QTableWidget()
@@ -254,12 +257,12 @@ class AdminToolWindow(QMainWindow):
 
         # ── 备份管理 ──
         backup_group = QGroupBox("台账备份与恢复")
-        backup_group.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        backup_group.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         bkp_layout = QVBoxLayout(backup_group)
 
         # 备份列表
         self._backup_combo = QComboBox()
-        self._backup_combo.setMinimumHeight(30)
+        self._backup_combo.setMinimumHeight(28)
         bkp_layout.addWidget(QLabel("备份历史："))
         bkp_layout.addWidget(self._backup_combo)
 
@@ -301,7 +304,7 @@ class AdminToolWindow(QMainWindow):
         bkp_layout.addWidget(QLabel("── 黑名单 ──"))
         self._bl_list = QTextEdit()
         self._bl_list.setReadOnly(True)
-        self._bl_list.setFont(QFont("Consolas", 9))
+        self._bl_list.setFont(QFont("Consolas", 10))
         self._bl_list.setMaximumHeight(100)
         bkp_layout.addWidget(self._bl_list)
 
@@ -315,7 +318,7 @@ class AdminToolWindow(QMainWindow):
             QMainWindow {{ background-color: {t['card_bg']}; }}
             QGroupBox {{
                 border: 1px solid {t['border']};
-                border-radius: 6px;
+                border-radius: {t['radius_md']}px;
                 margin-top: 12px;
                 padding-top: 16px;
             }}
@@ -326,16 +329,25 @@ class AdminToolWindow(QMainWindow):
                 color: {t['text_main']};
             }}
             QPushButton {{
-                background-color: {t['primary']};
-                color: {t['text_primary']};
-                border: none;
-                border-radius: 4px;
-                padding: 6px 16px;
+                background-color: {t['hover_bg']};
+                color: {t['text_main']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {t['primary_hover']}; }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['primary']};
+                color: {t['primary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
             QLineEdit {{
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 4px 8px;
             }}
             QLineEdit:focus {{ border-color: {t['primary']}; }}
@@ -345,13 +357,13 @@ class AdminToolWindow(QMainWindow):
             }}
             QComboBox {{
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 4px 8px;
             }}
         """)
         # 激活码结果框样式（特殊处理）
         self._code_result.setStyleSheet(
-            f"QLineEdit {{ color: {t['primary']}; background-color: {t['hover_bg']}; }}"
+            f"QLineEdit {{ color: {t['primary']}; background-color: {t['hover_bg']}; padding: 4px 8px; }}"
         )
         # 生成时间标签样式
         self._gen_time_label.setStyleSheet(f"color: {t['success']};")
@@ -552,10 +564,11 @@ class AdminToolWindow(QMainWindow):
             expire_text = get_record_expire_status(rec)
             expire_item = QTableWidgetItem(expire_text)
             # 永久有效绿色，有期限蓝色
+            t = self._theme_engine.current_theme
             if rec.get("validity_days", 0) == 0:
-                expire_item.setForeground(Qt.darkGreen)
+                expire_item.setForeground(QtGui.QColor(t["success"]))
             else:
-                expire_item.setForeground(Qt.darkBlue)
+                expire_item.setForeground(QtGui.QColor(t["info"]))
             self._records_table.setItem(i, 4, expire_item)
             self._records_table.setItem(i, 5, QTableWidgetItem(rec.get("note", "")))
 
@@ -571,7 +584,16 @@ class AdminToolWindow(QMainWindow):
 
 def run_admin_tool():
     """启动管理员制码工具"""
+    # DPI 锁定：关闭高DPI缩放 + Fusion样式 + 文本抗锯齿
+    from PyQt5.QtCore import Qt
+    from PyQt5.QtGui import QFont
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling, True)
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    font = app.font()
+    font.setStyleStrategy(QFont.PreferAntialias)
+    app.setFont(font)
     window = AdminToolWindow()
     # 默认窗口大小为屏幕可用区域宽高的80%
     screen = app.primaryScreen().availableGeometry()

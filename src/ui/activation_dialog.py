@@ -90,14 +90,14 @@ class ActivationDialog(QDialog):
             "【批量命令生成】两项基础功能。激活后即可解锁全部功能："
             "四厂商全设备配置、批量运维巡检、AI智能诊断等。"
         )
-        desc_label.setFont(QFont("Microsoft YaHei", 10))
+        desc_label.setFont(QFont("Microsoft YaHei", 11))
         desc_label.setWordWrap(True)
         desc_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(desc_label)
 
         # ── 机器码区域 ──
         machine_label = QLabel("【本机设备唯一机器码】")
-        machine_label.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        machine_label.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         machine_label.setStyleSheet(f"color: {t['primary_light']}; margin-top: 8px;")
         layout.addWidget(machine_label)
 
@@ -109,7 +109,7 @@ class ActivationDialog(QDialog):
         self._code_display.setReadOnly(True)
         self._code_display.setFont(QFont("Consolas", 11, QFont.Bold))
         self._code_display.setAlignment(Qt.AlignCenter)
-        self._code_display.setMinimumHeight(38)
+        self._code_display.setMinimumHeight(28)
         self._code_display.setStyleSheet(
             f"QLineEdit {{"
             f"  background-color: {t['code_bg']};"
@@ -122,19 +122,28 @@ class ActivationDialog(QDialog):
         code_layout.addWidget(self._code_display, stretch=1)
 
         copy_btn = QPushButton("📋 一键复制")
-        copy_btn.setFont(QFont("Microsoft YaHei", 9))
-        copy_btn.setFixedSize(110, 38)
+        copy_btn.setFont(QFont("Microsoft YaHei", 10))
+        copy_btn.setFixedSize(110, 30)
         copy_btn.setCursor(Qt.PointingHandCursor)
         copy_btn.clicked.connect(self._copy_machine_code)
         copy_btn.setStyleSheet(
             f"QPushButton {{"
-            f"  background-color: {t['primary']};"
-            f"  color: {t['text_primary']};"
-            f"  border: none;"
+            f"  background-color: {t['hover_bg']};"
+            f"  color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
             f"  border-radius: {r}px;"
+            f"  padding: 0 16px;"
             f"}}"
-            f"QPushButton:hover {{ background-color: {t['primary_hover']}; }}"
-            f"QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}"
+            f"QPushButton:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            f"}}"
+            f"QPushButton:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            f"}}"
         )
         code_layout.addWidget(copy_btn)
         layout.addLayout(code_layout)
@@ -144,14 +153,14 @@ class ActivationDialog(QDialog):
             "① 点击「📋一键复制」机器码 → 发送给老韩（QQ:223518 / 微信:tachlaohan）"
             "  ② 收到激活码后填入上方输入框 → 点击「立即激活」"
         )
-        guide_label.setFont(QFont("Microsoft YaHei", 9))
+        guide_label.setFont(QFont("Microsoft YaHei", 10))
         guide_label.setWordWrap(True)
         guide_label.setStyleSheet(f"color: {t['text_tertiary']}; margin-top: 4px;")
         layout.addWidget(guide_label)
 
         # ── 激活码输入 ──
         act_label = QLabel("激活码：")
-        act_label.setFont(QFont("Microsoft YaHei", 10, QFont.Bold))
+        act_label.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
         act_label.setStyleSheet(f"color: {t['text_main']}; margin-top: 8px;")
         layout.addWidget(act_label)
 
@@ -159,13 +168,13 @@ class ActivationDialog(QDialog):
         self._activation_input.setPlaceholderText("请输入16位或18位激活码")
         self._activation_input.setFont(QFont("Consolas", 12, QFont.Bold))
         self._activation_input.setAlignment(Qt.AlignCenter)
-        self._activation_input.setMinimumHeight(40)
+        self._activation_input.setMinimumHeight(28)
         self._activation_input.setMaxLength(18)
         self._activation_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 2px solid {t['input_border']};"
             f"  border-radius: {r}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
@@ -175,41 +184,51 @@ class ActivationDialog(QDialog):
 
         # ── 激活按钮 ──
         activate_btn = QPushButton("🔓  立即激活")
-        activate_btn.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
-        activate_btn.setMinimumHeight(44)
+        activate_btn.setFont(QFont("Microsoft YaHei", 12, QFont.Bold))
+        activate_btn.setMinimumHeight(28)
         activate_btn.setCursor(Qt.PointingHandCursor)
         activate_btn.clicked.connect(self._on_activate)
         activate_btn.setStyleSheet(
             f"QPushButton {{"
-            f"  background-color: {t['success']};"
-            f"  color: {t['text_primary']};"
-            f"  border: none;"
+            f"  background-color: {t['hover_bg']};"
+            f"  color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
             f"  border-radius: {r}px;"
+            f"  padding: 5px 8px;"
             f"}}"
-            f"QPushButton:hover {{ background-color: {t['success_hover']}; }}"
-            f"QPushButton:pressed {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['primary']};"
+            f"  color: {t['primary']};"
+            f"}}"
+            f"QPushButton:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            f"}}"
         )
         layout.addWidget(activate_btn)
 
         # ── 稍后再说（仅试用模式显示）──
         if self._trial_mode:
             later_btn = QPushButton("稍后再说")
-            later_btn.setFont(QFont("Microsoft YaHei", 9))
-            later_btn.setMinimumHeight(32)
+            later_btn.setFont(QFont("Microsoft YaHei", 10))
+            later_btn.setMinimumHeight(28)
             later_btn.setCursor(Qt.PointingHandCursor)
             later_btn.clicked.connect(self._on_later)
             later_btn.setStyleSheet(
                 f"QPushButton {{"
-                f"  background-color: {t['warning_bg']};"
+                f"  background-color: transparent;"
                 f"  color: {t['warning']};"
                 f"  border: 1px solid {t['warning']};"
                 f"  border-radius: {r}px;"
                 f"  font-weight: bold;"
+                f"  padding: 0 16px;"
                 f"}}"
                 f"QPushButton:hover {{"
                 f"  background-color: {t['warning_bg']};"
                 f"  color: {t['warning_hover']};"
-                f"  border-color: {t['warning']};"
+                f"  border-color: {t['warning_hover']};"
                 f"}}"
             )
             layout.addWidget(later_btn)

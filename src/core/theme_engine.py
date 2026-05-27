@@ -655,11 +655,8 @@ class ThemeEngine(QObject):
         """获取指定组件的 QSS 片段（用于局部控件样式覆盖，带缓存）。
 
         Args:
-            component: 组件名称，如 "primary_btn", "ai_btn", "danger_btn",
-                       "input", "table", "tab", "groupbox", "list",
-                       "textedit", "progressbar", "checkbox", "nav_btn",
-                       "toolbar_btn", "status_btn_trial", "status_btn_expiring",
-                       "status_btn_active"
+            component: 组件名称，如 "btn", "nav_btn", "toolbar_btn",
+                       "status_btn_trial", "status_btn_expiring", "status_btn_active"
 
         Returns:
             QSS 字符串
@@ -672,109 +669,8 @@ class ThemeEngine(QObject):
         r = t["radius_md"]
 
         _qss_map = {
-            "primary_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    color: {t['primary']};
-                    border: 1px solid {t['primary']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    font-weight: bold;
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['selection_bg']};
-                    border: 1px solid {t['primary_hover']};
-                    color: {t['primary_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "ai_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    color: {t['ai_text']};
-                    border: 1px solid {t['ai_border']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    font-weight: bold;
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['selection_bg']};
-                    border-color: {t['ai_text']};
-                    color: {t['ai_text']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    color: {t['text_disabled']};
-                    border-color: {t['border']};
-                }}
-            """,
-            "danger_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    color: {t['danger']};
-                    border: 1px solid {t['danger']};
-                    border-radius: {r}px;
-                    font-size: 10pt;
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['danger_bg']};
-                    border: 1px solid {t['danger_hover']};
-                    color: {t['danger_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "success_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    color: {t['success']};
-                    border: 1px solid {t['success']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['success_bg']};
-                    border: 1px solid {t['success_hover']};
-                    color: {t['success_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "warning_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    color: {t['warning']};
-                    border: 1px solid {t['warning']};
-                    border-radius: {r}px;
-                    font-size: 10pt;
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['warning_bg']};
-                    border: 1px solid {t['warning_hover']};
-                    color: {t['warning_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "secondary_btn": f"""
+            # ── 所有按钮统一样式 ──
+            "btn": f"""
                 QPushButton {{
                     background-color: transparent;
                     border: 1px solid {t['border']};
@@ -784,13 +680,10 @@ class ThemeEngine(QObject):
                     padding: 5px 8px;
                 }}
                 QPushButton:hover {{
-                    background-color: {t['selection_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary']};
+                    background-color: {t['hover_bg']};
+                    border-color: {t['border_deep']};
                 }}
                 QPushButton:disabled {{
-                    background-color: transparent;
-                    border-color: {t['border']};
                     color: {t['text_disabled']};
                 }}
             """,
@@ -823,13 +716,10 @@ class ThemeEngine(QObject):
                     padding: 3px 8px;
                 }}
                 QPushButton:hover {{
-                    background-color: {t['selection_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary']};
+                    background-color: {t['hover_bg']};
+                    border-color: {t['border_deep']};
                 }}
                 QPushButton:disabled {{
-                    background-color: transparent;
-                    border-color: {t['border']};
                     color: {t['text_disabled']};
                 }}
             """,

@@ -508,10 +508,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.access_vlan_input = QLineEdit()
         self.access_vlan_input.setPlaceholderText('请输入VLAN ID')
         self.access_vlan_input.setFixedWidth(140)
-        self.access_vlan_input.setStyleSheet("""
+        self.access_vlan_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -536,7 +536,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         # 自动调整列宽
         self.access_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 设置表格行高
-        self.access_table.verticalHeader().setDefaultSectionSize(36)
+        self.access_table.verticalHeader().setDefaultSectionSize(32)
         # 初始化表格行数
         self.access_table.setRowCount(0)
         # 固定表格宽度
@@ -580,10 +580,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.trunk_start_port = QLineEdit()
         self.trunk_start_port.setPlaceholderText('开始端口')
         self.trunk_start_port.setFixedWidth(100)
-        self.trunk_start_port.setStyleSheet("""
+        self.trunk_start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -594,10 +594,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.trunk_end_port = QLineEdit()
         self.trunk_end_port.setPlaceholderText('结束端口')
         self.trunk_end_port.setFixedWidth(100)
-        self.trunk_end_port.setStyleSheet("""
+        self.trunk_end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -616,10 +616,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.trunk_vlan_input = QLineEdit()
         self.trunk_vlan_input.setPlaceholderText('all 或 10-20')
         self.trunk_vlan_input.setFixedWidth(140)
-        self.trunk_vlan_input.setStyleSheet("""
+        self.trunk_vlan_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -644,7 +644,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         # 自动调整列宽
         self.trunk_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 设置表格行高
-        self.trunk_table.verticalHeader().setDefaultSectionSize(36)
+        self.trunk_table.verticalHeader().setDefaultSectionSize(32)
         # 初始化表格行数
         self.trunk_table.setRowCount(0)
         # 固定表格宽度
@@ -675,10 +675,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.agg_id_input.setPlaceholderText('1')
         self.agg_id_input.setText('1')
         self.agg_id_input.setFixedWidth(80)
-        self.agg_id_input.setStyleSheet("""
+        self.agg_id_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -726,10 +726,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.agg_start_port = QLineEdit()
         self.agg_start_port.setPlaceholderText('开始')
         self.agg_start_port.setFixedWidth(60)
-        self.agg_start_port.setStyleSheet("""
+        self.agg_start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -740,10 +740,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.agg_end_port = QLineEdit()
         self.agg_end_port.setPlaceholderText('结束')
         self.agg_end_port.setFixedWidth(60)
-        self.agg_end_port.setStyleSheet("""
+        self.agg_end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -771,7 +771,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.agg_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.agg_table.verticalHeader().setDefaultSectionSize(36)
+        self.agg_table.verticalHeader().setDefaultSectionSize(32)
         self.agg_table.setRowCount(0)
         self.agg_table.setMinimumWidth(600)
         self.agg_table.setFixedHeight(50)
@@ -810,16 +810,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(start_port)
@@ -831,16 +831,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(end_port)
@@ -879,16 +879,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         loop_port_layout.addWidget(start_port)
@@ -900,16 +900,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         loop_port_layout.addWidget(end_port)
@@ -991,16 +991,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_layout.addWidget(start_port)
@@ -1013,16 +1013,16 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_layout.addWidget(end_port)
@@ -1063,10 +1063,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         acl_number_input = QLineEdit()
         acl_number_input.setText('1')
         acl_number_input.setFixedWidth(100)
-        acl_number_input.setStyleSheet("""
+        acl_number_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1121,10 +1121,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         src_ip_input = QLineEdit()
         src_ip_input.setText('any')
         src_ip_input.setFixedWidth(150)
-        src_ip_input.setStyleSheet("""
+        src_ip_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1141,10 +1141,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         dst_ip_input = QLineEdit()
         dst_ip_input.setText('any')
         dst_ip_input.setFixedWidth(150)
-        dst_ip_input.setStyleSheet("""
+        dst_ip_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1168,10 +1168,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         dst_port_input = QLineEdit()
         dst_port_input.setPlaceholderText('如: 80')
         dst_port_input.setFixedWidth(100)
-        dst_port_input.setStyleSheet("""
+        dst_port_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1183,18 +1183,25 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         # 添加规则按钮
         add_rule_button = QPushButton('添加规则')
         add_rule_button.setFixedSize(100, 32)
-        add_rule_button.setStyleSheet("""
-            QPushButton {
-                background-color: {t['primary']};
-                border: none;
-                border-radius: 4px;
-                color: {t['card_bg']};
+        add_rule_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                color: {t['text_main']};
                 font-size: 10pt;
                 font-weight: 600;
-            }
-            QPushButton:hover {
-                background-color: {t['primary_hover']};
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         row4_layout.addWidget(add_rule_button)
         
@@ -1218,7 +1225,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         self.acl_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.acl_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.acl_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.acl_table.verticalHeader().setDefaultSectionSize(36)
+        self.acl_table.verticalHeader().setDefaultSectionSize(32)
         self.acl_table.setRowCount(0)
         self.acl_table.setFixedWidth(780)
         self.acl_table.setFixedHeight(100)
@@ -1246,10 +1253,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1265,10 +1272,10 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1292,18 +1299,25 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         # 应用到接口按钮
         apply_button = QPushButton('应用到接口')
         apply_button.setFixedSize(120, 32)
-        apply_button.setStyleSheet("""
-            QPushButton {
-                background-color: {t['primary']};
-                border: none;
-                border-radius: 4px;
-                color: {t['card_bg']};
+        apply_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                color: {t['text_main']};
                 font-size: 10pt;
                 font-weight: 600;
-            }
-            QPushButton:hover {
-                background-color: {t['primary_hover']};
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         apply_layout.addWidget(apply_button)
         
@@ -2029,24 +2043,24 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         table.setItem(row, 3, QTableWidgetItem(vlan))
         # 操作按钮
         delete_button = QPushButton('删除')
-        delete_button.setStyleSheet("""
+        delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['danger']};
+                background-color: {t['page_bg']};
                 color: {t['text_primary']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 4px 8px;
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['danger_hover']};
+                background-color: {t['hover_bg']};
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
         table.setCellWidget(row, 4, delete_button)
         
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2100,24 +2114,24 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         table.setItem(row, 3, QTableWidgetItem(vlan))
         # 操作按钮
         delete_button = QPushButton('删除')
-        delete_button.setStyleSheet("""
+        delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['danger']};
+                background-color: {t['page_bg']};
                 color: {t['text_primary']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 4px 8px;
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['danger_hover']};
+                background-color: {t['hover_bg']};
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
         table.setCellWidget(row, 4, delete_button)
         
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2176,24 +2190,24 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         table.setItem(row, 3, QTableWidgetItem(member_ports))
         # 操作按钮
         delete_button = QPushButton('删除')
-        delete_button.setStyleSheet("""
+        delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['danger']};
+                background-color: {t['page_bg']};
                 color: {t['text_primary']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 4px 8px;
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['danger_hover']};
+                background-color: {t['hover_bg']};
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
         table.setCellWidget(row, 4, delete_button)
         
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2262,23 +2276,23 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         # 删除按钮
         delete_button = QPushButton('删除')
         delete_button.setFixedSize(60, 24)
-        delete_button.setStyleSheet("""
+        delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['danger']};
+                background-color: {t['page_bg']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 color: {t['card_bg']};
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['danger_hover']};
+                background-color: {t['hover_bg']};
             }
         """)
         delete_button.clicked.connect(lambda: self.remove_acl_rule(acl_table, row_position))
         acl_table.setCellWidget(row_position, 4, delete_button)
         
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = acl_table.horizontalHeader().height()
         total_height = header_height + acl_table.rowCount() * row_height + 2
         acl_table.setFixedHeight(total_height)
@@ -2313,7 +2327,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         acl_table.removeRow(row)
         
         # 重新计算表格高度
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = acl_table.horizontalHeader().height()
         total_height = header_height + acl_table.rowCount() * row_height + 2
         acl_table.setFixedHeight(total_height)

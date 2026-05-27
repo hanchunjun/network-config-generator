@@ -168,19 +168,19 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         item_layout.addWidget(label)
         
         input_widget = QLineEdit()
-        input_widget.setFixedHeight(32)
+        input_widget.setFixedHeight(26)
         input_widget.setFixedWidth(150)
         input_widget.setPlaceholderText('请输入数字，如：100')
-        input_widget.setStyleSheet("""
+        input_widget.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QLineEdit:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)
@@ -201,19 +201,19 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         item_layout.addWidget(label)
         
         input_widget = QLineEdit()
-        input_widget.setFixedHeight(32)
+        input_widget.setFixedHeight(26)
         input_widget.setFixedWidth(150)
         input_widget.setPlaceholderText('请输入IP地址，如：192.168.1.1')
-        input_widget.setStyleSheet("""
+        input_widget.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QLineEdit:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)
@@ -227,19 +227,19 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         item_layout.addWidget(label)
         
         input_widget = QLineEdit()
-        input_widget.setFixedHeight(32)
+        input_widget.setFixedHeight(26)
         input_widget.setFixedWidth(150)
         input_widget.setPlaceholderText('请输入子网掩码，如：255.255.255.0')
-        input_widget.setStyleSheet("""
+        input_widget.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QLineEdit:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)
@@ -259,19 +259,19 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         item_layout.addWidget(label)
         
         input_widget = QLineEdit()
-        input_widget.setFixedHeight(32)
+        input_widget.setFixedHeight(26)
         input_widget.setFixedWidth(150)
         input_widget.setPlaceholderText('请输入IP地址，如：192.168.1.254')
-        input_widget.setStyleSheet("""
+        input_widget.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QLineEdit:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)
@@ -535,16 +535,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.access_start_port = QLineEdit()
         self.access_start_port.setPlaceholderText('开始端口')
         self.access_start_port.setFixedWidth(100)
-        self.access_start_port.setStyleSheet("""
+        self.access_start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(self.access_start_port)
@@ -556,16 +556,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.access_end_port = QLineEdit()
         self.access_end_port.setPlaceholderText('结束端口')
         self.access_end_port.setFixedWidth(100)
-        self.access_end_port.setStyleSheet("""
+        self.access_end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(self.access_end_port)
@@ -581,16 +581,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.access_vlan_input = QLineEdit()
         self.access_vlan_input.setPlaceholderText('VLAN ID')
         self.access_vlan_input.setFixedWidth(140)
-        self.access_vlan_input.setStyleSheet("""
+        self.access_vlan_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         vlan_layout.addWidget(self.access_vlan_input)
@@ -612,7 +612,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         # 自动调整列宽
         self.access_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 设置表格行高
-        self.access_table.verticalHeader().setDefaultSectionSize(36)
+        self.access_table.verticalHeader().setDefaultSectionSize(32)
         # 初始化表格行数
         self.access_table.setRowCount(0)
         # 固定表格宽度
@@ -641,10 +641,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         interface_layout.addWidget(interface_label)
         self.trunk_interface_combo = QComboBox()
         self.trunk_interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        self.trunk_interface_combo.setStyleSheet("""
+        self.trunk_interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -664,16 +664,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.trunk_start_port = QLineEdit()
         self.trunk_start_port.setPlaceholderText('开始端口')
         self.trunk_start_port.setFixedWidth(100)
-        self.trunk_start_port.setStyleSheet("""
+        self.trunk_start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(self.trunk_start_port)
@@ -685,16 +685,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.trunk_end_port = QLineEdit()
         self.trunk_end_port.setPlaceholderText('结束端口')
         self.trunk_end_port.setFixedWidth(100)
-        self.trunk_end_port.setStyleSheet("""
+        self.trunk_end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(self.trunk_end_port)
@@ -710,16 +710,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.trunk_vlan_input = QLineEdit()
         self.trunk_vlan_input.setPlaceholderText('VLAN ID')
         self.trunk_vlan_input.setFixedWidth(140)
-        self.trunk_vlan_input.setStyleSheet("""
+        self.trunk_vlan_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         vlan_layout.addWidget(self.trunk_vlan_input)
@@ -742,10 +742,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
                 color: {t['text_secondary']};
             }
         """)
-        self.trunk_table.setStyleSheet("""
+        self.trunk_table.setStyleSheet(f"""
             QTableWidget {
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']};
             }
             QTableWidget::item {
@@ -759,7 +759,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         # 自动调整列宽
         self.trunk_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 设置表格行高
-        self.trunk_table.verticalHeader().setDefaultSectionSize(36)
+        self.trunk_table.verticalHeader().setDefaultSectionSize(32)
         # 初始化表格行数
         self.trunk_table.setRowCount(0)
         # 固定表格宽度
@@ -790,10 +790,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.agg_id_input.setPlaceholderText('1')
         self.agg_id_input.setText('1')
         self.agg_id_input.setFixedWidth(80)
-        self.agg_id_input.setStyleSheet("""
+        self.agg_id_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -810,10 +810,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         mode_layout.addWidget(mode_label)
         self.agg_mode_combo = QComboBox()
         self.agg_mode_combo.addItems(['LACP (动态)', 'Manual (静态)'])
-        self.agg_mode_combo.setStyleSheet("""
+        self.agg_mode_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -830,10 +830,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         lb_layout.addWidget(lb_label)
         self.agg_lb_combo = QComboBox()
         self.agg_lb_combo.addItems(['src-dst-ip (推荐)', 'src-dst-mac', 'src-dst-port'])
-        self.agg_lb_combo.setStyleSheet("""
+        self.agg_lb_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -852,10 +852,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         member_port_layout.setSpacing(8)
         self.agg_interface_combo = QComboBox()
         self.agg_interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        self.agg_interface_combo.setStyleSheet("""
+        self.agg_interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -865,10 +865,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.agg_start_port = QLineEdit()
         self.agg_start_port.setPlaceholderText('开始')
         self.agg_start_port.setFixedWidth(60)
-        self.agg_start_port.setStyleSheet("""
+        self.agg_start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -879,10 +879,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.agg_end_port = QLineEdit()
         self.agg_end_port.setPlaceholderText('结束')
         self.agg_end_port.setFixedWidth(60)
-        self.agg_end_port.setStyleSheet("""
+        self.agg_end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -914,10 +914,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
                 color: {t['text_secondary']};
             }
         """)
-        self.agg_table.setStyleSheet("""
+        self.agg_table.setStyleSheet(f"""
             QTableWidget {
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']};
             }
             QTableWidget::item {
@@ -928,7 +928,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.agg_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.agg_table.verticalHeader().setDefaultSectionSize(36)
+        self.agg_table.verticalHeader().setDefaultSectionSize(32)
         self.agg_table.setRowCount(0)
         self.agg_table.setMinimumWidth(600)
         self.agg_table.setFixedHeight(50)
@@ -959,10 +959,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         # 接口类型下拉框
         interface_combo = QComboBox()
         interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        interface_combo.setStyleSheet("""
+        interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -975,16 +975,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(start_port)
@@ -996,16 +996,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_range_layout.addWidget(end_port)
@@ -1032,10 +1032,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         # 接口类型下拉框
         interface_combo = QComboBox()
         interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        interface_combo.setStyleSheet("""
+        interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1048,16 +1048,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         loop_port_layout.addWidget(start_port)
@@ -1069,16 +1069,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         loop_port_layout.addWidget(end_port)
@@ -1105,10 +1105,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         stp_mode_combo = QComboBox()
         stp_mode_combo.addItems(['RSTP', 'STP', 'MSTP'])
         stp_mode_combo.setCurrentText('RSTP')
-        stp_mode_combo.setStyleSheet("""
+        stp_mode_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1126,10 +1126,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         bridge_prio_combo = QComboBox()
         bridge_prio_combo.addItems(['4096', '8192', '12288', '16384', '20480', '24576', '28672', '32768'])
         bridge_prio_combo.setCurrentText('32768')
-        bridge_prio_combo.setStyleSheet("""
+        bridge_prio_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1173,10 +1173,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         # 接口类型
         interface_combo = QComboBox()
         interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        interface_combo.setStyleSheet("""
+        interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1190,16 +1190,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setPlaceholderText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_layout.addWidget(start_port)
@@ -1212,16 +1212,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setPlaceholderText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         port_layout.addWidget(end_port)
@@ -1244,10 +1244,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         acl_type_combo = QComboBox()
         acl_type_combo.addItems(['基本ACL (2000-2999)', '高级ACL (3000-3999)', '二层ACL (4000-4999)', '用户自定义ACL (5000-5999)', 'MPLS ACL (10000-10999)'])
         acl_type_combo.setCurrentText('高级ACL (3000-3999)')
-        acl_type_combo.setStyleSheet("""
+        acl_type_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1264,10 +1264,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         acl_number_input = QLineEdit()
         acl_number_input.setText('3000')
         acl_number_input.setFixedWidth(100)
-        acl_number_input.setStyleSheet("""
+        acl_number_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1288,10 +1288,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         row2_layout.addWidget(label)
         action_combo = QComboBox()
         action_combo.addItems(['permit', 'deny'])
-        action_combo.setStyleSheet("""
+        action_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1307,10 +1307,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         row2_layout.addWidget(label)
         protocol_combo = QComboBox()
         protocol_combo.addItems(['ip', 'tcp', 'udp', 'icmp'])
-        protocol_combo.setStyleSheet("""
+        protocol_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1333,10 +1333,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         src_ip_input = QLineEdit()
         src_ip_input.setText('any')
         src_ip_input.setFixedWidth(150)
-        src_ip_input.setStyleSheet("""
+        src_ip_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1352,10 +1352,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         dst_ip_input = QLineEdit()
         dst_ip_input.setText('any')
         dst_ip_input.setFixedWidth(150)
-        dst_ip_input.setStyleSheet("""
+        dst_ip_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1377,10 +1377,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         dst_port_input = QLineEdit()
         dst_port_input.setPlaceholderText('如: 80')
         dst_port_input.setFixedWidth(100)
-        dst_port_input.setStyleSheet("""
+        dst_port_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1391,18 +1391,25 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         
         add_rule_button = QPushButton('添加规则')
         add_rule_button.setFixedSize(100, 32)
-        add_rule_button.setStyleSheet("""
-            QPushButton {
-                background-color: {t['primary']};
-                border: none;
-                border-radius: 4px;
-                color: {t['card_bg']};
+        add_rule_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                color: {t['text_main']};
                 font-size: 10pt;
                 font-weight: 600;
-            }
-            QPushButton:hover {
-                background-color: {t['primary_hover']};
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         row4_layout.addWidget(add_rule_button)
         
@@ -1421,10 +1428,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
                 color: {t['text_secondary']};
             }
         """)
-        self.acl_table.setStyleSheet("""
+        self.acl_table.setStyleSheet(f"""
             QTableWidget {
                 border: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 background-color: {t['card_bg']};
             }
             QTableWidget::item {
@@ -1435,7 +1442,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         self.acl_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.acl_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.acl_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.acl_table.verticalHeader().setDefaultSectionSize(36)
+        self.acl_table.verticalHeader().setDefaultSectionSize(32)
         self.acl_table.setRowCount(0)
         self.acl_table.setFixedWidth(780)
         self.acl_table.setFixedHeight(100)
@@ -1451,10 +1458,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         
         interface_combo = QComboBox()
         interface_combo.addItems(['G 0/', 'G 1/', 'Te 0/', 'Te 1/'])
-        interface_combo.setStyleSheet("""
+        interface_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1467,10 +1474,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         start_port = QLineEdit()
         start_port.setText('1')
         start_port.setFixedWidth(80)
-        start_port.setStyleSheet("""
+        start_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1484,10 +1491,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         end_port = QLineEdit()
         end_port.setText('2')
         end_port.setFixedWidth(80)
-        end_port.setStyleSheet("""
+        end_port.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1502,10 +1509,10 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         apply_layout.addWidget(label)
         direction_combo = QComboBox()
         direction_combo.addItems(['inbound', 'outbound'])
-        direction_combo.setStyleSheet("""
+        direction_combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
@@ -1517,18 +1524,25 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         
         apply_button = QPushButton('应用到接口')
         apply_button.setFixedSize(120, 32)
-        apply_button.setStyleSheet("""
-            QPushButton {
-                background-color: {t['primary']};
-                border: none;
-                border-radius: 4px;
-                color: {t['card_bg']};
+        apply_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {t['hover_bg']};
+                border: 1px solid {t['border']};
+                border-radius: {t['radius_md']}px;
+                color: {t['text_main']};
                 font-size: 10pt;
                 font-weight: 600;
-            }
-            QPushButton:hover {
-                background-color: {t['primary_hover']};
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {t['card_bg']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
+            }}
+            QPushButton:disabled {{
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
+                color: {t['text_tertiary']};
+            }}
         """)
         apply_layout.addWidget(apply_button)
         
@@ -1687,7 +1701,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         else:
             # 输入框模式
             input_field = QLineEdit()
-            input_field.setFixedHeight(32)
+            input_field.setFixedHeight(26)
             if is_password:
                 input_field.setEchoMode(QLineEdit.Password)
                 input_field.setPlaceholderText('请输入密码')
@@ -1713,16 +1727,16 @@ class H3CAccessSwitchConfig(BaseConfigPage):
                     input_field.setPlaceholderText('请输入用户名')
                 else:
                     input_field.setPlaceholderText(f'请输入{label_text}')
-            input_field.setStyleSheet("""
+            input_field.setStyleSheet(f"""
                 QLineEdit {
                     border: 1px solid {t['input_border']};
-                    border-radius: 4px;
+                    border-radius: {t['radius_md']}px;
                     padding: 0 12px;
                     font-size: 10pt;
                     color: {t['text_main']};
                 }
                 QLineEdit:focus {
-                    border-color: {t['primary']};
+                    border-color: {t['border']};
                     outline: none;
                 }
             """)
@@ -1745,17 +1759,17 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         
         combo = QComboBox()
         combo.addItems(options)
-        combo.setFixedHeight(32)
-        combo.setStyleSheet("""
+        combo.setFixedHeight(26)
+        combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QComboBox:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)
@@ -2236,7 +2250,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         table.setCellWidget(row, 4, delete_button)
 
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2300,7 +2314,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         table.setCellWidget(row, 4, delete_button)
 
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2365,7 +2379,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         table.setCellWidget(row, 4, delete_button)
         
         # 计算表格的总高度并设置
-        row_height = 36  # 每行的固定高度
+        row_height = 32  # 每行的固定高度
         header_height = table.horizontalHeader().height()
         total_height = header_height + table.rowCount() * row_height + 2
         table.setFixedHeight(total_height)
@@ -2424,22 +2438,22 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         
         delete_button = QPushButton('删除')
         delete_button.setFixedSize(60, 24)
-        delete_button.setStyleSheet("""
+        delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['danger']};
+                background-color: {t['page_bg']};
                 border: none;
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 color: {t['card_bg']};
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['danger_hover']};
+                background-color: {t['hover_bg']};
             }
         """)
         delete_button.clicked.connect(lambda: self.remove_acl_rule(acl_table, row_position))
         acl_table.setCellWidget(row_position, 4, delete_button)
         
-        row_height = 36
+        row_height = 32
         header_height = acl_table.horizontalHeader().height()
         total_height = header_height + acl_table.rowCount() * row_height + 2
         acl_table.setFixedHeight(total_height)
@@ -2448,7 +2462,7 @@ class H3CAccessSwitchConfig(BaseConfigPage):
         """删除ACL规则"""
         acl_table.removeRow(row)
         
-        row_height = 36
+        row_height = 32
         header_height = acl_table.horizontalHeader().height()
         total_height = header_height + acl_table.rowCount() * row_height + 2
         acl_table.setFixedHeight(total_height)

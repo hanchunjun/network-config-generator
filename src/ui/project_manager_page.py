@@ -320,8 +320,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """)
         self.template_lib_btn.clicked.connect(self.open_template_library)
@@ -338,8 +338,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """)
         self.discover_btn.clicked.connect(self.open_discovery)
@@ -356,8 +356,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """)
         self.test_conn_btn.clicked.connect(self.test_connection)
@@ -383,7 +383,7 @@ class ProjectManagerPage(QWidget):
                 border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;
                 padding: 6px 10px; font-size: 10pt; background-color: {t['card_bg']};
             }}
-            QComboBox:hover {{ border: 1px solid {t['primary']}; }}
+            QComboBox:hover {{ border: 1px solid {t['border']}; }}
             QComboBox::drop-down {{ border: none; }}
         """)
         self.group_filter_combo.currentTextChanged.connect(self._on_group_filter_changed)
@@ -465,7 +465,7 @@ class ProjectManagerPage(QWidget):
                 font-size: 10pt;
                 background-color: {t['page_bg']};
             }}
-            QLineEdit:focus {{ border: 1px solid {t['primary']}; }}
+            QLineEdit:focus {{ border: 1px solid {t['border']}; }}
         """
 
     def _primary_btn_style(self):
@@ -473,19 +473,19 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['primary']};
+                background-color: {t['page_bg']};
                 color: {t['text_primary']};
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
                 border-radius: {r_md}px;
                 font-size: 10pt;
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['primary_hover']};
-                border-color: {t['primary_hover']};
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
             }}
             QPushButton:pressed {{
-                background-color: {t['primary_pressed']};
+                background-color: {t['hover_bg']};
             }}
             QPushButton:disabled {{
                 background-color: {t['border_deep']};
@@ -504,7 +504,7 @@ class ProjectManagerPage(QWidget):
                 border-radius: {r_md}px;
                 font-size: 10pt;
             }}
-            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
+            QPushButton:hover {{ border: 1px solid {t['border']}; }}
         """
 
     def _combo_style(self) -> str:
@@ -515,7 +515,7 @@ class ProjectManagerPage(QWidget):
                 border: 1px solid {t['input_border']}; border-radius: {r_md}px;
                 padding: 2px 10px; font-size: 10pt; background-color: {t['page_bg']};
             }}
-            QComboBox:hover {{ border: 1px solid {t['primary']}; }}
+            QComboBox:hover {{ border: 1px solid {t['border']}; }}
             QComboBox::drop-down {{ border: none; }}
         """
 
@@ -541,13 +541,13 @@ class ProjectManagerPage(QWidget):
         return f"""
             QPushButton {{
                 background-color: {t['page_bg']};
-                border: 1px solid {t['danger']};
-                border-radius: {r_md}px; font-size: 10pt; color: {t['danger']};
+                border: 1px solid {t['border']};
+                border-radius: {r_md}px; font-size: 10pt; color: {t['text_secondary']};
             }}
             QPushButton:hover {{
                 background-color: {t['hover_bg']};
-                border-color: {t['danger']};
-                color: {t['danger']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """
 
@@ -562,8 +562,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """
 
@@ -578,8 +578,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """
 
@@ -594,8 +594,8 @@ class ProjectManagerPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
         """
 
@@ -1318,7 +1318,7 @@ class ProjectManagerPage(QWidget):
                     left: 10px;
                     padding: 0 4px;
                 }}
-                QGroupBox:hover {{ border: 1px solid {t['primary']}; }}
+                QGroupBox:hover {{ border: 1px solid {t['border']}; }}
             """)
             card.setFixedWidth(210)
             card_layout = QVBoxLayout()
@@ -1352,8 +1352,8 @@ class ProjectManagerPage(QWidget):
                 }}
                 QPushButton:hover {{
                     background-color: {t['card_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary']};
+                    border-color: {t['border']};
+                    color: {t['text_secondary']};
                 }}
             """)
             enter_btn.clicked.connect(lambda checked, n=name: self._enter_project_from_card(n))

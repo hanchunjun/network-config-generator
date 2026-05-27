@@ -77,7 +77,7 @@ class HistoryDialog(QDialog):
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 14pt;
             }}
-            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
+            QPushButton:hover {{ border: 1px solid {t['border']}; }}
         """)
         close_btn.clicked.connect(self.accept)
         btn_layout.addWidget(close_btn)

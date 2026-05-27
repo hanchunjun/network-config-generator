@@ -54,7 +54,7 @@ class DeviceFormDialog(QDialog):
                 min-height: 26px;
             }}
             QLineEdit:focus, QComboBox:focus {{
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }}
             QComboBox::drop-down {{ border: none; }}
         """
@@ -121,7 +121,7 @@ class DeviceFormDialog(QDialog):
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; color: {t['text_secondary']}; padding: 6px;
             }}
-            QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['primary']}; }}
+            QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_secondary']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
@@ -136,8 +136,8 @@ class DeviceFormDialog(QDialog):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};

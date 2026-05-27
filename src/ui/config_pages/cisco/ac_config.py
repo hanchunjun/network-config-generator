@@ -33,7 +33,7 @@ class CiscoACConfig(BaseConfigPage):
                 color: {t['text_secondary']};
             }
             QTabBar::tab:selected {
-                background-color: {t['primary']};
+                background-color: {t['page_bg']};
                 color: {t['card_bg']};
                 font-weight: bold;
             }
@@ -87,16 +87,16 @@ class CiscoACConfig(BaseConfigPage):
         console_pwd_input = QLineEdit()
         console_pwd_input.setEchoMode(QLineEdit.Password)
         console_pwd_input.setPlaceholderText('请输入密码')
-        console_pwd_input.setStyleSheet("""
+        console_pwd_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         pwd_layout.addWidget(console_pwd_input)
@@ -116,16 +116,16 @@ class CiscoACConfig(BaseConfigPage):
         
         user_input = QLineEdit()
         user_input.setPlaceholderText('请输入用户名')
-        user_input.setStyleSheet("""
+        user_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         user_pwd_layout.addWidget(user_input)
@@ -139,16 +139,16 @@ class CiscoACConfig(BaseConfigPage):
         user_pwd_input = QLineEdit()
         user_pwd_input.setEchoMode(QLineEdit.Password)
         user_pwd_input.setPlaceholderText('请输入密码')
-        user_pwd_input.setStyleSheet("""
+        user_pwd_input.setStyleSheet(f"""
             QLineEdit {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 8px 12px;
                 font-size: 10pt;
                 background-color: {t['card_bg']};
             }
             QLineEdit:focus {
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
             }
         """)
         user_pwd_layout.addWidget(user_pwd_input)
@@ -380,17 +380,17 @@ class CiscoACConfig(BaseConfigPage):
         else:
             # 输入框模式
             input_field = QLineEdit()
-            input_field.setFixedHeight(32)
-            input_field.setStyleSheet("""
+            input_field.setFixedHeight(26)
+            input_field.setStyleSheet(f"""
                 QLineEdit {
                     border: 1px solid {t['input_border']};
-                    border-radius: 4px;
+                    border-radius: {t['radius_md']}px;
                     padding: 0 12px;
                     font-size: 10pt;
                     color: {t['text_main']};
                 }
                 QLineEdit:focus {
-                    border-color: {t['primary']};
+                    border-color: {t['border']};
                     outline: none;
                 }
             """)
@@ -438,17 +438,17 @@ class CiscoACConfig(BaseConfigPage):
         
         combo = QComboBox()
         combo.addItems(options)
-        combo.setFixedHeight(32)
-        combo.setStyleSheet("""
+        combo.setFixedHeight(26)
+        combo.setStyleSheet(f"""
             QComboBox {
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
+                border-radius: {t['radius_md']}px;
                 padding: 0 12px;
                 font-size: 10pt;
                 color: {t['text_main']};
             }
             QComboBox:focus {
-                border-color: {t['primary']};
+                border-color: {t['border']};
                 outline: none;
             }
         """)

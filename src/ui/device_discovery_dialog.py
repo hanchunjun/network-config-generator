@@ -138,7 +138,7 @@ class DeviceDiscoveryDialog(QDialog):
                 padding: 4px 8px; font-size: 11pt; background-color: {t['card_bg']};
                 min-height: 26px;
             }}
-            QLineEdit:focus, QComboBox:focus {{ border: 1px solid {t['primary']}; }}
+            QLineEdit:focus, QComboBox:focus {{ border: 1px solid {t['border']}; }}
         """
 
         ip_layout = QHBoxLayout()
@@ -182,8 +182,8 @@ class DeviceDiscoveryDialog(QDialog):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};
@@ -199,14 +199,14 @@ class DeviceDiscoveryDialog(QDialog):
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']}; color: {t['danger']};
-                border: 1px solid {t['danger']};
+                background-color: {t['hover_bg']}; color: {t['text_secondary']};
+                border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['danger_hover']};
-                color: {t['danger_hover']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};
@@ -224,7 +224,7 @@ class DeviceDiscoveryDialog(QDialog):
                 text-align: center; height: 22px; background-color: {t['card_bg']};
             }}
             QProgressBar::chunk {{
-                background-color: {t['primary']}; border-radius: {t['radius_sm']}px;
+                background-color: {t['page_bg']}; border-radius: {t['radius_sm']}px;
             }}
         """)
         btn_layout.addWidget(self.progress_bar)
@@ -292,8 +292,8 @@ class DeviceDiscoveryDialog(QDialog):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};
@@ -315,7 +315,7 @@ class DeviceDiscoveryDialog(QDialog):
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
-            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
+            QPushButton:hover {{ border: 1px solid {t['border']}; }}
         """)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn, alignment=Qt.AlignRight)

@@ -62,7 +62,7 @@ class LoginDialog(QDialog):
         title_label = QLabel("🔐  用户登录")
         title_label.setFont(QFont("Microsoft YaHei", 15, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet(f"color: {t['primary']};")
+        title_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(title_label)
 
         # ── 分隔线 ──
@@ -81,16 +81,16 @@ class LoginDialog(QDialog):
         self._username_input = QLineEdit()
         self._username_input.setPlaceholderText("请输入用户名")
         self._username_input.setFont(QFont("Microsoft YaHei", 11))
-        self._username_input.setMinimumHeight(38)
+        self._username_input.setMinimumHeight(26)
         self._username_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 1px solid {t['input_border']};"
             f"  border-radius: {t['radius_md']}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
         )
         layout.addWidget(self._username_input)
 
@@ -104,16 +104,16 @@ class LoginDialog(QDialog):
         self._password_input.setPlaceholderText("请输入密码")
         self._password_input.setFont(QFont("Microsoft YaHei", 11))
         self._password_input.setEchoMode(QLineEdit.Password)
-        self._password_input.setMinimumHeight(38)
+        self._password_input.setMinimumHeight(26)
         self._password_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 1px solid {t['input_border']};"
             f"  border-radius: {t['radius_md']}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
         )
         self._password_input.returnPressed.connect(self._on_login)
         layout.addWidget(self._password_input)
@@ -128,13 +128,21 @@ class LoginDialog(QDialog):
         login_btn.clicked.connect(self._on_login)
         login_btn.setStyleSheet(
             f"QPushButton {{"
-            f"  background-color: {t['primary']};"
-            f"  color: {t['text_primary']};"
-            f"  border: none;"
+            f"  background-color: {t['hover_bg']};"
+            f"  color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
             f"  border-radius: {t['radius_md']}px;"
             f"}}"
-            f"QPushButton:hover {{ background-color: {t['primary_hover']}; }}"
-            f"QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}"
+            f"QPushButton:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_secondary']};"
+            f"}}"
+            f"QPushButton:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            f"}}"
         )
         layout.addWidget(login_btn)
 

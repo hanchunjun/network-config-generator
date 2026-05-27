@@ -75,16 +75,16 @@ def _danger_btn_style(t: dict) -> str:
     return f"""
         QPushButton {{
             background-color: {t['page_bg']};
-            color: {t['danger']};
-            border: 1px solid {t['danger']};
+            color: {t['text_secondary']};
+            border: 1px solid {t['border']};
             border-radius: {r}px;
             font-size: 10pt;
             padding: 4px 8px;
         }}
         QPushButton:hover {{
             background-color: {t['hover_bg']};
-            border-color: {t['danger']};
-            color: {t['danger']};
+            border-color: {t['border']};
+            color: {t['text_secondary']};
         }}
     """
 
@@ -94,8 +94,8 @@ def _ai_btn_style(t: dict) -> str:
     return f"""
         QPushButton {{
             background-color: {t['page_bg']};
-            color: {t['primary']};
-            border: 1px solid {t['primary']};
+            color: {t['text_secondary']};
+            border: 1px solid {t['border']};
             border-radius: {r}px;
             font-size: 11pt;
             font-weight: bold;
@@ -103,8 +103,8 @@ def _ai_btn_style(t: dict) -> str:
         }}
         QPushButton:hover {{
             background-color: {t['hover_bg']};
-            border-color: {t['primary_hover']};
-            color: {t['primary_hover']};
+            border-color: {t['border']};
+            color: {t['text_secondary']};
         }}
         QPushButton:disabled {{
             background-color: {t['hover_bg']};
@@ -118,20 +118,20 @@ def _primary_btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['primary']};
+            background-color: {t['page_bg']};
             color: {t['text_primary']};
-            border: 1px solid {t['primary']};
+            border: 1px solid {t['border']};
             border-radius: {r}px;
             font-size: 11pt;
             font-weight: bold;
             padding: 5px 8px;
         }}
         QPushButton:hover {{
-            background-color: {t['primary_hover']};
-            border-color: {t['primary_hover']};
+            background-color: {t['hover_bg']};
+            border-color: {t['border']};
         }}
         QPushButton:pressed {{
-            background-color: {t['primary_pressed']};
+            background-color: {t['hover_bg']};
         }}
         QPushButton:disabled {{
             background-color: {t['border_deep']};
@@ -719,7 +719,7 @@ class TaskCard(QGroupBox):
                 font-size: 10pt;
             }}
             QProgressBar::chunk {{
-                background-color: {t['primary']};
+                background-color: {t['page_bg']};
                 border-radius: {r}px;
             }}
         """
@@ -1175,7 +1175,7 @@ class OpsToolboxPage(QWidget):
                 border: 1px solid {t['input_border']}; border-radius: {r}px;
                 padding: 4px 8px; font-size: 11pt; background-color: {t['card_bg']};
             }}
-            QComboBox:hover {{ border: 1px solid {t['primary']}; }}
+            QComboBox:hover {{ border: 1px solid {t['border']}; }}
             QComboBox::drop-down {{ border: none; width: 20px; }}
             QComboBox QAbstractItemView {{
                 border: 1px solid {t['border']}; selection-background-color: {t['selection_bg']};
@@ -1203,7 +1203,7 @@ class OpsToolboxPage(QWidget):
                 background-color: {t['card_bg']};
                 border-bottom-color: {t['card_bg']};
                 font-weight: bold;
-                color: {t['primary']};
+                color: {t['text_secondary']};
             }}
             QTabBar::tab:hover {{ background-color: {t['selection_bg']}; }}
         """

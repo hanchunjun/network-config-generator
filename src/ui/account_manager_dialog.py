@@ -57,7 +57,7 @@ class AccountManagerDialog(QDialog):
         title_label = QLabel("🔑  账户管理")
         title_label.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet(f"color: {t['primary']};")
+        title_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(title_label)
 
         # ── 分隔线 ──
@@ -69,23 +69,23 @@ class AccountManagerDialog(QDialog):
 
         # ── 新用户名 ──
         username_label = QLabel("新用户名")
-        username_label.setFont(QFont("Microsoft YaHei", 10))
+        username_label.setFont(QFont("Microsoft YaHei", 11))
         username_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(username_label)
 
         self._username_input = QLineEdit()
         self._username_input.setPlaceholderText("请输入新用户名")
         self._username_input.setFont(QFont("Microsoft YaHei", 11))
-        self._username_input.setMinimumHeight(36)
+        self._username_input.setMinimumHeight(26)
         self._username_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 1px solid {t['input_border']};"
             f"  border-radius: {r}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
         )
         # 预填当前用户名
         account = self._account_manager._load_account()
@@ -95,7 +95,7 @@ class AccountManagerDialog(QDialog):
 
         # ── 新密码 ──
         password_label = QLabel("新密码")
-        password_label.setFont(QFont("Microsoft YaHei", 10))
+        password_label.setFont(QFont("Microsoft YaHei", 11))
         password_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(password_label)
 
@@ -103,22 +103,22 @@ class AccountManagerDialog(QDialog):
         self._password_input.setPlaceholderText("请输入新密码（≥8位，含大小写字母+数字）")
         self._password_input.setFont(QFont("Microsoft YaHei", 11))
         self._password_input.setEchoMode(QLineEdit.Password)
-        self._password_input.setMinimumHeight(36)
+        self._password_input.setMinimumHeight(26)
         self._password_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 1px solid {t['input_border']};"
             f"  border-radius: {r}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
         )
         layout.addWidget(self._password_input)
 
         # ── 确认密码 ──
         confirm_label = QLabel("确认密码")
-        confirm_label.setFont(QFont("Microsoft YaHei", 10))
+        confirm_label.setFont(QFont("Microsoft YaHei", 11))
         confirm_label.setStyleSheet(f"color: {t['text_secondary']};")
         layout.addWidget(confirm_label)
 
@@ -126,16 +126,16 @@ class AccountManagerDialog(QDialog):
         self._confirm_input.setPlaceholderText("请再次输入新密码")
         self._confirm_input.setFont(QFont("Microsoft YaHei", 11))
         self._confirm_input.setEchoMode(QLineEdit.Password)
-        self._confirm_input.setMinimumHeight(36)
+        self._confirm_input.setMinimumHeight(26)
         self._confirm_input.setStyleSheet(
             f"QLineEdit {{"
             f"  border: 1px solid {t['input_border']};"
             f"  border-radius: {r}px;"
-            f"  padding: 4px 12px;"
+            f"  padding: 4px 8px;"
             f"  background-color: {t['input_bg']};"
             f"  color: {t['text_main']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
         )
         self._confirm_input.returnPressed.connect(self._on_save)
         layout.addWidget(self._confirm_input)
@@ -144,19 +144,28 @@ class AccountManagerDialog(QDialog):
 
         # ── 保存按钮 ──
         save_btn = QPushButton("💾  保存修改")
-        save_btn.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
-        save_btn.setMinimumHeight(40)
+        save_btn.setFont(QFont("Microsoft YaHei", 12, QFont.Bold))
+        save_btn.setMinimumHeight(28)
         save_btn.setCursor(Qt.PointingHandCursor)
         save_btn.clicked.connect(self._on_save)
         save_btn.setStyleSheet(
             f"QPushButton {{"
-            f"  background-color: {t['success']};"
-            f"  color: {t['text_primary']};"
-            f"  border: none;"
+            f"  background-color: {t['hover_bg']};"
+            f"  color: {t['text_main']};"
+            f"  border: 1px solid {t['border']};"
             f"  border-radius: {r}px;"
+            f"  padding: 5px 8px;"
             f"}}"
-            f"QPushButton:hover {{ background-color: {t['success_hover']}; }}"
-            f"QPushButton:pressed {{ background-color: {t['success_hover']}; }}"
+            f"QPushButton:hover {{"
+            f"  background-color: {t['card_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_secondary']};"
+            f"}}"
+            f"QPushButton:disabled {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            f"}}"
         )
         layout.addWidget(save_btn)
 

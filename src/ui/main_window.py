@@ -433,8 +433,8 @@ class MainWindow(QMainWindow):
                 button.setStyleSheet(f"""
                     QPushButton {{
                         background-color: {t['hover_bg']};
-                        color: {t['primary']};
-                        border: 1px solid {t['primary']};
+                        color: {t['text_main']};
+                        border: 1px solid {t['border_deep']};
                         border-radius: {r}px;
                         font-size: 10pt;
                         font-weight: bold;
@@ -442,8 +442,7 @@ class MainWindow(QMainWindow):
                     }}
                     QPushButton:hover {{
                         background-color: {t['card_bg']};
-                        border: 1px solid {t['primary']};
-                        color: {t['primary']};
+                        border: 1px solid {t['text_tertiary']};
                     }}
                 """)
             else:
@@ -456,7 +455,7 @@ class MainWindow(QMainWindow):
                         color: {t['text_secondary']};
                         padding: 4px 6px;
                     }}
-                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                    QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
                 """)
         # 刷新设备类型按钮
         for did, button in self.device_buttons.items():
@@ -464,8 +463,8 @@ class MainWindow(QMainWindow):
                 button.setStyleSheet(f"""
                     QPushButton {{
                         background-color: {t['hover_bg']};
-                        color: {t['primary']};
-                        border: 1px solid {t['primary']};
+                        color: {t['text_secondary']};
+                        border: 1px solid {t['border']};
                         border-radius: {r}px;
                         font-size: 10pt;
                         font-weight: bold;
@@ -473,7 +472,7 @@ class MainWindow(QMainWindow):
                     }}
                     QPushButton:hover {{
                         background-color: {t['card_bg']};
-                        border: 1px solid {t['primary_hover']};
+                        border: 1px solid {t['border']};
                     }}
                 """)
             else:
@@ -486,7 +485,7 @@ class MainWindow(QMainWindow):
                         color: {t['text_secondary']};
                         padding: 4px 6px;
                     }}
-                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                    QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
                 """)
         # 刷新配置选择栏背景
         if self._config_top_bar is not None:
@@ -676,7 +675,7 @@ class MainWindow(QMainWindow):
                     color: {t['text_secondary']};
                     padding: 4px 6px;
                 }}
-                QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
             """)
             button.clicked.connect(lambda checked, vid=vendor_id: self.on_vendor_clicked(vid))
             self.vendor_buttons[vendor_id] = button
@@ -705,7 +704,7 @@ class MainWindow(QMainWindow):
                     color: {t['text_secondary']};
                     padding: 4px 6px;
                 }}
-                QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
             """)
             button.clicked.connect(lambda checked, did=device_id: self.on_device_clicked(did))
             self.device_buttons[device_id] = button
@@ -727,8 +726,8 @@ class MainWindow(QMainWindow):
                 button.setStyleSheet(f"""
                     QPushButton {{
                         background-color: {t['hover_bg']};
-                        color: {t['primary']};
-                        border: 1px solid {t['primary']};
+                        color: {t['text_secondary']};
+                        border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
                         font-weight: bold;
@@ -745,7 +744,7 @@ class MainWindow(QMainWindow):
                         color: {t['text_secondary']};
                         padding: 4px 6px;
                     }}
-                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                    QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
                 """)
         self.selected_vendor = vendor
         self.try_show_config_page()
@@ -760,8 +759,8 @@ class MainWindow(QMainWindow):
                 button.setStyleSheet(f"""
                     QPushButton {{
                         background-color: {t['hover_bg']};
-                        color: {t['primary']};
-                        border: 1px solid {t['primary']};
+                        color: {t['text_secondary']};
+                        border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
                         font-weight: bold;
@@ -778,7 +777,7 @@ class MainWindow(QMainWindow):
                         color: {t['text_secondary']};
                         padding: 4px 6px;
                     }}
-                    QPushButton:hover {{ border: 1px solid {t['primary']}; color: {t['text_main']}; }}
+                    QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
                 """)
         self.selected_device = device_type
         self.try_show_config_page()
@@ -877,15 +876,15 @@ class MainWindow(QMainWindow):
             self._activation_btn.setStyleSheet(f"""
                 QPushButton {{
                     background-color: {t['danger_bg']};
-                    border: 1px solid {t['danger']};
+                    border: 1px solid {t['border']};
                     border-radius: {r}px;
                     font-size: 10pt;
-                    color: {t['danger']};
+                    color: {t['text_secondary']};
                     font-weight: bold;
                 }}
                 QPushButton:hover {{
                     background-color: {t['danger_bg']};
-                    border-color: {t['danger']};
+                    border-color: {t['border']};
                 }}
             """)
         else:
@@ -897,7 +896,7 @@ class MainWindow(QMainWindow):
                 self._activation_btn.setStyleSheet(f"""
                     QPushButton {{
                         background-color: {t['warning_bg']};
-                        border: 1px solid {t['warning']};
+                        border: 1px solid {t['border']};
                         border-radius: {r}px;
                         font-size: 10pt;
                         color: {t['warning']};
@@ -905,7 +904,7 @@ class MainWindow(QMainWindow):
                     }}
                     QPushButton:hover {{
                         background-color: {t['warning_bg']};
-                        border-color: {t['warning']};
+                        border-color: {t['border']};
                     }}
                 """)
             else:
@@ -1025,8 +1024,8 @@ class MainWindow(QMainWindow):
                 }}
                 QPushButton:hover {{
                     background-color: {t['card_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary']};
+                    border-color: {t['border']};
+                    color: {t['text_secondary']};
                 }}
             """)
             activate_btn.clicked.connect(lambda: (dialog.close(), self._open_activation_dialog()))
@@ -1044,9 +1043,9 @@ class MainWindow(QMainWindow):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
-                border: 1px solid {t['primary_hover']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
+                border: 1px solid {t['border']};
             }}
         """)
         close_button.clicked.connect(dialog.close)

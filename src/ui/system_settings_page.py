@@ -82,7 +82,7 @@ class SystemSettingsPage(QWidget):
         layout.setSpacing(12)
 
         self._title_label = QLabel("模型设置")
-        self._title_label.setStyleSheet("font-size: 15pt; font-weight: bold; text-decoration: none;")
+        self._title_label.setStyleSheet("font-size: 14pt; font-weight: bold; text-decoration: none;")
         layout.addWidget(self._title_label)
 
         selector_group = QGroupBox("")
@@ -91,7 +91,7 @@ class SystemSettingsPage(QWidget):
         sel_layout.setSpacing(8)
 
         self._sel_label = QLabel("配置选择：")
-        self._sel_label.setStyleSheet("font-size: 10pt;")
+        self._sel_label.setStyleSheet("font-size: 11pt;")
         sel_layout.addWidget(self._sel_label)
 
         self.profile_combo = QComboBox()
@@ -100,22 +100,22 @@ class SystemSettingsPage(QWidget):
         sel_layout.addWidget(self.profile_combo)
 
         self.add_btn = QPushButton("+ 新增")
-        self.add_btn.setFixedSize(80, 34)
+        self.add_btn.setFixedSize(80, 30)
         self.add_btn.clicked.connect(self.on_add_new)
         sel_layout.addWidget(self.add_btn)
 
         self.del_btn = QPushButton("删除")
-        self.del_btn.setFixedSize(60, 34)
+        self.del_btn.setFixedSize(60, 30)
         self.del_btn.clicked.connect(self.on_delete_profile)
         sel_layout.addWidget(self.del_btn)
 
         self.rename_btn = QPushButton("✏️ 重命名")
-        self.rename_btn.setFixedSize(80, 34)
+        self.rename_btn.setFixedSize(80, 30)
         self.rename_btn.clicked.connect(self.on_rename_profile)
         sel_layout.addWidget(self.rename_btn)
 
         self.profile_count_lbl = QLabel("")
-        self.profile_count_lbl.setStyleSheet("font-size: 10pt;")
+        self.profile_count_lbl.setStyleSheet("font-size: 11pt;")
         sel_layout.addWidget(self.profile_count_lbl)
         sel_layout.addStretch()
 
@@ -130,7 +130,7 @@ class SystemSettingsPage(QWidget):
         vendor_layout = QHBoxLayout()
         vendor_label = QLabel("模型厂商")
         vendor_label.setFixedWidth(120)
-        vendor_label.setStyleSheet("font-size: 10pt; font-weight: normal;")
+        vendor_label.setStyleSheet("font-size: 11pt; font-weight: normal;")
         vendor_layout.addWidget(vendor_label)
         self.vendor_combo = QComboBox()
         self.vendor_combo.setFixedWidth(280)
@@ -144,7 +144,7 @@ class SystemSettingsPage(QWidget):
         url_layout = QHBoxLayout()
         url_label = QLabel("BaseURL")
         url_label.setFixedWidth(120)
-        url_label.setStyleSheet("font-size: 10pt; font-weight: normal;")
+        url_label.setStyleSheet("font-size: 11pt; font-weight: normal;")
         url_layout.addWidget(url_label)
         self.url_input = QLineEdit()
         self.url_input.setFixedWidth(520)
@@ -156,7 +156,7 @@ class SystemSettingsPage(QWidget):
         key_layout = QHBoxLayout()
         key_label = QLabel("API Key")
         key_label.setFixedWidth(120)
-        key_label.setStyleSheet("font-size: 10pt; font-weight: normal;")
+        key_label.setStyleSheet("font-size: 11pt; font-weight: normal;")
         key_layout.addWidget(key_label)
         self.key_input = QLineEdit()
         self.key_input.setFixedWidth(520)
@@ -165,7 +165,7 @@ class SystemSettingsPage(QWidget):
         key_layout.addWidget(self.key_input)
 
         self.show_key_btn = QPushButton("显示")
-        self.show_key_btn.setFixedSize(64, 36)
+        self.show_key_btn.setFixedSize(64, 30)
         self.show_key_btn.clicked.connect(self.toggle_key_visibility)
         key_layout.addWidget(self.show_key_btn)
         key_layout.addStretch()
@@ -174,7 +174,7 @@ class SystemSettingsPage(QWidget):
         model_layout = QHBoxLayout()
         model_label = QLabel("模型名称")
         model_label.setFixedWidth(120)
-        model_label.setStyleSheet("font-size: 10pt; font-weight: normal;")
+        model_label.setStyleSheet("font-size: 11pt; font-weight: normal;")
         model_layout.addWidget(model_label)
         self.model_input = QLineEdit()
         self.model_input.setFixedWidth(320)
@@ -187,17 +187,17 @@ class SystemSettingsPage(QWidget):
         btn_layout.setSpacing(14)
 
         self.save_btn = QPushButton("保存配置")
-        self.save_btn.setFixedSize(120, 42)
+        self.save_btn.setFixedSize(120, 30)
         self.save_btn.clicked.connect(self.save_config)
         btn_layout.addWidget(self.save_btn)
 
         self.test_btn = QPushButton("测试连通性")
-        self.test_btn.setFixedSize(120, 42)
+        self.test_btn.setFixedSize(120, 30)
         self.test_btn.clicked.connect(self.test_connectivity)
         btn_layout.addWidget(self.test_btn)
 
         self.test_status = QLabel("")
-        self.test_status.setStyleSheet("font-size: 10pt;")
+        self.test_status.setStyleSheet("font-size: 11pt;")
         btn_layout.addWidget(self.test_status)
         btn_layout.addStretch()
         ai_layout.addLayout(btn_layout)
@@ -212,7 +212,7 @@ class SystemSettingsPage(QWidget):
 
         self.tips_checkbox = QCheckBox("开启操作提示与异常提醒")
         self.tips_checkbox.setChecked(True)
-        self.tips_checkbox.setStyleSheet("font-size: 10pt; font-weight: normal;")
+        self.tips_checkbox.setStyleSheet("font-size: 11pt; font-weight: normal;")
         general_layout.addWidget(self.tips_checkbox)
 
         general_group.setLayout(general_layout)
@@ -242,15 +242,16 @@ class SystemSettingsPage(QWidget):
         hover_bg = t["hover_bg"]
         card_bg = t["card_bg"]
         radius_md = t["radius_md"]
+        radius_lg = t["radius_lg"]
 
         # 标题
         self._title_label.setStyleSheet(
-            f"font-size: 15pt; font-weight: bold; color: {text_main}; text-decoration: none;"
+            f"font-size: 14pt; font-weight: bold; color: {text_main}; text-decoration: none;"
         )
 
         # 选择器标签
-        self._sel_label.setStyleSheet(f"font-size: 10pt; color: {text_secondary};")
-        self.profile_count_lbl.setStyleSheet(f"font-size: 10pt; color: {text_tertiary};")
+        self._sel_label.setStyleSheet(f"font-size: 11pt; color: {text_secondary};")
+        self.profile_count_lbl.setStyleSheet(f"font-size: 11pt; color: {text_tertiary};")
 
         # 配置选择栏按钮（次要按钮样式）
         secondary_btn = f"""
@@ -258,10 +259,10 @@ class SystemSettingsPage(QWidget):
                 background-color: {hover_bg};
                 color: {text_main};
                 border: 1px solid {border};
-                border-radius: 6px;
-                font-size: 10pt;
-                padding: 0 12px;
-                min-height: 32px;
+                border-radius: {radius_md}px;
+                font-size: 11pt;
+                padding: 5px 8px;
+                min-height: 28px;
             }}
             QPushButton:hover {{ background-color: {card_bg}; }}
         """
@@ -273,9 +274,9 @@ class SystemSettingsPage(QWidget):
         combo_style = f"""
             QComboBox {{
                 border: 1px solid {t['input_border']};
-                border-radius: 6px;
-                padding: 8px 14px;
-                font-size: 10pt;
+                border-radius: {radius_md}px;
+                padding: 6px 14px;
+                font-size: 11pt;
                 background-color: {card_bg};
                 color: {text_main};
             }}
@@ -293,9 +294,9 @@ class SystemSettingsPage(QWidget):
         self.vendor_combo.setStyleSheet(f"""
             QComboBox {{
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
-                padding: 9px 12px;
-                font-size: 10pt;
+                border-radius: {radius_md}px;
+                padding: 4px 8px;
+                font-size: 11pt;
                 background-color: {input_bg};
                 color: {text_main};
             }}
@@ -307,9 +308,9 @@ class SystemSettingsPage(QWidget):
         line_style = f"""
             QLineEdit {{
                 border: 1px solid {t['input_border']};
-                border-radius: 4px;
-                padding: 9px 12px;
-                font-size: 10pt;
+                border-radius: {radius_md}px;
+                padding: 4px 8px;
+                font-size: 11pt;
                 background-color: {input_bg};
                 color: {text_main};
             }}
@@ -324,43 +325,55 @@ class SystemSettingsPage(QWidget):
             QPushButton {{
                 background-color: {input_bg};
                 border: 1px solid {border};
-                border-radius: 4px;
-                font-size: 10pt;
+                border-radius: {radius_md}px;
+                font-size: 11pt;
                 color: {text_secondary};
             }}
             QPushButton:hover {{ border-color: {primary}; color: {primary}; }}
         """)
 
-        # 保存按钮（主按钮）
+        # 保存按钮（次要按钮样式，统一无色）
         self.save_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {primary};
-                color: {text_primary};
-                border: none;
-                border-radius: 6px;
+                background-color: {hover_bg};
+                color: {text_main};
+                border: 1px solid {border};
+                border-radius: {radius_md}px;
                 font-size: 11pt;
-                font-weight: 500;
+                padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {primary_hover}; }}
-            QPushButton:pressed {{ background-color: {primary_hover}; }}
+            QPushButton:hover {{
+                background-color: {card_bg};
+                border-color: {primary};
+                color: {primary};
+            }}
+            QPushButton:pressed {{ background-color: {hover_bg}; }}
         """)
 
-        # 测试连通性按钮（成功色）
+        # 测试连通性按钮（次要按钮样式，统一无色）
         self.test_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {success};
-                color: {text_primary};
-                border: none;
-                border-radius: 6px;
+                background-color: {hover_bg};
+                color: {text_main};
+                border: 1px solid {border};
+                border-radius: {radius_md}px;
                 font-size: 11pt;
-                font-weight: 500;
+                padding: 5px 8px;
             }}
-            QPushButton:hover {{ background-color: {success_hover}; }}
-            QPushButton:disabled {{ background-color: {border}; }}
+            QPushButton:hover {{
+                background-color: {card_bg};
+                border-color: {primary};
+                color: {primary};
+            }}
+            QPushButton:disabled {{
+                background-color: {hover_bg};
+                border-color: {border};
+                color: {text_tertiary};
+            }}
         """)
 
         # 测试状态标签
-        self.test_status.setStyleSheet(f"font-size: 10pt; color: {text_tertiary};")
+        self.test_status.setStyleSheet(f"font-size: 11pt; color: {text_tertiary};")
 
         # AI 模型配置分组框
         self._ai_group.setStyleSheet(f"""
@@ -369,7 +382,7 @@ class SystemSettingsPage(QWidget):
                 font-weight: bold;
                 color: {text_main};
                 border: 1px solid {border};
-                border-radius: 8px;
+                border-radius: {radius_lg}px;
                 margin-top: 10px;
                 padding: 18px 14px 10px 14px;
                 background-color: {card_bg};
@@ -383,7 +396,7 @@ class SystemSettingsPage(QWidget):
 
         # 字段标签（模型厂商/BaseURL/API Key/模型名称）
         for lbl in self._ai_group.findChildren(QLabel):
-            lbl.setStyleSheet(f"font-size: 10pt; color: {text_secondary}; font-weight: normal;")
+            lbl.setStyleSheet(f"font-size: 11pt; color: {text_secondary}; font-weight: normal;")
 
         # 全局设置分组框
         self._general_group.setStyleSheet(f"""
@@ -392,7 +405,7 @@ class SystemSettingsPage(QWidget):
                 font-weight: bold;
                 color: {text_main};
                 border: 1px solid {border};
-                border-radius: 8px;
+                border-radius: {radius_lg}px;
                 margin-top: 10px;
                 padding: 18px 14px 10px 14px;
                 background-color: {card_bg};
@@ -406,7 +419,7 @@ class SystemSettingsPage(QWidget):
 
         # 复选框
         self.tips_checkbox.setStyleSheet(
-            f"font-size: 10pt; color: {text_secondary}; font-weight: normal;"
+            f"font-size: 11pt; color: {text_secondary}; font-weight: normal;"
         )
 
     def on_vendor_changed(self, index):
@@ -498,7 +511,7 @@ class SystemSettingsPage(QWidget):
             except Exception:
                 url_host = raw_url[:40] + "..." if len(raw_url) > 40 else raw_url
         self.test_status.setText(f"当前：{self.active_name} | 模型：{model_display} | {url_host}")
-        self.test_status.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['text_tertiary']};")
+        self.test_status.setStyleSheet(f"font-size: 11pt; color: {self._theme_engine.current_theme['text_tertiary']};")
         self._is_new_profile = False
 
     def on_profile_changed(self, index):
@@ -508,7 +521,7 @@ class SystemSettingsPage(QWidget):
         self.active_name = self.profiles[index]["name"]
         self._load_active_to_form()
         if old_name != self.active_name:
-            self.test_status.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['primary']};")
+            self.test_status.setStyleSheet(f"font-size: 11pt; color: {self._theme_engine.current_theme['primary']};")
 
     def on_add_new(self):
         existing_names = {p["name"] for p in self.profiles}
@@ -569,7 +582,7 @@ class SystemSettingsPage(QWidget):
         self.active_name = new_name
         self._refresh_profile_list()
         self.test_status.setText(f"已重命名：{old_name} → {new_name}")
-        self.test_status.setStyleSheet(f"font-size: 9pt; color: {self._theme_engine.current_theme['success']};")
+        self.test_status.setStyleSheet(f"font-size: 11pt; color: {self._theme_engine.current_theme['success']};")
         self._save_all()
 
     def save_config(self):
@@ -626,7 +639,7 @@ class SystemSettingsPage(QWidget):
             return
         self.test_btn.setEnabled(False)
         self.test_status.setText("正在测试连接...")
-        self.test_status.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['primary']};")
+        self.test_status.setStyleSheet(f"font-size: 11pt; color: {self._theme_engine.current_theme['primary']};")
         self.test_thread = AIConnectivityThread(base_url, api_key, model)
         self.test_thread.finished_signal.connect(self.on_test_finished)
         self.test_thread.start()
@@ -636,10 +649,10 @@ class SystemSettingsPage(QWidget):
         t = self._theme_engine.current_theme
         if success:
             self.test_status.setText(message)
-            self.test_status.setStyleSheet(f"font-size: 10pt; color: {t['success']};")
+            self.test_status.setStyleSheet(f"font-size: 11pt; color: {t['success']};")
         else:
             self.test_status.setText(message)
-            self.test_status.setStyleSheet(f"font-size: 10pt; color: {t['danger']};")
+            self.test_status.setStyleSheet(f"font-size: 11pt; color: {t['text_secondary']};")
 
 
 def get_active_ai_config() -> dict:

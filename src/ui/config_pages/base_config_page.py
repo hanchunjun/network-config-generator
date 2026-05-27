@@ -41,7 +41,7 @@ class BaseConfigPage(QWidget):
     # ------------------------------------------------------------------
     def _get_title_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"font-size: 15pt; font-weight: bold; color: {t['text_main']};"
+        return f"font-size: 14pt; font-weight: bold; color: {t['text_main']};"
 
     def _get_preview_label_style(self) -> str:
         t = self._theme_engine.current_theme
@@ -49,12 +49,12 @@ class BaseConfigPage(QWidget):
 
     def _get_desc_label_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"font-size: 10pt; color: {t['text_secondary']}; margin-bottom: 10px;"
+        return f"font-size: 11pt; color: {t['text_secondary']}; margin-bottom: 10px;"
 
     def _get_card_style(self) -> str:
         t = self._theme_engine.current_theme
         return (
-            f"QWidget {{ background-color: {t['card_bg']}; border-radius: 8px; "
+            f"QWidget {{ background-color: {t['card_bg']}; border-radius: {t['radius_lg']}px;"
             f"padding: 14px; }}"
         )
 
@@ -64,31 +64,41 @@ class BaseConfigPage(QWidget):
 
     def _get_label_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"font-size: 10pt; color: {t['text_main']};"
+        return f"font-size: 11pt; color: {t['text_main']};"
 
     def _get_label_secondary_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"font-size: 10pt; color: {t['text_secondary']};"
+        return f"font-size: 11pt; color: {t['text_secondary']};"
 
     def _get_input_style(self) -> str:
         t = self._theme_engine.current_theme
         return (
             f"QLineEdit {{"
-            f" border: 1px solid {t['input_border']}; border-radius: 4px;"
-            f" padding: 0 12px; font-size: 10pt; color: {t['text_main']};"
+            f" border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;"
+            f" padding: 4px 8px; font-size: 11pt; color: {t['text_main']};"
             f" background-color: {t['card_bg']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; outline: none; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; outline: none; }}"
         )
 
     def _get_primary_button_style(self) -> str:
         t = self._theme_engine.current_theme
         return (
             f"QPushButton {{"
-            f" background-color: {t['primary']}; color: {t['text_primary']};"
-            f" border: none; border-radius: 4px; font-size: 10pt;"
+            f" background-color: {t['hover_bg']};"
+            f" color: {t['text_main']};"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px; font-size: 11pt;"
             f"}}"
-            f"QPushButton:hover {{ background-color: {t['primary_hover']}; }}"
+            f"QPushButton:hover {{"
+            f" background-color: {t['card_bg']};"
+            f" border-color: {t['border']};"
+            f" color: {t['text_secondary']};"
+            f"}}"
+            f"QPushButton:disabled {{"
+            f" background-color: {t['hover_bg']};"
+            f" border-color: {t['border']};"
+            f" color: {t['text_tertiary']};"
+            f"}}"
         )
 
     def _get_secondary_button_style(self) -> str:
@@ -96,19 +106,19 @@ class BaseConfigPage(QWidget):
         return (
             f"QPushButton {{"
             f" background-color: {t['card_bg']};"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
-            f" font-size: 10pt; color: {t['text_main']};"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
+            f" font-size: 11pt; color: {t['text_main']};"
             f"}}"
-            f"QPushButton:hover {{ border: 1px solid {t['primary']}; }}"
+            f"QPushButton:hover {{ border: 1px solid {t['border']}; }}"
         )
 
     def _get_preview_text_style(self) -> str:
         t = self._theme_engine.current_theme
         return (
             f"QTextEdit {{"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" padding: 10px; font-family: 'Courier New', monospace;"
-            f" font-size: 10pt; color: {t['text_main']};"
+            f" font-size: 11pt; color: {t['text_main']};"
             f" background-color: {t['card_bg']};"
             f"}}"
         )
@@ -122,10 +132,10 @@ class BaseConfigPage(QWidget):
             f" border: 1px solid {t['border']}; border-bottom: none;"
             f" padding: 10px 24px; margin-right: 4px;"
             f" border-top-left-radius: 6px; border-top-right-radius: 6px;"
-            f" font-size: 10pt; color: {t['text_secondary']};"
+            f" font-size: 11pt; color: {t['text_secondary']};"
             f"}}"
             f"QTabBar::tab:selected {{"
-            f" background-color: {t['primary']}; color: {t['text_primary']};"
+            f" background-color: {t['page_bg']}; color: {t['text_primary']};"
             f" font-weight: bold;"
             f"}}"
             f"QTabBar::tab:hover:!selected {{ background-color: {t['hover_bg']}; }}"
@@ -135,32 +145,32 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QComboBox {{"
-            f" border: 1px solid {t['input_border']}; border-radius: 4px;"
-            f" padding: 0 12px; font-size: 10pt; color: {t['text_main']};"
+            f" border: 1px solid {t['input_border']}; border-radius: {t['radius_md']}px;"
+            f" padding: 4px 8px; font-size: 11pt; color: {t['text_main']};"
             f" background-color: {t['card_bg']};"
             f"}}"
-            f"QComboBox:focus {{ border-color: {t['primary']}; }}"
+            f"QComboBox:focus {{ border-color: {t['border']}; }}"
             f"QComboBox::drop-down {{ border: none; }}"
             f"QComboBox QAbstractItemView {{"
-            f" border: 1px solid {t['input_border']}; selection-background-color: {t['primary']};"
+            f" border: 1px solid {t['input_border']}; selection-background-color: {t['page_bg']};"
             f"}}"
         )
 
     def _get_checkbox_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"QCheckBox {{ font-size: 10pt; color: {t['text_main']}; }}"
+        return f"QCheckBox {{ font-size: 11pt; color: {t['text_main']}; }}"
 
     def _get_radio_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"QRadioButton {{ font-size: 10pt; color: {t['text_secondary']}; }}"
+        return f"QRadioButton {{ font-size: 11pt; color: {t['text_secondary']}; }}"
 
     def _get_groupbox_style(self) -> str:
         t = self._theme_engine.current_theme
         return (
             f"QGroupBox {{"
-            f" border: 1px solid {t['border']}; border-radius: 6px;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" margin-top: 12px; padding-top: 12px;"
-            f" font-size: 10pt; font-weight: bold; color: {t['text_main']};"
+            f" font-size: 11pt; font-weight: bold; color: {t['text_main']};"
             f"}}"
             f"QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 4px; }}"
         )
@@ -169,17 +179,17 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QTableWidget {{"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" gridline-color: {t['border']};"
             f" background-color: {t['card_bg']}; color: {t['text_main']};"
-            f" font-size: 10pt;"
+            f" font-size: 11pt;"
             f"}}"
             f"QHeaderView::section {{"
             f" background-color: {t['sidebar_bg']}; color: {t['text_main']};"
             f" border: 1px solid {t['border']}; padding: 6px;"
             f"}}"
             f"QTableWidget::item {{ padding: 4px; }}"
-            f"QTableWidget::item:selected {{ background-color: {t['primary']}; color: {t['text_primary']}; }}"
+            f"QTableWidget::item:selected {{ background-color: {t['page_bg']}; color: {t['text_primary']}; }}"
         )
 
     def _get_table_header_style(self) -> str:
@@ -187,7 +197,7 @@ class BaseConfigPage(QWidget):
         return (
             f"QHeaderView::section {{"
             f" background-color: {t['sidebar_bg']}; color: {t['text_secondary']};"
-            f" border: none; padding: 8px; font-size: 9pt;"
+            f" border: none; padding: 6px; font-size: 10pt;"
             f"}}"
         )
 
@@ -197,10 +207,10 @@ class BaseConfigPage(QWidget):
         return (
             f"QLineEdit {{"
             f" border: 1px solid {t['border_deep']}; padding: 4px 8px;"
-            f" font-size: 10pt; color: {t['text_main']};"
+            f" font-size: 11pt; color: {t['text_main']};"
             f" background-color: {t['card_bg']};"
             f"}}"
-            f"QLineEdit:focus {{ border: 1px solid {t['primary']}; }}"
+            f"QLineEdit:focus {{ border: 1px solid {t['border']}; }}"
         )
 
     def _get_scroll_area_style(self) -> str:
@@ -221,21 +231,21 @@ class BaseConfigPage(QWidget):
 
     def _get_tab_content_desc_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"font-size: 9pt; color: {t['text_secondary']};"
+        return f"font-size: 10pt; color: {t['text_secondary']};"
 
     def _get_bold_label_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"color: {t['text_main']}; font-size: 10pt; font-weight: bold;"
+        return f"color: {t['text_main']}; font-size: 11pt; font-weight: bold;"
 
     def _get_hint_label_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"color: {t['text_main']}; font-size: 9pt;"
+        return f"color: {t['text_main']}; font-size: 10pt;"
 
     def _get_method_label_style(self) -> str:
         """方法标签样式（#E5E5E5 背景 + #CCCCCC 边框）"""
         t = self._theme_engine.current_theme
         return (
-            f"color: {t['text_main']}; font-size: 10pt; font-weight: bold;"
+            f"color: {t['text_main']}; font-size: 11pt; font-weight: bold;"
             f" background-color: {t['sidebar_bg']};"
             f" border: 1px solid {t['border_deep']}; padding: 4px 8px;"
         )
@@ -244,13 +254,13 @@ class BaseConfigPage(QWidget):
         """方法字段标签样式（#CCCCCC 边框）"""
         t = self._theme_engine.current_theme
         return (
-            f"color: {t['text_main']}; font-size: 10pt;"
+            f"color: {t['text_main']}; font-size: 11pt;"
             f" border: 1px solid {t['border_deep']}; padding: 4px 8px;"
         )
 
     def _get_login_title_style(self) -> str:
         t = self._theme_engine.current_theme
-        return f"color: {t['text_main']}; font-size: 10pt; font-weight: bold;"
+        return f"color: {t['text_main']}; font-size: 11pt; font-weight: bold;"
 
     def _get_danger_button_style(self) -> str:
         """危险/删除按钮样式（红色边框+文字，hover 加深）"""
@@ -258,11 +268,11 @@ class BaseConfigPage(QWidget):
         return (
             f"QPushButton {{"
             f" background-color: transparent;"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
-            f" color: {t['text_secondary']}; font-size: 9pt;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
+            f" color: {t['text_secondary']}; font-size: 10pt;"
             f"}}"
             f"QPushButton:hover {{"
-            f" border: 1px solid {t['danger']}; color: {t['danger']};"
+            f" border: 1px solid {t['border']}; color: {t['text_secondary']};"
             f"}}"
         )
 
@@ -272,10 +282,10 @@ class BaseConfigPage(QWidget):
         return (
             f"QLineEdit {{"
             f" border: 1px solid {t['border_deep']}; padding: 4px 8px;"
-            f" font-size: 10pt; color: {t['text_main']};"
+            f" font-size: 11pt; color: {t['text_main']};"
             f" background-color: {t['card_bg']};"
             f"}}"
-            f"QLineEdit:focus {{ border: 1px solid {t['primary']}; }}"
+            f"QLineEdit:focus {{ border: 1px solid {t['border']}; }}"
         )
 
     def _get_small_delete_btn_style(self) -> str:
@@ -284,11 +294,11 @@ class BaseConfigPage(QWidget):
         return (
             f"QPushButton {{"
             f" background-color: {t['card_bg']};"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
-            f" color: {t['text_secondary']}; font-size: 9pt;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
+            f" color: {t['text_secondary']}; font-size: 10pt;"
             f"}}"
             f"QPushButton:hover {{"
-            f" border: 1px solid {t['danger']}; color: {t['danger']};"
+            f" border: 1px solid {t['border']}; color: {t['text_secondary']};"
             f"}}"
         )
 
@@ -297,17 +307,17 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QTableWidget {{"
-            f" border: 1px solid {t['border']}; border-radius: 4px;"
+            f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" gridline-color: {t['border']};"
             f" background-color: {t['card_bg']}; color: {t['text_main']};"
-            f" font-size: 10pt;"
+            f" font-size: 11pt;"
             f"}}"
             f"QHeaderView::section {{"
             f" background-color: {t['sidebar_bg']}; color: {t['text_main']};"
             f" border: 1px solid {t['border']}; padding: 6px;"
             f"}}"
             f"QTableWidget::item {{ padding: 4px; }}"
-            f"QTableWidget::item:selected {{ background-color: {t['primary']}; color: {t['text_primary']}; }}"
+            f"QTableWidget::item:selected {{ background-color: {t['page_bg']}; color: {t['text_primary']}; }}"
         )
 
     # ------------------------------------------------------------------
@@ -326,14 +336,14 @@ class BaseConfigPage(QWidget):
 
         # 返回按钮
         back_button = QPushButton('返回上一级')
-        back_button.setFixedSize(100, 40)
+        back_button.setFixedSize(100, 30)
         back_button.setStyleSheet(self._get_secondary_button_style())
         back_button.clicked.connect(self.on_back_clicked)
         title_layout.addWidget(back_button)
 
         # 返回首页按钮
         home_button = QPushButton('返回首页')
-        home_button.setFixedSize(100, 40)
+        home_button.setFixedSize(100, 30)
         home_button.setStyleSheet(self._get_secondary_button_style())
         home_button.clicked.connect(self.on_home_clicked)
         title_layout.addWidget(home_button)
@@ -364,25 +374,25 @@ class BaseConfigPage(QWidget):
         preview_header.addStretch()
 
         generate_button = QPushButton('生成配置')
-        generate_button.setFixedSize(100, 36)
+        generate_button.setFixedSize(100, 30)
         generate_button.setStyleSheet(self._get_primary_button_style())
         generate_button.clicked.connect(self.generate_config)
         preview_header.addWidget(generate_button)
 
         copy_button = QPushButton('复制脚本')
-        copy_button.setFixedSize(100, 36)
+        copy_button.setFixedSize(100, 30)
         copy_button.setStyleSheet(self._get_secondary_button_style())
         copy_button.clicked.connect(self.copy_config)
         preview_header.addWidget(copy_button)
 
         export_button = QPushButton('导出配置')
-        export_button.setFixedSize(100, 36)
+        export_button.setFixedSize(100, 30)
         export_button.setStyleSheet(self._get_secondary_button_style())
         export_button.clicked.connect(self.export_config)
         preview_header.addWidget(export_button)
 
         reset_button = QPushButton('重置')
-        reset_button.setFixedSize(80, 36)
+        reset_button.setFixedSize(80, 26)
         reset_button.setStyleSheet(self._get_secondary_button_style())
         reset_button.clicked.connect(self.reset_config)
         preview_header.addWidget(reset_button)
@@ -485,7 +495,7 @@ class BaseConfigPage(QWidget):
             input_field.setStyleSheet(self._get_label_secondary_style())
         else:
             input_field = QLineEdit()
-            input_field.setFixedHeight(32)
+            input_field.setFixedHeight(26)
             input_field.setText(default_value)
             if is_password:
                 input_field.setEchoMode(QLineEdit.Password)

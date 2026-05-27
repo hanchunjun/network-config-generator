@@ -100,7 +100,7 @@ class DeviceTemplateDialog(QDialog):
                 background-color: {t['card_bg']}; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 5px 8px;
             }}
-            QPushButton:hover {{ border: 1px solid {t['primary']}; }}
+            QPushButton:hover {{ border: 1px solid {t['border']}; }}
         """)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
@@ -115,8 +115,8 @@ class DeviceTemplateDialog(QDialog):
             }}
             QPushButton:hover {{
                 background-color: {t['card_bg']};
-                border-color: {t['primary']};
-                color: {t['primary']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};

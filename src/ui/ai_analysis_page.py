@@ -277,8 +277,8 @@ class AIAnalysisPage(QWidget):
         return f"""
             QPushButton {{
                 background-color: {t['page_bg']};
-                color: {t['primary']};
-                border: 1px solid {t['primary']};
+                color: {t['text_secondary']};
+                border: 1px solid {t['border']};
                 border-radius: {r_md}px;
                 font-size: 11pt;
                 font-weight: bold;
@@ -286,8 +286,8 @@ class AIAnalysisPage(QWidget):
             }}
             QPushButton:hover {{
                 background-color: {t['hover_bg']};
-                border-color: {t['primary_hover']};
-                color: {t['primary_hover']};
+                border-color: {t['border']};
+                color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
                 background-color: {t['hover_bg']};
@@ -301,20 +301,20 @@ class AIAnalysisPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['primary']};
+                background-color: {t['page_bg']};
                 color: {t['text_primary']};
-                border: 1px solid {t['primary']};
+                border: 1px solid {t['border']};
                 border-radius: {r_md}px;
                 font-size: 11pt;
                 font-weight: bold;
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['primary_hover']};
-                border-color: {t['primary_hover']};
+                background-color: {t['hover_bg']};
+                border-color: {t['border']};
             }}
             QPushButton:pressed {{
-                background-color: {t['primary_pressed']};
+                background-color: {t['hover_bg']};
             }}
             QPushButton:disabled {{
                 background-color: {t['border_deep']};
@@ -912,7 +912,7 @@ class AIAnalysisPage(QWidget):
                 background-color: {t['card_bg']};
                 border-bottom-color: {t['card_bg']};
                 font-weight: bold;
-                color: {t['accent']};
+                color: {t['text_secondary']};
             }}
             QTabBar::tab:hover {{ background-color: {t['hover_bg']}; }}
         """)
@@ -935,14 +935,14 @@ class AIAnalysisPage(QWidget):
                 # Prompt编辑区
                 text_edit.setStyleSheet(f"""
                     QTextEdit {{
-                        border: 1px solid {t['accent']};
+                        border: 1px solid {t['border']};
                         border-radius: {r_md}px;
                         padding: 10px;
                         font-family: 'Consolas', 'Courier New', monospace;
                         font-size: 11pt;
                         background-color: {t['card_bg']};
                     }}
-                    QTextEdit:focus {{ border: 1px solid {t['accent']}; }}
+                    QTextEdit:focus {{ border: 1px solid {t['border']}; }}
                 """)
 
         # 刷新 QListWidget 样式
@@ -958,7 +958,7 @@ class AIAnalysisPage(QWidget):
                     outline: none;
                 }}
                 QListWidget::item {{ padding: 5px 8px; }}
-                QListWidget::item:selected {{ background-color: {t['accent']}; color: {t['text_primary']}; }}
+                QListWidget::item:selected {{ background-color: {t['page_bg']}; color: {t['text_primary']}; }}
                 QListWidget::item:hover {{ background-color: {t['hover_bg']}; }}
             """)
 
@@ -971,7 +971,7 @@ class AIAnalysisPage(QWidget):
                 background-color: {t['card_bg']};
                 font-size: 10pt;
             }}
-            QProgressBar::chunk {{ background-color: {t['accent']}; border-radius: {r_sm}px; }}
+            QProgressBar::chunk {{ background-color: {t['page_bg']}; border-radius: {r_sm}px; }}
         """)
 
     def showEvent(self, event):

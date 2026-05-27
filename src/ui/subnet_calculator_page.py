@@ -54,7 +54,7 @@ class CardFrame(QFrame):
                 f"}}"
             )
             self.value.setStyleSheet(
-                f"font-size: 14pt; color: {t['primary']}; font-weight: bold; "
+                f"font-size: 14pt; color: {t['text_secondary']}; font-weight: bold; "
                 f"font-family: Consolas, monospace;"
             )
         else:
@@ -307,20 +307,20 @@ class SubnetCalculatorPage(QWidget):
             f"  border: 1px solid {t['border']}; border-radius: {r_md}px; padding: 2px 6px;"
             f"  font-size: 12pt; background: {t['card_bg']};"
             f"}}"
-            f"QLineEdit:focus {{ border-color: {t['primary']}; }}"
+            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
             f"QSpinBox {{"
             f"  border: 1px solid {t['border']}; border-radius: {r_md}px; padding: 2px 6px;"
             f"  font-size: 12pt; background: {t['card_bg']};"
             f"}}"
-            f"QSpinBox:focus {{ border-color: {t['primary']}; }}"
+            f"QSpinBox:focus {{ border-color: {t['border']}; }}"
             f"QPushButton[objectName=\"calcBtn\"] {{"
             f"  background-color: {t['hover_bg']}; color: {t['text_main']};"
             f"  border: 1px solid {t['border']};"
             f"  border-radius: {r_md}px; font-size: 12pt; font-weight: bold;"
             f"}}"
             f"QPushButton[objectName=\"calcBtn\"]:hover {{"
-            f"  background-color: {t['card_bg']}; border-color: {t['primary']};"
-            f"  color: {t['primary']};"
+            f"  background-color: {t['card_bg']}; border-color: {t['border']};"
+            f"  color: {t['text_secondary']};"
             f"}}"
             f"QPushButton[objectName=\"calcBtn\"]:disabled {{"
             f"  background-color: {t['hover_bg']}; border-color: {t['border']};"
@@ -332,8 +332,8 @@ class SubnetCalculatorPage(QWidget):
             f"  border-radius: {r_md}px; font-size: 12pt; font-weight: bold;"
             f"}}"
             f"QPushButton[objectName=\"divideBtn\"]:hover {{"
-            f"  background-color: {t['card_bg']}; border-color: {t['primary']};"
-            f"  color: {t['primary']};"
+            f"  background-color: {t['card_bg']}; border-color: {t['border']};"
+            f"  color: {t['text_secondary']};"
             f"}}"
             f"QPushButton[objectName=\"divideBtn\"]:disabled {{"
             f"  background-color: {t['hover_bg']}; border-color: {t['border']};"
@@ -533,19 +533,19 @@ class SubnetCalculatorPage(QWidget):
                         if ones == 8:
                             cell.setStyleSheet(
                                 f"font-family: Consolas; font-size: 10pt; color: {t['text_primary']}; "
-                                f"background-color: {t['primary']}; border: 1px solid {t['primary_hover']}; "
+                                f"background-color: {t['page_bg']}; border: 1px solid {t['border']}; "
                                 f"border-radius: {r_sm}px;"
                             )
                         elif ones > 0:
                             cell.setStyleSheet(
                                 f"font-family: Consolas; font-size: 10pt; color: {t['text_primary']}; "
-                                f"background-color: {t['primary_light']}; border: 1px solid {t['primary_hover']}; "
+                                f"background-color: {t['primary_light']}; border: 1px solid {t['border']}; "
                                 f"border-radius: {r_sm}px;"
                             )
                         else:
                             cell.setStyleSheet(
-                                f"font-family: Consolas; font-size: 10pt; color: {t['danger']}; "
-                                f"background-color: {t['danger_bg']}; border: 1px solid {t['danger_hover']}; "
+                                f"font-family: Consolas; font-size: 10pt; color: {t['text_secondary']}; "
+                                f"background-color: {t['danger_bg']}; border: 1px solid {t['border']}; "
                                 f"border-radius: {r_sm}px;"
                             )
                     elif r_idx == 3:
@@ -553,13 +553,13 @@ class SubnetCalculatorPage(QWidget):
                         if zeros == 8:
                             cell.setStyleSheet(
                                 f"font-family: Consolas; font-size: 10pt; color: {t['text_primary']}; "
-                                f"background-color: {t['warning']}; border: 1px solid {t['warning_hover']}; "
+                                f"background-color: {t['page_bg']}; border: 1px solid {t['border']}; "
                                 f"border-radius: {r_sm}px;"
                             )
                         elif zeros > 0:
                             cell.setStyleSheet(
                                 f"font-family: Consolas; font-size: 10pt; color: {t['text_tertiary']}; "
-                                f"background-color: {t['warning_bg']}; border: 1px solid {t['warning_hover']}; "
+                                f"background-color: {t['warning_bg']}; border: 1px solid {t['border']}; "
                                 f"border-radius: {r_sm}px;"
                             )
                         else:
