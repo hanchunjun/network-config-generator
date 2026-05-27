@@ -74,7 +74,7 @@ class HistoryDialog(QDialog):
         close_btn.setFixedSize(100, 38)
         close_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['card_bg']}; border: 1px solid {t['border']};
+                background-color: transparent; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 14pt;
             }}
             QPushButton:hover {{ border: 1px solid {t['border']}; }}

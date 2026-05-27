@@ -1030,7 +1030,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -1038,7 +1038,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
@@ -1089,7 +1089,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -1097,7 +1097,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
@@ -1158,7 +1158,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -1166,7 +1166,7 @@ class RuijieCoreSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))

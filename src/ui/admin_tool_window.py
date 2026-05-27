@@ -329,19 +329,19 @@ class AdminToolWindow(QMainWindow):
                 color: {t['text_main']};
             }}
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['primary']};
                 color: {t['primary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}

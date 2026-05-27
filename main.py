@@ -17,9 +17,14 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 # 配置Qt环境变量
+# 强制锁定96DPI基准渲染，禁止Qt自动缩放
 if "QT_DEVICE_PIXEL_RATIO" in os.environ:
     del os.environ["QT_DEVICE_PIXEL_RATIO"]
-os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+if "QT_AUTO_SCREEN_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"]
+if "QT_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_SCALE_FACTOR"]
+os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(__file__))
@@ -112,19 +117,32 @@ _install_qt_message_handler()
 
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 if __name__ == '__main__':
-    # 强制进程DPI Unaware，让Windows统一做bitmap拉伸
-    # 解决125%/150%系统缩放下窗口内容溢出问题
+    # ── DPI 初始化（三步锁定96DPI基准渲染）──
+
+    # 第1步：关闭Qt高DPI缩放属性（必须在QApplication构造前）
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+    app = QApplication(sys.argv)
+
+    # 第2步：强制进程DPI Unaware（Windows层bitmap拉伸兜底）
     try:
         import ctypes
         ctypes.windll.shcore.SetProcessDpiAwareness(0)
     except Exception:
         pass
 
-    # 不跟随系统DPI缩放，保持100%/125%/150%下布局一致
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-    app = QApplication(sys.argv)
+    # 第3步：全局Fusion样式 + 双重抗锯齿
+    app.setStyle("Fusion")
+    app.setAttribute(Qt.AA_UseSoftwareOpenGL, False)  # 保持默认渲染，不强制软件OpenGL
+    # 文本抗锯齿：通过字体StyleHint全局开启
+    font = app.font()
+    font.setStyleStrategy(QFont.PreferAntialias)
+    app.setFont(font)
 
     # ★ 最高优先级：激活校验（未激活不加载任何业务模块）
     can_start, machine_code, act_status, act_info = _check_activation()

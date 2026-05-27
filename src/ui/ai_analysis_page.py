@@ -261,14 +261,14 @@ class AIAnalysisPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_secondary']};
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px;
                 font-size: 10pt;
                 padding: 4px 8px;
             }}
-            QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
+            QPushButton:hover {{ background-color: transparent; border-color: {t['border_deep']}; }}
         """
 
     def _ai_btn_style(self) -> str:
@@ -276,7 +276,7 @@ class AIAnalysisPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_secondary']};
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px;
@@ -285,12 +285,12 @@ class AIAnalysisPage(QWidget):
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_disabled']};
                 border-color: {t['border']};
             }}
@@ -301,7 +301,7 @@ class AIAnalysisPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px;
@@ -310,14 +310,14 @@ class AIAnalysisPage(QWidget):
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
             }}
             QPushButton:pressed {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }}
             QPushButton:disabled {{
-                background-color: {t['border_deep']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}

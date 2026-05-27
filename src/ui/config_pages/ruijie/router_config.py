@@ -1210,7 +1210,7 @@ class RuijieRouterConfig(BaseConfigPage):
         delete_button = QPushButton("删除")
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 border: none;
                 border-radius: {t['radius_md']}px;
                 color: {t['text_primary']};

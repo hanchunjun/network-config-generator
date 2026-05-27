@@ -256,15 +256,15 @@ class SystemSettingsPage(QWidget):
         # 配置选择栏按钮（次要按钮样式）
         secondary_btn = f"""
             QPushButton {{
-                background-color: {hover_bg};
-                color: {text_main};
+                background-color: transparent;
+                color: {text_secondary};
                 border: 1px solid {border};
                 border-radius: {radius_md}px;
                 font-size: 11pt;
                 padding: 5px 8px;
                 min-height: 28px;
             }}
-            QPushButton:hover {{ background-color: {card_bg}; }}
+            QPushButton:hover {{ background-color: transparent; border-color: {border_deep}; }}
         """
         self.add_btn.setStyleSheet(secondary_btn)
         self.del_btn.setStyleSheet(secondary_btn)
@@ -323,7 +323,7 @@ class SystemSettingsPage(QWidget):
         # 显示/隐藏按钮
         self.show_key_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {input_bg};
+                background-color: transparent;
                 border: 1px solid {border};
                 border-radius: {radius_md}px;
                 font-size: 11pt;
@@ -335,38 +335,37 @@ class SystemSettingsPage(QWidget):
         # 保存按钮（次要按钮样式，统一无色）
         self.save_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {hover_bg};
-                color: {text_main};
+                background-color: transparent;
+                color: {text_secondary};
                 border: 1px solid {border};
                 border-radius: {radius_md}px;
                 font-size: 11pt;
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {card_bg};
-                border-color: {primary};
-                color: {primary};
+                background-color: transparent;
+                border-color: {border_deep};
+                color: {text_main};
             }}
-            QPushButton:pressed {{ background-color: {hover_bg}; }}
         """)
 
         # 测试连通性按钮（次要按钮样式，统一无色）
         self.test_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {hover_bg};
-                color: {text_main};
+                background-color: transparent;
+                color: {text_secondary};
                 border: 1px solid {border};
                 border-radius: {radius_md}px;
                 font-size: 11pt;
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {card_bg};
-                border-color: {primary};
-                color: {primary};
+                background-color: transparent;
+                border-color: {border_deep};
+                color: {text_main};
             }}
             QPushButton:disabled {{
-                background-color: {hover_bg};
+                background-color: transparent;
                 border-color: {border};
                 color: {text_tertiary};
             }}

@@ -82,7 +82,7 @@ class ExportWarningDialog(QDialog):
         confirm_btn.setFixedSize(120, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
@@ -91,12 +91,12 @@ class ExportWarningDialog(QDialog):
                 padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -112,7 +112,7 @@ class ExportWarningDialog(QDialog):
         cancel_btn.setFixedSize(120, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 font-size: 11pt;
@@ -178,7 +178,7 @@ class PasswordVisibilityDialog(QDialog):
         confirm_btn.setFixedSize(100, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
@@ -186,12 +186,12 @@ class PasswordVisibilityDialog(QDialog):
                 padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -207,7 +207,7 @@ class PasswordVisibilityDialog(QDialog):
         cancel_btn.setFixedSize(100, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 font-size: 11pt;
@@ -279,7 +279,7 @@ class DeleteDeviceDialog(QDialog):
         confirm_btn.setFixedSize(100, 30)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_secondary']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
@@ -287,12 +287,12 @@ class DeleteDeviceDialog(QDialog):
                 padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -308,7 +308,7 @@ class DeleteDeviceDialog(QDialog):
         cancel_btn.setFixedSize(100, 30)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 font-size: 11pt;

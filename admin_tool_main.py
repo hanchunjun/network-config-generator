@@ -10,9 +10,14 @@ import os
 import sys
 
 # 配置Qt环境变量
+# 强制锁定96DPI基准渲染，禁止Qt自动缩放
 if "QT_DEVICE_PIXEL_RATIO" in os.environ:
     del os.environ["QT_DEVICE_PIXEL_RATIO"]
-os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+if "QT_AUTO_SCREEN_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"]
+if "QT_SCALE_FACTOR" in os.environ:
+    del os.environ["QT_SCALE_FACTOR"]
+os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(__file__))

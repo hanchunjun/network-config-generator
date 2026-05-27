@@ -409,7 +409,7 @@ class MainWindow(QMainWindow):
                         color: {t['text_secondary']};
                     }}
                     QPushButton:hover {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         color: {t['text_main']};
                     }}
                 """)
@@ -432,7 +432,7 @@ class MainWindow(QMainWindow):
             if vid == self.selected_vendor:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         color: {t['text_main']};
                         border: 1px solid {t['border_deep']};
                         border-radius: {r}px;
@@ -441,14 +441,14 @@ class MainWindow(QMainWindow):
                         padding: 4px 6px;
                     }}
                     QPushButton:hover {{
-                        background-color: {t['card_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['text_tertiary']};
                     }}
                 """)
             else:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['border']};
                         border-radius: {r}px;
                         font-size: 10pt;
@@ -462,7 +462,7 @@ class MainWindow(QMainWindow):
             if did == self.selected_device:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         color: {t['text_secondary']};
                         border: 1px solid {t['border']};
                         border-radius: {r}px;
@@ -471,14 +471,14 @@ class MainWindow(QMainWindow):
                         padding: 4px 6px;
                     }}
                     QPushButton:hover {{
-                        background-color: {t['card_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['border']};
                     }}
                 """)
             else:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['border']};
                         border-radius: {r}px;
                         font-size: 10pt;
@@ -539,7 +539,7 @@ class MainWindow(QMainWindow):
                     color: {t['text_secondary']};
                 }}
                 QPushButton:hover {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     color: {t['text_main']};
                 }}
                 QPushButton[active="true"] {{
@@ -668,7 +668,7 @@ class MainWindow(QMainWindow):
             button.setFixedSize(80, 30)
             button.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
@@ -697,7 +697,7 @@ class MainWindow(QMainWindow):
             button.setFixedSize(100, 30)
             button.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
@@ -725,7 +725,7 @@ class MainWindow(QMainWindow):
             if vid == vendor:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         color: {t['text_secondary']};
                         border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
@@ -737,7 +737,7 @@ class MainWindow(QMainWindow):
             else:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
@@ -758,7 +758,7 @@ class MainWindow(QMainWindow):
             if did == device_type:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         color: {t['text_secondary']};
                         border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
@@ -770,7 +770,7 @@ class MainWindow(QMainWindow):
             else:
                 button.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['hover_bg']};
+                        background-color: transparent;
                         border: 1px solid {t['border']};
                         border-radius: {t['radius_md']}px;
                         font-size: 10pt;
@@ -1016,14 +1016,14 @@ class MainWindow(QMainWindow):
             activate_btn.setFixedSize(120, 30)
             activate_btn.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     color: {t['text_main']};
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_md']}px;
                     font-size: 11pt;
                 }}
                 QPushButton:hover {{
-                    background-color: {t['card_bg']};
+                    background-color: transparent;
                     border-color: {t['border']};
                     color: {t['text_secondary']};
                 }}
@@ -1035,14 +1035,14 @@ class MainWindow(QMainWindow):
         close_button.setFixedSize(100, 30)
         close_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 font-size: 11pt;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
                 border: 1px solid {t['border']};

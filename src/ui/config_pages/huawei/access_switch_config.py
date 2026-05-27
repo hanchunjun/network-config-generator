@@ -1347,7 +1347,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         add_rule_button.setFixedSize(100, 32)
         add_rule_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 color: {t['text_main']};
@@ -1355,12 +1355,12 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
                 font-weight: 600;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -1480,7 +1480,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         apply_button.setFixedSize(120, 32)
         apply_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px;
                 color: {t['text_main']};
@@ -1488,12 +1488,12 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
                 font-weight: 600;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -2207,7 +2207,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -2215,7 +2215,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
@@ -2278,7 +2278,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -2286,7 +2286,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
@@ -2371,7 +2371,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         delete_button = QPushButton('删除')
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
@@ -2379,7 +2379,7 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda _, r=row: table.removeRow(r))
@@ -2447,14 +2447,14 @@ class HuaweiAccessSwitchConfig(BaseConfigPage):
         delete_button.setFixedSize(60, 24)
         delete_button.setStyleSheet(f"""
             QPushButton {
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 border: none;
                 border-radius: {t['radius_md']}px;
                 color: {t['card_bg']};
                 font-size: 9pt;
             }
             QPushButton:hover {
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }
         """)
         delete_button.clicked.connect(lambda: self.remove_acl_rule(acl_table, row_position))

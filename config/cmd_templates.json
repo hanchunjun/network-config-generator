@@ -1,0 +1,170 @@
+{
+  "version": "1.0",
+  "templates": [
+    {
+      "id": "preset_ruijie_vlan",
+      "name": "锐捷-VLAN批量创建",
+      "category": "preset",
+      "vendor": "锐捷",
+      "type": "vlan",
+      "content": "vlan %a\n name VLAN_%a\nexit\n",
+      "params": [
+        "a"
+      ],
+      "description": "锐捷交换机批量创建VLAN并命名（%a=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_ruijie_interface_vlan",
+      "name": "锐捷-接口划分VLAN",
+      "category": "preset",
+      "vendor": "锐捷",
+      "type": "interface_vlan",
+      "content": "interface GigabitEthernet 0/%a\n switchport mode access\n switchport access vlan %b\nexit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "锐捷交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_ruijie_dhcp",
+      "name": "锐捷-DHCP地址池",
+      "category": "preset",
+      "vendor": "锐捷",
+      "type": "dhcp",
+      "content": "ip dhcp pool VLAN_%a\n network 192.168.%b.0 255.255.255.0\n default-router 192.168.%b.254\n dns-server 61.147.37.1 218.2.135.1\nexit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "锐捷交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_huawei_vlan",
+      "name": "华为-VLAN批量创建",
+      "category": "preset",
+      "vendor": "华为",
+      "type": "vlan",
+      "content": "vlan batch %a to %b\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "华为交换机批量创建VLAN（%a=起始VLAN %b=结束VLAN）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_huawei_interface_vlan",
+      "name": "华为-接口划分VLAN",
+      "category": "preset",
+      "vendor": "华为",
+      "type": "interface_vlan",
+      "content": "interface GigabitEthernet 0/%a\n port link-type access\n port default vlan %b\nquit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "华为交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_huawei_dhcp",
+      "name": "华为-DHCP地址池",
+      "category": "preset",
+      "vendor": "华为",
+      "type": "dhcp",
+      "content": "ip pool VLAN_%a\n gateway-list 192.168.%b.254\n network 192.168.%b.0 mask 255.255.255.0\n dns-list 61.147.37.1 218.2.135.1\nquit\ndhcp enable\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "华为交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_h3c_vlan",
+      "name": "H3C-VLAN批量创建",
+      "category": "preset",
+      "vendor": "H3C",
+      "type": "vlan",
+      "content": "vlan %a\n name VLAN_%a\nquit\n",
+      "params": [
+        "a"
+      ],
+      "description": "H3C交换机创建VLAN并命名（%a=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_h3c_interface_vlan",
+      "name": "H3C-接口划分VLAN",
+      "category": "preset",
+      "vendor": "H3C",
+      "type": "interface_vlan",
+      "content": "interface GigabitEthernet 0/%a\n port access vlan %b\nquit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "H3C交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_h3c_dhcp",
+      "name": "H3C-DHCP地址池",
+      "category": "preset",
+      "vendor": "H3C",
+      "type": "dhcp",
+      "content": "dhcp server ip-pool VLAN_%a\n gateway-list 192.168.%b.254\n network 192.168.%b.0 mask 255.255.255.0\n dns-list 61.147.37.1 218.2.135.1\nquit\ndhcp enable\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "H3C交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_cisco_vlan",
+      "name": "思科-VLAN批量创建",
+      "category": "preset",
+      "vendor": "思科",
+      "type": "vlan",
+      "content": "vlan %a\n name VLAN_%a\nexit\n",
+      "params": [
+        "a"
+      ],
+      "description": "Cisco交换机创建VLAN并命名（%a=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_cisco_interface_vlan",
+      "name": "思科-接口划分VLAN",
+      "category": "preset",
+      "vendor": "思科",
+      "type": "interface_vlan",
+      "content": "interface GigabitEthernet 0/%a\n switchport mode access\n switchport access vlan %b\nexit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "Cisco交换机接口划入VLAN（%a=接口编号 %b=VLAN号）",
+      "created_at": "2026-05-27 03:43:36"
+    },
+    {
+      "id": "preset_cisco_dhcp",
+      "name": "思科-DHCP地址池",
+      "category": "preset",
+      "vendor": "思科",
+      "type": "dhcp",
+      "content": "ip dhcp pool VLAN_%a\n network 192.168.%b.0 255.255.255.0\n default-router 192.168.%b.254\n dns-server 61.147.37.1 218.2.135.1\nexit\n",
+      "params": [
+        "a",
+        "b"
+      ],
+      "description": "Cisco交换机DHCP地址池（%a=VLAN号 %b=网段第三段）",
+      "created_at": "2026-05-27 03:43:36"
+    }
+  ]
+}

@@ -176,17 +176,17 @@ class DeviceDiscoveryDialog(QDialog):
         self.scan_btn.setFixedSize(120, 30)
         self.scan_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']}; color: {t['text_main']};
+                background-color: transparent; color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -199,17 +199,17 @@ class DeviceDiscoveryDialog(QDialog):
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']}; color: {t['text_secondary']};
+                background-color: transparent; color: {t['text_secondary']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -286,17 +286,17 @@ class DeviceDiscoveryDialog(QDialog):
         self.add_selected_btn.setEnabled(False)
         self.add_selected_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']}; color: {t['text_main']};
+                background-color: transparent; color: {t['text_main']};
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
             QPushButton:disabled {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -312,7 +312,7 @@ class DeviceDiscoveryDialog(QDialog):
         close_btn.setFixedSize(100, 30)
         close_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['card_bg']}; border: 1px solid {t['border']};
+                background-color: transparent; border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 11pt; padding: 6px;
             }}
             QPushButton:hover {{ border: 1px solid {t['border']}; }}

@@ -314,12 +314,12 @@ class ProjectManagerPage(QWidget):
         t = self._theme_engine.current_theme
         self.template_lib_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -332,12 +332,12 @@ class ProjectManagerPage(QWidget):
         t = self._theme_engine.current_theme
         self.discover_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -350,12 +350,12 @@ class ProjectManagerPage(QWidget):
         t = self._theme_engine.current_theme
         self.test_conn_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {t['radius_md']}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -473,7 +473,7 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 color: {t['text_primary']};
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px;
@@ -481,14 +481,14 @@ class ProjectManagerPage(QWidget):
                 padding: 5px 8px;
             }}
             QPushButton:hover {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
             }}
             QPushButton:pressed {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
             }}
             QPushButton:disabled {{
-                background-color: {t['border_deep']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_tertiary']};
             }}
@@ -499,7 +499,7 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px;
                 font-size: 10pt;
@@ -540,12 +540,12 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['page_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px; font-size: 10pt; color: {t['text_secondary']};
             }}
             QPushButton:hover {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -556,12 +556,12 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -572,12 +572,12 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -588,12 +588,12 @@ class ProjectManagerPage(QWidget):
         r_md = t['radius_md']
         return f"""
             QPushButton {{
-                background-color: {t['hover_bg']};
+                background-color: transparent;
                 border: 1px solid {t['border']};
                 border-radius: {r_md}px; font-size: 10pt; color: {t['text_main']};
             }}
             QPushButton:hover {{
-                background-color: {t['card_bg']};
+                background-color: transparent;
                 border-color: {t['border']};
                 color: {t['text_secondary']};
             }}
@@ -1342,7 +1342,7 @@ class ProjectManagerPage(QWidget):
             enter_btn.setFixedHeight(26)
             enter_btn.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {t['hover_bg']};
+                    background-color: transparent;
                     color: {t['text_main']};
                     border: 1px solid {t['border']};
                     border-radius: {t['radius_md']}px;
@@ -1351,7 +1351,7 @@ class ProjectManagerPage(QWidget):
                     padding: 3px 6px;
                 }}
                 QPushButton:hover {{
-                    background-color: {t['card_bg']};
+                    background-color: transparent;
                     border-color: {t['border']};
                     color: {t['text_secondary']};
                 }}

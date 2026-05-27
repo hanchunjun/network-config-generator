@@ -59,14 +59,14 @@ def _btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['page_bg']};
+            background-color: transparent;
             color: {t['text_secondary']};
             border: 1px solid {t['border']};
             border-radius: {r}px;
             font-size: 10pt;
             padding: 4px 8px;
         }}
-        QPushButton:hover {{ background-color: {t['border']}; border-color: {t['border_deep']}; }}
+        QPushButton:hover {{ background-color: transparent; border-color: {t['border_deep']}; }}
     """
 
 
@@ -74,7 +74,7 @@ def _danger_btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['page_bg']};
+            background-color: transparent;
             color: {t['text_secondary']};
             border: 1px solid {t['border']};
             border-radius: {r}px;
@@ -82,7 +82,7 @@ def _danger_btn_style(t: dict) -> str:
             padding: 4px 8px;
         }}
         QPushButton:hover {{
-            background-color: {t['hover_bg']};
+            background-color: transparent;
             border-color: {t['border']};
             color: {t['text_secondary']};
         }}
@@ -93,7 +93,7 @@ def _ai_btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['page_bg']};
+            background-color: transparent;
             color: {t['text_secondary']};
             border: 1px solid {t['border']};
             border-radius: {r}px;
@@ -102,12 +102,12 @@ def _ai_btn_style(t: dict) -> str:
             padding: 5px 8px;
         }}
         QPushButton:hover {{
-            background-color: {t['hover_bg']};
+            background-color: transparent;
             border-color: {t['border']};
             color: {t['text_secondary']};
         }}
         QPushButton:disabled {{
-            background-color: {t['hover_bg']};
+            background-color: transparent;
             color: {t['text_disabled']};
             border-color: {t['border']};
         }}
@@ -118,7 +118,7 @@ def _primary_btn_style(t: dict) -> str:
     r = t['radius_md']
     return f"""
         QPushButton {{
-            background-color: {t['page_bg']};
+            background-color: transparent;
             color: {t['text_primary']};
             border: 1px solid {t['border']};
             border-radius: {r}px;
@@ -127,14 +127,14 @@ def _primary_btn_style(t: dict) -> str:
             padding: 5px 8px;
         }}
         QPushButton:hover {{
-            background-color: {t['hover_bg']};
+            background-color: transparent;
             border-color: {t['border']};
         }}
         QPushButton:pressed {{
-            background-color: {t['hover_bg']};
+            background-color: transparent;
         }}
         QPushButton:disabled {{
-            background-color: {t['border_deep']};
+            background-color: transparent;
             border-color: {t['border']};
             color: {t['text_tertiary']};
         }}

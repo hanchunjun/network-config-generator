@@ -85,17 +85,17 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QPushButton {{"
-            f" background-color: {t['hover_bg']};"
+            f" background-color: transparent;"
             f" color: {t['text_main']};"
             f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px; font-size: 11pt;"
             f"}}"
             f"QPushButton:hover {{"
-            f" background-color: {t['card_bg']};"
+            f" background-color: transparent;"
             f" border-color: {t['border']};"
             f" color: {t['text_secondary']};"
             f"}}"
             f"QPushButton:disabled {{"
-            f" background-color: {t['hover_bg']};"
+            f" background-color: transparent;"
             f" border-color: {t['border']};"
             f" color: {t['text_tertiary']};"
             f"}}"
@@ -105,7 +105,7 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QPushButton {{"
-            f" background-color: {t['card_bg']};"
+            f" background-color: transparent;"
             f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" font-size: 11pt; color: {t['text_main']};"
             f"}}"
@@ -293,7 +293,7 @@ class BaseConfigPage(QWidget):
         t = self._theme_engine.current_theme
         return (
             f"QPushButton {{"
-            f" background-color: {t['card_bg']};"
+            f" background-color: transparent;"
             f" border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;"
             f" color: {t['text_secondary']}; font-size: 10pt;"
             f"}}"
