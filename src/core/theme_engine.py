@@ -565,25 +565,11 @@ class ThemeEngine(QObject):
         }}
 
         /* ── 复选框 ──
-           Fusion 样式下原生勾选图标在 checked 态不可见，需用 image 绘制勾。
-           背景保持 input_bg 不变，仅边框变 primary 色，勾用 primary 色。
-           SVG 颜色直接嵌入 f-string，避免二次格式化问题。 */
+           仅设置文字样式，完全不自定义 indicator。
+           保留 Qt 原生勾选图标（Fusion 样式默认行为）。
+           选中态通过属性选择器设置文字颜色。 */
         QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; spacing: 6px; }}
-        QCheckBox::indicator {{
-            width: 18px; height: 18px;
-            border-radius: {t['radius_sm']}px;
-            border: 1px solid {t['border']};
-            background-color: {t['input_bg']};
-        }}
-        QCheckBox::indicator:checked {{
-            background-color: {t['input_bg']};
-            border: 2px solid {t['primary']};
-            image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path d='M3 8.5l3 3 6-6.5' stroke='{t['primary']}' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
-        }}
-        QCheckBox::indicator:indeterminate {{
-            background-color: {t['input_bg']};
-            border: 2px solid {t['primary']};
-        }}
+        QCheckBox[checked="true"] {{ color: {t['primary_light']}; }}
 
         /* ── 滚动条 ── */
         QScrollBar:vertical {{
