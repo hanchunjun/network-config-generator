@@ -396,11 +396,11 @@ class MainWindow(QMainWindow):
             self._logo_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['primary_light']}; padding-right: 20px;")
         # 导航按钮
         for mid, btn in self.nav_buttons.items():
-            is_active = btn.property("active") == "true"
-            if is_active:
+            is_selected = btn.property("selected") == "true"
+            if is_selected:
                 btn.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {t['selection_bg']};
+                        background-color: transparent;
                         border: none;
                         border-radius: {t['radius_md']}px;
                         padding: 3px 8px;
@@ -553,8 +553,7 @@ class MainWindow(QMainWindow):
                     background-color: transparent;
                     color: {t['text_main']};
                 }}
-                QPushButton[active="true"] {{
-                    background-color: {t['selection_bg']};
+                QPushButton[selected="true"] {{
                     color: {t['primary_light']};
                     font-weight: bold;
                 }}
@@ -630,9 +629,9 @@ class MainWindow(QMainWindow):
     def _update_nav_buttons(self, active_id):
         for mid, btn in self.nav_buttons.items():
             if mid == active_id:
-                btn.setProperty("active", "true")
+                btn.setProperty("selected", "true")
             else:
-                btn.setProperty("active", "false")
+                btn.setProperty("selected", "false")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
 
@@ -690,6 +689,7 @@ class MainWindow(QMainWindow):
                     padding: 3px 5px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
+                QPushButton[selected="true"] {{ border-color: {t['primary']}; color: {t['primary_light']}; font-weight: bold; }}
             """)
             button.clicked.connect(lambda checked, vid=vendor_id: self.on_vendor_clicked(vid))
             self.vendor_buttons[vendor_id] = button
@@ -719,6 +719,7 @@ class MainWindow(QMainWindow):
                     padding: 3px 5px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
+                QPushButton[selected="true"] {{ border-color: {t['primary']}; color: {t['primary_light']}; font-weight: bold; }}
             """)
             button.clicked.connect(lambda checked, did=device_id: self.on_device_clicked(did))
             self.device_buttons[device_id] = button
@@ -734,32 +735,13 @@ class MainWindow(QMainWindow):
         if self._trial_mode and vendor != "ruijie":
             self._show_trial_prompt()
             return
-        t = self._theme_engine.current_theme
         for vid, button in self.vendor_buttons.items():
             if vid == vendor:
-                button.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: transparent;
-                        color: {t['text_secondary']};
-                        border: 1px solid {t['border']};
-                        border-radius: {t['radius_md']}px;
-                        font-size: 10pt;
-                        font-weight: bold;
-                        padding: 4px 6px;
-                    }}
-                """)
+                button.setProperty("selected", "true")
             else:
-                button.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: transparent;
-                        border: 1px solid {t['border']};
-                        border-radius: {t['radius_md']}px;
-                        font-size: 10pt;
-                        color: {t['text_secondary']};
-                        padding: 4px 6px;
-                    }}
-                    QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
-                """)
+                button.setProperty("selected", "false")
+            button.style().unpolish(button)
+            button.style().polish(button)
         self.selected_vendor = vendor
         self.try_show_config_page()
 
@@ -767,32 +749,13 @@ class MainWindow(QMainWindow):
         if self._trial_mode and device_type != "access_switch":
             self._show_trial_prompt()
             return
-        t = self._theme_engine.current_theme
         for did, button in self.device_buttons.items():
             if did == device_type:
-                button.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: transparent;
-                        color: {t['text_secondary']};
-                        border: 1px solid {t['border']};
-                        border-radius: {t['radius_md']}px;
-                        font-size: 10pt;
-                        font-weight: bold;
-                        padding: 4px 6px;
-                    }}
-                """)
+                button.setProperty("selected", "true")
             else:
-                button.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: transparent;
-                        border: 1px solid {t['border']};
-                        border-radius: {t['radius_md']}px;
-                        font-size: 10pt;
-                        color: {t['text_secondary']};
-                        padding: 4px 6px;
-                    }}
-                    QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
-                """)
+                button.setProperty("selected", "false")
+            button.style().unpolish(button)
+            button.style().polish(button)
         self.selected_device = device_type
         self.try_show_config_page()
 

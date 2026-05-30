@@ -700,7 +700,7 @@ class ThemeEngine(QObject):
                     background-color: {t['hover_bg']};
                     color: {t['text_main']};
                 }}
-                QPushButton[active="true"] {{
+                QPushButton[selected="true"] {{
                     background-color: {t['selection_bg']};
                     color: {t['primary_light']};
                     font-weight: bold;
