@@ -564,22 +564,15 @@ class ThemeEngine(QObject):
             border-radius: {t['radius_sm']}px;
         }}
 
-        /* ── 复选框 ── */
+        /* ── 复选框 ──
+           仅设置文字样式和 checked 态边框高亮。
+           indicator 尺寸/背景保持 Qt 原生默认，确保勾选图标正常显示。 */
         QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; spacing: 6px; }}
-        QCheckBox::indicator {{
-            width: 18px;
-            height: 18px;
-            border-radius: {t['radius_sm']}px;
-            border: 1px solid {t['border']};
-            background-color: {t['input_bg']};
-        }}
         QCheckBox::indicator:checked {{
-            border-color: {t['primary']};
-            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' stroke='%233B7CFF' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            border: 2px solid {t['primary']};
         }}
         QCheckBox::indicator:indeterminate {{
-            border-color: {t['primary']};
-            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='%233B7CFF'/%3E%3C/svg%3E");
+            border: 2px solid {t['primary']};
         }}
 
         /* ── 滚动条 ── */
