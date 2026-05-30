@@ -154,3 +154,37 @@ grep -rn "V0\.[0-9]\+\.[0-9]\+\|版本.*V0\.\|version.*0\." \
 
 - 每次重大改动在 `CHANGELOG.md` 对应版本下追加条目
 - 格式遵循 Keep a Changelog（Added/Fixed/Changed/Security）
+
+## 八、改动后自动流程（每次代码修改后必须执行，无需用户提醒）
+
+每次完成代码修改后，按顺序自动执行以下步骤：
+
+### 1. 代码审查
+- 检查修改文件是否有语法错误、逻辑错误
+- 检查是否有死代码、未使用的导入
+- 检查是否符合 DESIGN.md 规范
+
+### 2. 测试
+- 运行 `python -m py_compile <修改文件>` 确认语法正确
+- 运行 `python -m pytest tests/ -v` 确认测试通过
+
+### 3. 打包
+- 清理 `build/` 目录
+- 运行 `pyinstaller NetworkConfigGenerator.spec --noconfirm`
+- 运行 `python installer/build_setup.py`
+- 验证 `dist/NetOps/` 和 `installer/NetOps_Setup_0.4.0.exe` 生成成功
+
+### 4. 更新相关文件
+- 检查 CLAUDE.md、DESIGN.md、rules/ 是否需要同步更新
+- 检查版本号是否需要更新（遵循第六章规范）
+- 检查 codemap 是否需要更新
+
+### 5. Git 提交
+- 使用 conventional commits 格式
+- 详细描述修改内容
+- 不遗漏任何修改文件
+
+### 教训
+
+> V0.4.1 多次出现"改了代码忘了打包"、"改了规范忘了更新代码"、"版本号漏更新"等问题。
+> **每次改动后必须自动走完整个流程，不需要用户提醒。**
