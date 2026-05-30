@@ -280,6 +280,7 @@ class BaseConfigPage(QWidget):
         )
 
     def _get_checkbox_style(self) -> str:
+        """仅设置文字样式，indicator 由 ThemeEngine 全局 QSS 统一控制。"""
         t = self._theme_engine.current_theme
         return f"QCheckBox {{ font-size: 11pt; color: {t['text_main']}; }}"
 
