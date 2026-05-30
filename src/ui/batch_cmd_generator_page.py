@@ -730,15 +730,16 @@ class BatchCmdGeneratorPage(QWidget):
         )
         _primary = te.qss("btn_primary")
         _default = te.qss("btn_default")
-        for name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn", "tplRenameBtn", "tplSaveBtn", "tplDeleteBtn"):
+        _danger = te.qss("btn_danger")
+        # 主操作：生成、保存、复制、新增模板
+        for name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn"):
             ss += f"QPushButton#{name} {{{_primary}}}\n"
-        ss += f"QPushButton#clearBtn {{{_default}}}\n"
+        # 辅助操作：重命名、清空
+        for name in ("tplRenameBtn", "clearBtn"):
+            ss += f"QPushButton#{name} {{{_default}}}\n"
+        # 危险操作：删除
+        ss += f"QPushButton#tplDeleteBtn {{{_danger}}}\n"
         ss += (
-            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
-            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn)"
-            ":not(#clearBtn) {"
-            f"{_primary}"
-            "}"
             "QCheckBox { spacing: 4px; }"
             f"px;"
             f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
