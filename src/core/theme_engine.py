@@ -574,14 +574,12 @@ class ThemeEngine(QObject):
             background-color: {t['input_bg']};
         }}
         QCheckBox::indicator:checked {{
-            background-color: {t['primary']};
             border-color: {t['primary']};
-            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M3 8l3.5 3.5L13 5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8l3 3.5 6-6.5' stroke='%233B7CFF' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
         }}
         QCheckBox::indicator:indeterminate {{
-            background-color: {t['primary_light']};
-            border-color: {t['primary_light']};
-            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='white'/%3E%3C/svg%3E");
+            border-color: {t['primary']};
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='%233B7CFF'/%3E%3C/svg%3E");
         }}
 
         /* ── 滚动条 ── */

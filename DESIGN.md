@@ -200,7 +200,7 @@ btn.setStyleSheet(t['qss']('btn_danger'))    # 危险
 
 | 组件 | 关键参数 |
 |------|---------|
-| 复选框 | indicator 16×16，圆角 3px，选中白色勾 + `primary` 背景，半选白色横线 + `primary_light` 背景 |
+| 复选框 | indicator 16×16，圆角 3px，选中白色勾（无背景色变化），半选白色横线（无背景色变化） |
 | 进度条 | 高 16px，chunk `primary`，圆角 3px |
 | 卡片 | 圆角 8px，padding 14px，`card_bg` + `border` |
 | 分割线 | `border_deep` 色，高度 1px |
@@ -263,7 +263,7 @@ btn.setStyleSheet(t['qss']('btn_danger'))    # 危险
 | 按钮 | default / hover / pressed / disabled / selected | 见 4.1 |
 | 输入框 | default / focus / disabled / readonly | 见 4.2 |
 | 下拉框 | default / hover / focus / expanded | expanded 时边框变 `primary` |
-| 复选框 | unchecked / checked / indeterminate | checked 白色勾 + `primary` 背景，indeterminate 白色横线 + `primary_light` 背景 |
+| 复选框 | unchecked / checked / indeterminate | checked 白色勾（背景不变），indeterminate 白色横线（背景不变） |
 | 表格行 | default / alternate / selected | selected 用 `selection_bg` + `text_main` |
 | 标签页 | unselected / selected | 见 4.5 |
 | 进度条 | running / done / error | running 用 `primary` chunk，done 用 `success`，error 用 `danger` |
