@@ -782,6 +782,11 @@ class ThemeEngine(QObject):
                     border-color: {t['border']};
                     color: {t['text_tertiary']};
                 }}
+                QPushButton[selected="true"] {{
+                    background-color: {t['selection_bg']};
+                    border-color: {t['primary']};
+                    color: {t['primary_light']};
+                }}
             """,
             "btn_default": f"""
                 QPushButton {{
@@ -808,6 +813,11 @@ class ThemeEngine(QObject):
                     border-color: {t['border']};
                     color: {t['text_tertiary']};
                 }}
+                QPushButton[selected="true"] {{
+                    background-color: {t['selection_bg']};
+                    border-color: {t['primary']};
+                    color: {t['primary_light']};
+                }}
             """,
             "btn_danger": f"""
                 QPushButton {{
@@ -828,6 +838,11 @@ class ThemeEngine(QObject):
                     background-color: transparent;
                     border-color: {t['border']};
                     color: {t['text_tertiary']};
+                }}
+                QPushButton[selected="true"] {{
+                    background-color: {t['danger_bg']};
+                    border-color: {t['danger']};
+                    color: {t['danger']};
                 }}
             """,
             "input_field": f"""

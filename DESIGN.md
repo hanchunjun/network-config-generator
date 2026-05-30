@@ -120,6 +120,21 @@
 
 **适用场景**：删除、移除、清除数据等**不可逆操作**。
 
+#### 选中状态（selected）
+
+适用于导航按钮、厂家/设备选择按钮、标签页等需要保持高亮态的场景。
+
+| 按钮类型 | 选中态样式 |
+|---------|-----------|
+| 导航按钮 | `selection_bg` 背景 + `primary_light` 文字 + bold |
+| 厂家/设备选择按钮 | `transparent` 背景 + `border_deep` 边框 + bold |
+| 标签页选中 | `card_bg` 底 + `primary_light` 文字 + 底部 `primary_light` 条 |
+
+**交互规则**：
+- 选中态互斥：同一组内仅一个按钮可处于选中态
+- 点击已选中按钮不取消选中（保持高亮）
+- 选中态优先级高于 hover（hover 不覆盖选中态颜色）
+
 #### 公共尺寸
 
 | 档位 | 高度 | padding | 字号 | 圆角 | 场景 |
@@ -240,6 +255,20 @@ btn.setStyleSheet(t['qss']('btn_danger'))    # 危险
 | QThread | 必须存为实例变量 `self._xxx_thread` |
 | 文件操作 | 必须 `.tmp` + `os.replace` 原子写入 |
 | 路径 | 禁止硬编码绝对路径，使用 `get_app_dir()` 等 API |
+
+### 交互状态汇总
+
+| 组件 | 状态 | 样式规则 |
+|------|------|---------|
+| 按钮 | default / hover / pressed / disabled / selected | 见 4.1 |
+| 输入框 | default / focus / disabled / readonly | 见 4.2 |
+| 下拉框 | default / hover / focus / expanded | expanded 时边框变 `primary` |
+| 复选框 | unchecked / checked / indeterminate | checked 用 `primary` 填充，indeterminate 用 `primary_light` |
+| 表格行 | default / alternate / selected | selected 用 `selection_bg` + `text_main` |
+| 标签页 | unselected / selected | 见 4.5 |
+| 进度条 | running / done / error | running 用 `primary` chunk，done 用 `success`，error 用 `danger` |
+| 导航按钮 | default / hover / active | active 用 `selection_bg` + `primary_light` |
+| 对话框 | open / close | 打开时背景 `card_bg`，无动画（即时显示） |
 
 ### 状态提示
 
