@@ -716,6 +716,7 @@ class BatchCmdGeneratorPage(QWidget):
         t = self._theme
         r = t["radius_md"]
         te = ThemeEngine.get()
+        # 仅设置非按钮控件的样式，避免覆盖全局 QSS 的 QPushButton 默认样式
         ss = (
             "QTextEdit {"
             f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
@@ -728,18 +729,16 @@ class BatchCmdGeneratorPage(QWidget):
             "}"
             f"QSpinBox:focus {{ border-color: {t['border']}; }}"
         )
-        _primary = te.qss("btn_primary")
-        _default = te.qss("btn_default")
-        _danger = te.qss("btn_danger")
-        # 主操作：生成、保存、复制、新增模板
-        for name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn"):
-            ss += f"QPushButton#{name} {{{_primary}}}\n"
-        # 辅助操作：重命名、清空
-        for name in ("tplRenameBtn", "clearBtn"):
-            ss += f"QPushButton#{name} {{{_default}}}\n"
-        # 危险操作：删除
-        ss += f"QPushButton#tplDeleteBtn {{{_danger}}}\n"
         self.setStyleSheet(ss)
+        # 按钮样式单独设置，不覆盖全局 QSS
+        for btn in self.findChildren(QPushButton):
+            obj_name = btn.objectName()
+            if obj_name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn", "tplSaveBtn"):
+                btn.setStyleSheet(te.qss("btn_primary"))
+            elif obj_name in ("tplRenameBtn", "clearBtn"):
+                btn.setStyleSheet(te.qss("btn_default"))
+            elif obj_name in ("tplDeleteBtn",):
+                btn.setStyleSheet(te.qss("btn_danger"))
 
     def _on_theme_changed(self, theme_id: str) -> None:
         """主题切换时刷新样式。"""
