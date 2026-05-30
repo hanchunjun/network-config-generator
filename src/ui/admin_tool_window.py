@@ -60,7 +60,7 @@ class AdminToolWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._theme_engine = ThemeEngine.get()
-        self.setWindowTitle("NetOps 管理员制码工具 V0.3.0 — 老韩专用")
+        self.setWindowTitle("NetOps 管理员制码工具 V0.4.1 — 老韩专用")
         self.setMinimumSize(900, 650)
         self._setup_ui()
         self._apply_style()

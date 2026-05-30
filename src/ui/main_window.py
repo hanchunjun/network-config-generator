@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
         if self._trial_mode:
             netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0' + (' [试用模式]' if self._trial_mode else ''))
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.4.1' + (' [试用模式]' if self._trial_mode else ''))
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()
@@ -960,7 +960,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.4.1')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
             activated_at = act_info.get("activated_at", "")[:16]
@@ -978,7 +978,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 15, 20, 15)
         layout.setSpacing(10)
 
-        version_str = 'V0.3.0' + (' 试用版' if self._trial_mode else '')
+        version_str = 'V0.4.1' + (' 试用版' if self._trial_mode else '')
         title_label = QLabel(f'NetOps 企业网络自动化运维平台 {version_str}')
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet(f'font-size: 12pt; font-weight: bold; color: {t["text_main"]};')
@@ -1063,7 +1063,7 @@ class MainWindow(QMainWindow):
             is_active, act_status, act_info = check_activation()
             self._trial_mode = not is_active
             self._activation_info = act_info
-            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.3.0')
+            self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.4.1')
             self._update_activation_btn_style()
             netops_logger.get_logger().info("用户激活成功，退出试用模式")
 
