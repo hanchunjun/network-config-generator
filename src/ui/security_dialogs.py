@@ -136,6 +136,3 @@ class ExportWarningDialog(QDialog):
         self.accept()
 
 
-# NOTE: PasswordVisibilityDialog and DeleteDeviceDialog were removed as dead code.
-# They were never referenced by any other module in the project.
-# If needed in the future, git history contains the original implementation.
