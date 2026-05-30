@@ -126,9 +126,9 @@
 
 | 按钮类型 | 选中态样式 |
 |---------|-----------|
-| 导航按钮 | `selection_bg` 背景 + `primary_light` 文字 + bold |
-| 厂家/设备选择按钮 | `transparent` 背景 + `border_deep` 边框 + bold |
-| 标签页选中 | `card_bg` 底 + `primary_light` 文字 + 底部 `primary_light` 条 |
+| 导航按钮 | 边框变 `primary`，文字变 `primary_light` |
+| 厂家/设备选择按钮 | 边框变 `primary`，文字变 `primary_light` |
+| 标签页选中 | 底部 `primary_light` 条不变 |
 
 **交互规则**：
 - 选中态互斥：同一组内仅一个按钮可处于选中态
