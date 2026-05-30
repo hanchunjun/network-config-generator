@@ -758,7 +758,7 @@ class ThemeEngine(QObject):
                     font-size: 11pt;
                     color: {t['primary_light']};
                     font-weight: bold;
-                    padding: 5px 12px;
+                    padding: 4px 10px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['sidebar_bg']};
@@ -776,8 +776,10 @@ class ThemeEngine(QObject):
                     color: {t['text_tertiary']};
                 }}
                 QPushButton[selected="true"] {{
+                    background-color: {t['selection_bg']};
                     border-color: {t['primary']};
                     color: {t['primary_light']};
+                    font-weight: bold;
                 }}
             """,
             "btn_default": f"""
@@ -788,7 +790,7 @@ class ThemeEngine(QObject):
                     font-size: 11pt;
                     color: {t['text_main']};
                     font-weight: bold;
-                    padding: 5px 12px;
+                    padding: 4px 10px;
                 }}
                 QPushButton:hover {{
                     background-color: {t['hover_bg']};
@@ -806,8 +808,10 @@ class ThemeEngine(QObject):
                     color: {t['text_tertiary']};
                 }}
                 QPushButton[selected="true"] {{
+                    background-color: {t['selection_bg']};
                     border-color: {t['primary']};
                     color: {t['primary_light']};
+                    font-weight: bold;
                 }}
             """,
             "btn_danger": f"""
@@ -818,7 +822,7 @@ class ThemeEngine(QObject):
                     font-size: 11pt;
                     color: {t['danger']};
                     font-weight: bold;
-                    padding: 5px 12px;
+                    padding: 4px 10px;
                 }}
                 QPushButton:hover {{
                     background-color: transparent;
@@ -836,8 +840,10 @@ class ThemeEngine(QObject):
                     color: {t['text_tertiary']};
                 }}
                 QPushButton[selected="true"] {{
-                    border-color: {t['danger_hover']};
-                    color: {t['danger_hover']};
+                    background-color: {t['danger_bg']};
+                    border-color: {t['danger']};
+                    color: {t['danger']};
+                    font-weight: bold;
                 }}
             """,
             "input_field": f"""

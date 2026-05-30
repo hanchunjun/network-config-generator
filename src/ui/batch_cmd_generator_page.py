@@ -739,11 +739,6 @@ class BatchCmdGeneratorPage(QWidget):
             ss += f"QPushButton#{name} {{{_default}}}\n"
         # 危险操作：删除
         ss += f"QPushButton#tplDeleteBtn {{{_danger}}}\n"
-        ss += (
-            "QCheckBox { spacing: 4px; }"
-            f"px;"
-            f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
-        )
         self.setStyleSheet(ss)
 
     def _on_theme_changed(self, theme_id: str) -> None:
