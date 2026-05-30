@@ -565,7 +565,7 @@ class ThemeEngine(QObject):
         }}
 
         /* ── 复选框 ── */
-        QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; }}
+        QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; spacing: 6px; }}
         QCheckBox::indicator {{
             width: 16px;
             height: 16px;
@@ -576,6 +576,12 @@ class ThemeEngine(QObject):
         QCheckBox::indicator:checked {{
             background-color: {t['primary']};
             border-color: {t['primary']};
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M3 8l3.5 3.5L13 5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        }}
+        QCheckBox::indicator:indeterminate {{
+            background-color: {t['primary_light']};
+            border-color: {t['primary_light']};
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='white'/%3E%3C/svg%3E");
         }}
 
         /* ── 滚动条 ── */
@@ -829,6 +835,11 @@ class ThemeEngine(QObject):
                 }}
                 QPushButton:hover {{
                     background-color: transparent;
+                    border-color: {t['danger_hover']};
+                    color: {t['danger_hover']};
+                }}
+                QPushButton:pressed {{
+                    background-color: {t['hover_bg']};
                     border-color: {t['danger_hover']};
                     color: {t['danger_hover']};
                 }}
