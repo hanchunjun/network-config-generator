@@ -1,4 +1,4 @@
-# NetOps V0.4.1 — 项目总纲
+# NetOps V0.4.2 — 项目总纲
 
 ## 开发规则
 
@@ -39,7 +39,7 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 8. 日志：`logger`，禁止 `print()`
 9. 试用模式：未激活仅开放锐捷接入交换机和命令生成
 
-## Logo 与图标（V0.4.1）
+## Logo 与图标（V0.4.2）
 
 | 项目 | 内容 |
 |------|------|
@@ -49,20 +49,25 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 | 预览 | `assets/netops_preview.png` |
 | 生成脚本 | `scripts/generate_icon.py`（可复用，支持 `--preview`） |
 
-## 按钮规范（V0.4.0）
+## 按钮规范（V0.4.2）
 
 > 详见 DESIGN.md §4.1
 
-| 级别 | 方法 | 用途 |
-|------|------|------|
-| `btn_primary` | 蓝描边+蓝字 | 主操作（生成/保存/创建）|
-| `btn_default` | 中性边框+主文字 | 辅助（清空/刷新/导出）|
-| `btn_danger` | 红描边+红字 | 破坏性（删除/移除）|
+**统一灰色边框风格**：所有按钮默认灰色边框+灰色文字，hover 时才显示对应颜色。
 
+| 级别 | 方法 | 默认边框 | hover 边框 | 用途 |
+|------|------|---------|-----------|------|
+| `btn_primary` | 灰色边框+灰色文字 | `border_deep` | `primary`（蓝） | 主操作（生成/保存/创建）|
+| `btn_default` | 灰色边框+灰色文字 | `border_deep` | `text_secondary` | 辅助（清空/刷新/导出）|
+| `btn_danger` | 灰色边框+灰色文字 | `border_deep` | `danger`（红） | 破坏性（删除/移除）|
+
+**使用方式**：
 ```python
 t = ThemeEngine.get().current_theme
 btn.setStyleSheet(t['qss']('btn_primary'))
 ```
+
+**注意**：禁止在页面级 setStyleSheet 中覆盖 QPushButton 默认样式，应使用 ThemeEngine.qss() 或针对单个按钮设置。
 
 ## 目录结构
 
