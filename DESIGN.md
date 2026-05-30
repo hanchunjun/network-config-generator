@@ -84,25 +84,25 @@
 
 #### 一级 · 主操作按钮 `btn_primary`
 
-透明底 + **蓝色描边 + 蓝色文字** + bold。用于核心动作。
+透明底 + **灰色边框 + 主文字色** + bold。仅 hover 时边框变色。用于核心动作。
 
 | 状态 | 背景 | 边框 | 文字 |
 |------|------|------|------|
-| default | transparent | `primary_light` | `primary_light` |
-| hover | `sidebar_bg` | `primary` | `primary` |
-| pressed | `hover_bg` | `primary_hover` | `primary_hover` |
+| default | transparent | `border` | `text_main` |
+| hover | `hover_bg` | `border_deep` | `text_main` |
+| pressed | `page_bg` | `text_main` | `text_main` |
 | disabled | transparent | `border` | `text_tertiary` |
 
 **适用场景**：生成命令、保存结果、创建项目、提交、复制全部、新增模板等**主要正向操作**。
 
 #### 二级 · 常规按钮 `btn_default`
 
-透明底 + **中性深边框 + 主文字色**。用于辅助/中性动作。
+透明底 + **中性深边框 + 主文字色**。仅 hover 时边框变色。用于辅助/中性动作。
 
 | 状态 | 背景 | 边框 | 文字 |
 |------|------|------|------|
 | default | transparent | `border_deep` | `text_main` |
-| hover | `hover_bg` | `text_secondary` | `text_secondary` |
+| hover | `hover_bg` | `text_secondary` | `text_main` |
 | pressed | `page_bg` | `text_main` | `text_main` |
 | disabled | transparent | `border` | `text_tertiary` |
 

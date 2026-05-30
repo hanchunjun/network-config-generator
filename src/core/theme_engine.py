@@ -753,20 +753,20 @@ class ThemeEngine(QObject):
             "btn_primary": f"""
                 QPushButton {{
                     background-color: transparent;
-                    border: 1px solid {t['primary_light']};
+                    border: 1px solid {t['border_deep']};
                     border-radius: {r}px;
                     font-size: 11pt;
-                    color: {t['primary_light']};
+                    color: {t['text_main']};
                     font-weight: bold;
                     padding: 4px 10px;
                 }}
                 QPushButton:hover {{
-                    background-color: {t['sidebar_bg']};
+                    background-color: {t['hover_bg']};
                     border-color: {t['primary']};
                     color: {t['primary']};
                 }}
                 QPushButton:pressed {{
-                    background-color: {t['hover_bg']};
+                    background-color: {t['page_bg']};
                     border-color: {t['primary_hover']};
                     color: {t['primary_hover']};
                 }}
@@ -795,7 +795,7 @@ class ThemeEngine(QObject):
                 QPushButton:hover {{
                     background-color: {t['hover_bg']};
                     border-color: {t['text_secondary']};
-                    color: {t['text_secondary']};
+                    color: {t['text_main']};
                 }}
                 QPushButton:pressed {{
                     background-color: {t['page_bg']};
@@ -817,20 +817,20 @@ class ThemeEngine(QObject):
             "btn_danger": f"""
                 QPushButton {{
                     background-color: transparent;
-                    border: 1px solid {t['danger']};
+                    border: 1px solid {t['border_deep']};
                     border-radius: {r}px;
                     font-size: 11pt;
-                    color: {t['danger']};
+                    color: {t['text_main']};
                     font-weight: bold;
                     padding: 4px 10px;
                 }}
                 QPushButton:hover {{
-                    background-color: transparent;
-                    border-color: {t['danger_hover']};
-                    color: {t['danger_hover']};
+                    background-color: {t['hover_bg']};
+                    border-color: {t['danger']};
+                    color: {t['danger']};
                 }}
                 QPushButton:pressed {{
-                    background-color: {t['hover_bg']};
+                    background-color: {t['page_bg']};
                     border-color: {t['danger_hover']};
                     color: {t['danger_hover']};
                 }}

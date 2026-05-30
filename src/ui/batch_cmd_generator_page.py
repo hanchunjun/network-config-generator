@@ -712,11 +712,34 @@ class BatchCmdGeneratorPage(QWidget):
             "}"
         )
 
+    def _btn_style(self, border_key: str) -> str:
+        """生成按钮 QSS，与其他页面保持统一的灰色边框风格。"""
+        t = self._theme
+        r = t["radius_md"]
+        return (
+            f"QPushButton {{"
+            f"  background-color: transparent;"
+            f"  border: 1px solid {t[border_key]};"
+            f"  border-radius: {r}px;"
+            f"  font-size: 10pt;"
+            f"  padding: 5px 8px;"
+            f"}}"
+            f"QPushButton:hover {{"
+            f"  background-color: {t['hover_bg']};"
+            f"  border-color: {t[border_key]};"
+            f"}}"
+            f"QPushButton:pressed {{ background-color: {t['page_bg']}; }}"
+            f"QPushButton:disabled {{"
+            f"  background-color: transparent;"
+            f"  border-color: {t['border']};"
+            f"  color: {t['text_tertiary']};"
+            f"}}"
+        )
+
     def _apply_style(self) -> None:
         t = self._theme
         r = t["radius_md"]
-        te = ThemeEngine.get()
-        # 仅设置非按钮控件的样式，避免覆盖全局 QSS 的 QPushButton 默认样式
+        # 仅设置非按钮控件的样式
         ss = (
             "QTextEdit {"
             f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
@@ -730,15 +753,13 @@ class BatchCmdGeneratorPage(QWidget):
             f"QSpinBox:focus {{ border-color: {t['border']}; }}"
         )
         self.setStyleSheet(ss)
-        # 按钮样式单独设置，不覆盖全局 QSS
+        # 按钮样式：统一灰色边框（与其他页面一致）
         for btn in self.findChildren(QPushButton):
             obj_name = btn.objectName()
-            if obj_name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn", "tplSaveBtn"):
-                btn.setStyleSheet(te.qss("btn_primary"))
-            elif obj_name in ("tplRenameBtn", "clearBtn"):
-                btn.setStyleSheet(te.qss("btn_default"))
-            elif obj_name in ("tplDeleteBtn",):
-                btn.setStyleSheet(te.qss("btn_danger"))
+            if obj_name in ("tplDeleteBtn",):
+                btn.setStyleSheet(self._btn_style("danger"))
+            else:
+                btn.setStyleSheet(self._btn_style("border"))
 
     def _on_theme_changed(self, theme_id: str) -> None:
         """主题切换时刷新样式。"""
