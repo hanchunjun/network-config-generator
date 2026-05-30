@@ -73,8 +73,8 @@ class AdminToolWindow(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(16, 14, 16, 14)
+        main_layout.setSpacing(8)
 
         # ── 标题 ──
         title = QLabel("🔐 NetOps 管理员制码工具")
@@ -140,7 +140,7 @@ class AdminToolWindow(QMainWindow):
         self._code_result.setMinimumHeight(28)
         result_layout.addWidget(self._code_result, stretch=1)
         copy_code_btn = QPushButton("📋 复制")
-        copy_code_btn.setFixedSize(80, 30)
+        copy_code_btn.setFixedSize(64, 28)
         copy_code_btn.setFont(QFont("Microsoft YaHei", 10))
         copy_code_btn.setCursor(Qt.PointingHandCursor)
         copy_code_btn.clicked.connect(self._copy_code)
@@ -584,16 +584,8 @@ class AdminToolWindow(QMainWindow):
 
 def run_admin_tool():
     """启动管理员制码工具"""
-    # DPI 锁定：关闭高DPI缩放 + Fusion样式 + 文本抗锯齿
-    from PyQt5.QtCore import Qt
-    from PyQt5.QtGui import QFont
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling, True)
-    app = QApplication(sys.argv)
-    app.setStyle("Fusion")
-    font = app.font()
-    font.setStyleStrategy(QFont.PreferAntialias)
-    app.setFont(font)
+    from src.utils.app_factory import create_application
+    app = create_application()
     window = AdminToolWindow()
     # 默认窗口大小为屏幕可用区域宽高的80%
     screen = app.primaryScreen().availableGeometry()

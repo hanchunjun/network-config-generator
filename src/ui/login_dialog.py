@@ -53,8 +53,8 @@ class LoginDialog(QDialog):
         self.setModal(True)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(36, 28, 36, 28)
-        layout.setSpacing(14)
+        layout.setContentsMargins(28, 20, 28, 20)
+        layout.setSpacing(10)
 
         t = self._theme
 
@@ -123,7 +123,7 @@ class LoginDialog(QDialog):
         # ── 登录按钮 ──
         login_btn = QPushButton("登 录")
         login_btn.setFont(QFont("Microsoft YaHei", 11, QFont.Bold))
-        login_btn.setMinimumHeight(42)
+        login_btn.setMinimumHeight(36)
         login_btn.setCursor(Qt.PointingHandCursor)
         login_btn.clicked.connect(self._on_login)
         login_btn.setStyleSheet(

@@ -3,10 +3,7 @@
 """
 NetOps网络自动化运维工具主程序入口
 
-V0.3.0 新增：启动时强制激活校验（最高优先级）
-- 未激活 → 弹出激活弹窗，激活成功后继续
-- 激活失败退出 → 软件不加载任何业务模块
-- 方案B：激活成功后静默校验180天黑名单
+V0.4.0 重构：DPI工厂化 + 独一入口
 """
 
 import os
@@ -16,22 +13,14 @@ import logging
 from datetime import datetime
 from typing import Optional, Tuple
 
-# 配置Qt环境变量
-# 强制锁定96DPI基准渲染，禁止Qt自动缩放
-if "QT_DEVICE_PIXEL_RATIO" in os.environ:
-    del os.environ["QT_DEVICE_PIXEL_RATIO"]
-if "QT_AUTO_SCREEN_SCALE_FACTOR" in os.environ:
-    del os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"]
-if "QT_SCALE_FACTOR" in os.environ:
-    del os.environ["QT_SCALE_FACTOR"]
-os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
+from src.utils.app_factory import setup_dpi_environment
 
-# 添加项目根目录到Python路径
+setup_dpi_environment()
+
 sys.path.append(os.path.dirname(__file__))
 
 
 def _setup_crash_logger():
-    """安装全局异常钩子，将未捕获异常写入崩溃日志"""
     _log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
     os.makedirs(_log_dir, exist_ok=True)
     _crash_log = os.path.join(_log_dir, "crash.log")
@@ -58,38 +47,23 @@ def _setup_crash_logger():
 
 
 def _install_qt_message_handler():
-    """安装Qt消息处理器，捕获Qt内部警告"""
     try:
         from PyQt5.QtCore import qInstallMessageHandler
         def _qt_handler(mode, context, msg):
-            pass  # 静默Qt内部消息，避免干扰
+            pass
         qInstallMessageHandler(_qt_handler)
     except Exception:
         pass
 
 
 def _check_activation() -> Tuple[bool, str, str, dict]:
-    """启动时激活校验（最高优先级）。
-
-    流程：
-    1. 采集机器码（仅一次，避免重复 WMIC 调用）
-    2. 检查本地激活状态
-    3. 已激活 → 方案B静默黑名单校验
-    4. 黑名单命中 → 提示失效并退出
-    5. 未激活 → 进入试用模式（仅开放锐捷接入交换机配置）
-
-    Returns:
-        Tuple[bool, str, str, dict]: (是否允许启动, 机器码, 状态描述, 详细信息)
-    """
     from src.core.activation_engine import check_activation, perform_silent_check, get_machine_code
     from src.core.logger import netops_logger
 
-    # 仅采集一次机器码，传递给 check_activation 和 MainWindow，避免重复 WMIC
     machine_code = get_machine_code()
     is_active, act_status, act_info = check_activation(machine_code=machine_code)
 
     if is_active:
-        # 方案B：激活成功后静默校验黑名单（联网失败跳过，不判失效）
         valid, msg = perform_silent_check()
         if not valid:
             from PyQt5.QtWidgets import QMessageBox
@@ -107,58 +81,30 @@ def _check_activation() -> Tuple[bool, str, str, dict]:
         netops_logger.get_logger().info("激活校验通过，启动主程序")
         return True, machine_code, act_status, act_info
 
-    # 未激活 → 进入试用模式
     netops_logger.get_logger().info("未激活，进入试用模式（仅开放锐捷接入交换机配置）")
-    return True, machine_code, act_status, act_info  # 试用模式也允许启动
+    return True, machine_code, act_status, act_info
 
 
 _setup_crash_logger()
 _install_qt_message_handler()
 
-from PyQt5.QtWidgets import QApplication, QDialog
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QDialog
 
 if __name__ == '__main__':
-    # ── DPI 初始化（三步锁定96DPI基准渲染）──
+    from src.utils.app_factory import create_application
 
-    # 第1步：关闭Qt高DPI缩放属性（必须在QApplication构造前）
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling, True)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    app = create_application()
 
-    app = QApplication(sys.argv)
-
-    # 第2步：强制进程DPI Unaware（Windows层bitmap拉伸兜底）
-    try:
-        import ctypes
-        ctypes.windll.shcore.SetProcessDpiAwareness(0)
-    except Exception:
-        pass
-
-    # 第3步：全局Fusion样式 + 双重抗锯齿
-    app.setStyle("Fusion")
-    app.setAttribute(Qt.AA_UseSoftwareOpenGL, False)  # 保持默认渲染，不强制软件OpenGL
-    # 文本抗锯齿：通过字体StyleHint全局开启
-    font = app.font()
-    font.setStyleStrategy(QFont.PreferAntialias)
-    app.setFont(font)
-
-    # ★ 最高优先级：激活校验（未激活不加载任何业务模块）
     can_start, machine_code, act_status, act_info = _check_activation()
     if not can_start:
         sys.exit(1)
 
-    # ★ 登录认证（激活通过后执行，登录成功才加载主窗口）
     from src.ui.login_dialog import LoginDialog
     login_dialog = LoginDialog()
     if login_dialog.exec_() != QDialog.Accepted:
         sys.exit(0)
 
-    # 激活+登录通过后才加载主窗口（传入激活结果，避免重复 check_activation 调用）
     from src.ui.main_window import MainWindow
-    # can_start=False 时已 sys.exit(1)，此处 can_start 必为 True
-    # act_status="未激活" 表示试用模式，其他值为已激活状态
     is_active = act_status != "未激活"
     window = MainWindow(is_active=is_active, act_status=act_status, act_info=act_info)
     window.show()

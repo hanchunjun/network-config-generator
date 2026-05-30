@@ -1,6 +1,14 @@
-# 开发实施步骤 & 打包规范（V0.3.7）
+# 开发实施步骤 & 打包规范（V0.4.1）
 
 ## 开发实施步骤
+
+### V0.4.1 Logo 设计与安装包（2026年5月30日）
+
+1. **Logo 设计**：新增 `assets/netops.ico` — 华文行楷 "Net" 字样 + 深海蓝→科技蓝渐变背景 + 四角光点科技装饰
+2. **图标生成脚本**：新增 `scripts/generate_icon.py` — 从 TTF 字体渲染多尺寸 ICO（16/32/48/64/128/256），支持 `--preview` 参数生成预览图
+3. **安装包构建**：新增 `installer/build_setup.py` — 自解压安装包构建脚本，将 `dist/NetOps/` 打包为带图标的 `NetOps_Setup_0.4.0.exe`
+4. **ICO 文件结构**：6帧（16/32/48/64/128用DIB 24bpp，256用PNG压缩），总大小 80.4 KB
+5. **打包流程更新**：`pyinstaller NetworkConfigGenerator.spec` → `python installer/build_setup.py` → 生成安装包
 
 ### V0.3.6 主题增强（2026年5月26日）
 

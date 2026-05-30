@@ -1,7 +1,7 @@
 # 构建与部署代码地图
 
-**最后更新：** 2026-05-26
-**项目版本：** V0.3.7 性能优化版
+**最后更新：** 2026-05-30
+**项目版本：** V0.4.1 Logo 设计与安装包版
 
 ---
 
@@ -78,15 +78,24 @@ py -3.11 -m radon cc src/ -a -nc
 ## 打包命令
 
 ```bash
-# 删除旧EXE（如果被占用需先关闭运行的实例）
+# 1. 生成 Logo 图标（首次或修改后执行）
+python scripts/generate_icon.py --preview
+
+# 2. 删除旧EXE（如果被占用需先关闭运行的实例）
 del dist\NetOps.exe
 del dist\AdminKeyGenTool.exe
 
-# 打包用户端EXE
+# 3. 清理构建缓存
+rmdir /s /q build\
+
+# 4. 打包用户端EXE
 pyinstaller NetworkConfigGenerator.spec --noconfirm
 
-# 打包管理员制码工具EXE
+# 5. 打包管理员制码工具EXE
 pyinstaller admin_tool.spec --noconfirm
+
+# 6. 构建安装包（自解压 EXE）
+python installer/build_setup.py
 ```
 
 ---
@@ -155,12 +164,13 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 ---
 
-## 输出产物（两个独立EXE）
+## 输出产物（三个独立 EXE + 安装包）
 
 | 文件 | 位置 | 大小 | 用途 |
 |------|------|------|------|
-| `NetOps.exe` | `dist/` | 48.6MB | 用户端主程序（含三主题） |
-| `AdminKeyGenTool.exe` | `dist/` | 41.2MB | 管理员制码工具 |
+| `NetOps.exe` | `dist/NetOps/` | ~48MB | 用户端主程序（含三主题） |
+| `AdminKeyGenTool.exe` | `dist/` | ~41MB | 管理员制码工具 |
+| `NetOps_Setup_0.4.0.exe` | `installer/` | ~62MB | 安装包（双击安装，含新 Logo） |
 | 构建日志 | `build/` | — | 分产品目录存储 |
 | 警告日志 | `build/*/warn-*.txt` | — | — |
 | 交叉引用 | `build/*/xref-*.html` | — | — |
@@ -169,19 +179,21 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 ## 部署方式
 
-### 方式1：直接运行
+### 方式1：安装包安装（推荐）
 ```
-dist\NetOps.exe
+双击 installer/NetOps_Setup_0.4.0.exe → 自动安装到 Program Files\NetOps
+→ 创建桌面快捷方式 + 开始菜单快捷方式
+→ 安装包含行书 "Net" Logo 图标
 ```
 
-### 方式2：拷贝到任意位置
+### 方式2：便携运行（免安装）
 ```
-xcopy dist\ D:\网络工具\ /E /I /H
-D:\网络工具\NetOps.exe
+双击 dist/NetOps/NetOps.exe 直接运行
+数据跟随 EXE 所在目录（config/projects/single/activation）
 ```
 
 ### 方式3：U盘携带
-整个文件夹复制到U盘，插上即用
+整个 dist/NetOps/ 文件夹复制到U盘，插上即用
 
 ---
 
@@ -205,6 +217,7 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
+| V0.4.1 Logo 设计版 | 2026-05-30 | 华文行楷 "Net" Logo + 安装包构建脚本 + ICO 6帧 + 自解压安装包 |
 | V0.3.7 性能优化版 | 2026-05-26 | 6项Python针对性优化：WMIC去重 + 配置缓存修复 + 批量命令生成优化 + 死依赖清理 + SSH并发化 + QSS缓存 |
 | V0.3.6 主题增强版 | 2026-05-26 | Windows标题栏深色模式 + 导航栏刷新修复 + input_border输入框边框 + 默认主题Business |
 | V0.3.5 三主题版 | 2026-05-25 | 三主题切换系统 + ThemeEngine + 全局动态QSS + EXE重命名 NetOps.exe |

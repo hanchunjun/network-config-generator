@@ -217,13 +217,13 @@ def _log_error(message: str):
     except Exception:
         pass  # 日志写入失败不影响主流程
 
-def run_backup(project_dir: str, progress_callback=None, max_workers: int = 5) -> List[str]:
+def run_backup(project_dir: str, progress_callback=None, max_workers: int = 20) -> List[str]:
     """批量备份（并发模式）。
 
     Args:
         project_dir: 项目目录路径
         progress_callback: 进度回调函数 (completed, total, message)
-        max_workers: 最大并发线程数（默认 5，单台设备不影响）
+        max_workers: 最大并发线程数（默认 20，单台设备不影响）
     """
     _resolve_paths(project_dir)
     init_folder()

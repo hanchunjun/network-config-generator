@@ -356,8 +356,8 @@ class AIAnalysisPage(QWidget):
 
     def init_ui(self):
         main_layout = QHBoxLayout()
-        main_layout.setContentsMargins(16, 16, 16, 16)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(12, 10, 12, 10)
+        main_layout.setSpacing(8)
 
         splitter = QSplitter(Qt.Horizontal)
 

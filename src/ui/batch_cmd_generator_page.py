@@ -200,7 +200,7 @@ class ParamGroupWidget(QGroupBox):
         self.base_spin = QSpinBox()
         self.base_spin.setRange(0, 99999)
         self.base_spin.setValue(1)
-        self.base_spin.setMinimumHeight(24)
+        self.base_spin.setMinimumHeight(22)
         self.base_spin.setMinimumWidth(50)
         layout.addWidget(self.base_spin, row, 1)
 
@@ -208,7 +208,7 @@ class ParamGroupWidget(QGroupBox):
         self.step_spin = QSpinBox()
         self.step_spin.setRange(-99999, 99999)
         self.step_spin.setValue(1)
-        self.step_spin.setMinimumHeight(24)
+        self.step_spin.setMinimumHeight(22)
         self.step_spin.setMinimumWidth(50)
         layout.addWidget(self.step_spin, row, 3)
 
@@ -219,7 +219,7 @@ class ParamGroupWidget(QGroupBox):
         self.repeat_spin.setRange(1, 9999)
         self.repeat_spin.setValue(1)
         self.repeat_spin.setEnabled(False)
-        self.repeat_spin.setMinimumHeight(24)
+        self.repeat_spin.setMinimumHeight(22)
         self.repeat_spin.setMinimumWidth(48)
         layout.addWidget(self.repeat_spin, row, 2, 1, 2)
 
@@ -230,7 +230,7 @@ class ParamGroupWidget(QGroupBox):
         self.loop_spin.setRange(1, 9999)
         self.loop_spin.setValue(12)
         self.loop_spin.setEnabled(False)
-        self.loop_spin.setMinimumHeight(24)
+        self.loop_spin.setMinimumHeight(22)
         self.loop_spin.setMinimumWidth(48)
         layout.addWidget(self.loop_spin, row, 2, 1, 2)
 
@@ -510,19 +510,19 @@ class BatchCmdGeneratorPage(QWidget):
 
     def _setup_ui(self) -> None:
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(16, 12, 16, 8)
-        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(12, 8, 12, 6)
+        main_layout.setSpacing(6)
 
         # 命令模板区
         template_group = QGroupBox("命令模板")
         template_group.setStyleSheet(self._group_style())
         template_layout = QVBoxLayout(template_group)
-        template_layout.setContentsMargins(16, 10, 16, 10)
-        template_layout.setSpacing(6)
+        template_layout.setContentsMargins(12, 8, 12, 8)
+        template_layout.setSpacing(4)
 
         # 模板选择工具栏
         template_bar = QHBoxLayout()
-        template_bar.setSpacing(6)
+        template_bar.setSpacing(4)
         template_bar.addWidget(QLabel("模板:"))
 
         self.template_combo = QComboBox()
@@ -544,28 +544,28 @@ class BatchCmdGeneratorPage(QWidget):
         self.btn_add_template = QPushButton("+ 新增")
         self.btn_add_template.setObjectName("tplAddBtn")
         self.btn_add_template.setCursor(Qt.PointingHandCursor)
-        self.btn_add_template.setMinimumHeight(24)
+        self.btn_add_template.setMinimumHeight(22)
         self.btn_add_template.setMinimumWidth(52)
         template_bar.addWidget(self.btn_add_template)
 
         self.btn_rename_template = QPushButton("重命名")
         self.btn_rename_template.setObjectName("tplRenameBtn")
         self.btn_rename_template.setCursor(Qt.PointingHandCursor)
-        self.btn_rename_template.setMinimumHeight(24)
+        self.btn_rename_template.setMinimumHeight(22)
         self.btn_rename_template.setMinimumWidth(52)
         template_bar.addWidget(self.btn_rename_template)
 
         self.btn_save_template = QPushButton("保存")
         self.btn_save_template.setObjectName("tplSaveBtn")
         self.btn_save_template.setCursor(Qt.PointingHandCursor)
-        self.btn_save_template.setMinimumHeight(24)
+        self.btn_save_template.setMinimumHeight(22)
         self.btn_save_template.setMinimumWidth(40)
         template_bar.addWidget(self.btn_save_template)
 
         self.btn_delete_template = QPushButton("删除")
         self.btn_delete_template.setObjectName("tplDeleteBtn")
         self.btn_delete_template.setCursor(Qt.PointingHandCursor)
-        self.btn_delete_template.setMinimumHeight(24)
+        self.btn_delete_template.setMinimumHeight(22)
         self.btn_delete_template.setMinimumWidth(40)
         template_bar.addWidget(self.btn_delete_template)
 
@@ -590,7 +590,7 @@ class BatchCmdGeneratorPage(QWidget):
             "exit\n\n"
             "%a=接口编号(如1~24), %b=VLAN号(如100~200)"
         )
-        self.template_edit.setMinimumHeight(110)
+        self.template_edit.setMinimumHeight(90)
         self.template_edit.setFont(QFont("Consolas", 11))
         template_layout.addWidget(self.template_edit)
 
@@ -600,8 +600,8 @@ class BatchCmdGeneratorPage(QWidget):
         param_group = QGroupBox("参数设置  （勾选「循环个数」→ 差异化批量生成模式）")
         param_group.setStyleSheet(self._group_style())
         param_outer_layout = QVBoxLayout(param_group)
-        param_outer_layout.setContentsMargins(8, 8, 8, 6)
-        param_outer_layout.setSpacing(6)
+        param_outer_layout.setContentsMargins(6, 6, 6, 4)
+        param_outer_layout.setSpacing(4)
 
         param_container = QW()
         param_container.setLayout(QHBoxLayout())
@@ -618,7 +618,7 @@ class BatchCmdGeneratorPage(QWidget):
         param_scroll.setWidgetResizable(True)
         param_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         param_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        param_scroll.setMinimumHeight(145)
+        param_scroll.setMinimumHeight(120)
         param_scroll.setMaximumHeight(175)
         param_outer_layout.addWidget(param_scroll)
 
@@ -626,7 +626,7 @@ class BatchCmdGeneratorPage(QWidget):
 
         # 操作按钮行
         action_row = QHBoxLayout()
-        action_row.setSpacing(8)
+        action_row.setSpacing(6)
 
         self.cmd_count_cb = QCheckBox()
         self.cmd_count_cb.setChecked(True)
@@ -638,7 +638,7 @@ class BatchCmdGeneratorPage(QWidget):
         self.cmd_count_spin = QSpinBox()
         self.cmd_count_spin.setRange(1, 999999)
         self.cmd_count_spin.setValue(12)
-        self.cmd_count_spin.setMinimumHeight(28)
+        self.cmd_count_spin.setMinimumHeight(26)
         self.cmd_count_spin.setMinimumWidth(75)
         self.cmd_count_spin.setToolTip("输出多少条相同的命令\n取消勾选后由下方「循环个数」控制差异化条数")
         action_row.addWidget(self.cmd_count_spin)
@@ -653,27 +653,28 @@ class BatchCmdGeneratorPage(QWidget):
         btn_gen = QPushButton("生成命令")
         btn_gen.setObjectName("genBtn")
         btn_gen.setCursor(Qt.PointingHandCursor)
-        btn_gen.setMinimumHeight(28)
+        btn_gen.setMinimumHeight(26)
         btn_gen.setMinimumWidth(85)
         action_row.addWidget(btn_gen)
 
         btn_save = QPushButton("保存结果")
         btn_save.setObjectName("saveBtn")
         btn_save.setCursor(Qt.PointingHandCursor)
-        btn_save.setMinimumHeight(28)
+        btn_save.setMinimumHeight(26)
         btn_save.setMinimumWidth(85)
         action_row.addWidget(btn_save)
 
         btn_copy = QPushButton("复制全部")
         btn_copy.setObjectName("copyBtn")
         btn_copy.setCursor(Qt.PointingHandCursor)
-        btn_copy.setMinimumHeight(28)
+        btn_copy.setMinimumHeight(26)
         btn_copy.setMinimumWidth(85)
         action_row.addWidget(btn_copy)
 
         btn_clear = QPushButton("清空")
+        btn_clear.setObjectName("clearBtn")
         btn_clear.setCursor(Qt.PointingHandCursor)
-        btn_clear.setMinimumHeight(24)
+        btn_clear.setMinimumHeight(22)
         btn_clear.setMinimumWidth(65)
         action_row.addWidget(btn_clear)
 
@@ -683,7 +684,7 @@ class BatchCmdGeneratorPage(QWidget):
         # 输出区
         self.output_edit = QTextEdit()
         self.output_edit.setFont(QFont("Consolas", 11))
-        self.output_edit.setMinimumHeight(220)
+        self.output_edit.setMinimumHeight(180)
         main_layout.addWidget(self.output_edit)
 
         # 状态栏
@@ -694,7 +695,7 @@ class BatchCmdGeneratorPage(QWidget):
             f"background-color: {t['hover_bg']}; color: {t['text_tertiary']}; font-size: 10pt;"
             f"border: 1px solid {t['border']}; padding: 3px;"
         )
-        status_bar.setMinimumHeight(24)
+        status_bar.setMinimumHeight(20)
         main_layout.addWidget(status_bar)
         self._status_label = status_bar
 
@@ -714,7 +715,8 @@ class BatchCmdGeneratorPage(QWidget):
     def _apply_style(self) -> None:
         t = self._theme
         r = t["radius_md"]
-        self.setStyleSheet(
+        te = ThemeEngine.get()
+        ss = (
             "QTextEdit {"
             f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
             f"  background: {t['input_bg']}; font-size: 11pt; color: {t['text_main']};"
@@ -725,128 +727,24 @@ class BatchCmdGeneratorPage(QWidget):
             f"  background: {t['input_bg']}; color: {t['text_main']};"
             "}"
             f"QSpinBox:focus {{ border-color: {t['border']}; }}"
-            f"QPushButton#genBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
-            f"  padding: 5px 8px;"
-            "}}"
-            f"QPushButton#genBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            "}}"
-            f"QPushButton#genBtn:pressed {{"
-            f"  background-color: transparent;"
-            "}}"
-            f"QPushButton#genBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#saveBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
-            f"  padding: 5px 8px;"
-            "}}"
-            f"QPushButton#saveBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_secondary']};"
-            "}}"
-            f"QPushButton#saveBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#copyBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 11pt; font-weight: bold;"
-            f"  padding: 5px 8px;"
-            "}}"
-            f"QPushButton#copyBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_secondary']};"
-            "}}"
-            f"QPushButton#copyBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#tplAddBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
-            f"  padding: 4px 12px;"
-            "}}"
-            f"QPushButton#tplAddBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            "}}"
-            f"QPushButton#tplAddBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#tplRenameBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
-            f"  padding: 4px 12px;"
-            "}}"
-            f"QPushButton#tplRenameBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_secondary']};"
-            "}}"
-            f"QPushButton#tplRenameBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#tplSaveBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
-            f"  padding: 4px 12px;"
-            "}}"
-            f"QPushButton#tplSaveBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            "}}"
-            f"QPushButton#tplSaveBtn:disabled {{"
-            f"  background-color: transparent;"
-            f"  border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            "}}"
-            f"QPushButton#tplDeleteBtn {{"
-            f"  background-color: transparent; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r}px; font-size: 10pt; font-weight: bold;"
-            f"  padding: 4px 12px;"
-            "}}"
-            f"QPushButton#tplDeleteBtn:hover {{"
-            f"  background-color: transparent;"
-            f"  border: 1px solid {t['border']};"
-            f"  color: {t['text_secondary']};"
-            "}}"
+        )
+        _primary = te.qss("btn_primary")
+        _default = te.qss("btn_default")
+        for name in ("genBtn", "saveBtn", "copyBtn", "tplAddBtn", "tplRenameBtn", "tplSaveBtn", "tplDeleteBtn"):
+            ss += f"QPushButton#{name} {{{_primary}}}\n"
+        ss += f"QPushButton#clearBtn {{{_default}}}\n"
+        ss += (
             "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
-            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn) {"
-            f"  background-color: {t['page_bg']}; color: {t['text_secondary']};"
-            f"  border: 1px solid {t['border']}; border-radius: {r}px; font-size: 11pt;"
-            f"  padding: 5px 8px;"
-            "}"
-            "QPushButton:not(#genBtn):not(#saveBtn):not(#copyBtn)"
-            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn):hover {"
-            f"  background-color: {t['hover_bg']}; border-color: {t['border_deep']};"
+            ":not(#tplAddBtn):not(#tplRenameBtn):not(#tplSaveBtn):not(#tplDeleteBtn)"
+            ":not(#clearBtn) {"
+            f"{_primary}"
             "}"
             "QCheckBox { spacing: 4px; }"
             f"QCheckBox::indicator {{ width: 15px; height: 15px; border-radius: {r}px;"
             f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
             f"QCheckBox::indicator:checked {{ background-color: {t['page_bg']}; border-color: {t['border']}; }}"
         )
+        self.setStyleSheet(ss)
 
     def _on_theme_changed(self, theme_id: str) -> None:
         """主题切换时刷新样式。"""

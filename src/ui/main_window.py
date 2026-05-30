@@ -17,19 +17,37 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedWidget, QVBoxLay
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QKeySequence
 
-# UI页面导入
-from src.ui.system_settings_page import SystemSettingsPage
-from src.ui.project_manager_page import ProjectManagerPage
-from src.ui.ops_toolbox_page import OpsToolboxPage
-from src.ui.single_device_page import SingleDevicePage
-from src.ui.ai_analysis_page import AIAnalysisPage
+# UI页面导入（轻量页面立即导入，重度页面延迟加载）
 from src.ui.theme_switcher_page import ThemeSwitcherPage
 
-# 配置页面导入（按厂商分组）
-from src.ui.config_pages.ruijie import RuijieAccessSwitchConfig, RuijieCoreSwitchConfig, RuijieRouterConfig, RuijieACConfig
-from src.ui.config_pages.huawei import HuaweiAccessSwitchConfig, HuaweiCoreSwitchConfig, HuaweiRouterConfig, HuaweiACConfig
-from src.ui.config_pages.h3c import H3CAccessSwitchConfig, H3CCoreSwitchConfig, H3CRouterConfig, H3CACConfig
-from src.ui.config_pages.cisco import CiscoAccessSwitchConfig, CiscoCoreSwitchConfig, CiscoRouterConfig, CiscoACConfig
+# 重度页面延迟导入注册表：module_id → (module_path, class_name)
+_LAZY_PAGE_REGISTRY: Dict[str, Tuple[str, str]] = {
+    "system": ("src.ui.system_settings_page", "SystemSettingsPage"),
+    "project": ("src.ui.project_manager_page", "ProjectManagerPage"),
+    "ops": ("src.ui.ops_toolbox_page", "OpsToolboxPage"),
+    "single": ("src.ui.single_device_page", "SingleDevicePage"),
+    "ai": ("src.ui.ai_analysis_page", "AIAnalysisPage"),
+}
+
+# 配置页面延迟导入注册表：(厂商, 设备类型) → (module_path, class_name)
+_LAZY_CONFIG_REGISTRY: Dict[Tuple[str, str], Tuple[str, str]] = {
+    ("锐捷", "接入交换机"): ("src.ui.config_pages.ruijie", "RuijieAccessSwitchConfig"),
+    ("锐捷", "核心交换机"): ("src.ui.config_pages.ruijie", "RuijieCoreSwitchConfig"),
+    ("锐捷", "路由器"): ("src.ui.config_pages.ruijie", "RuijieRouterConfig"),
+    ("锐捷", "AC控制器"): ("src.ui.config_pages.ruijie", "RuijieACConfig"),
+    ("华为", "接入交换机"): ("src.ui.config_pages.huawei", "HuaweiAccessSwitchConfig"),
+    ("华为", "核心交换机"): ("src.ui.config_pages.huawei", "HuaweiCoreSwitchConfig"),
+    ("华为", "路由器"): ("src.ui.config_pages.huawei", "HuaweiRouterConfig"),
+    ("华为", "AC控制器"): ("src.ui.config_pages.huawei", "HuaweiACConfig"),
+    ("H3C", "接入交换机"): ("src.ui.config_pages.h3c", "H3CAccessSwitchConfig"),
+    ("H3C", "核心交换机"): ("src.ui.config_pages.h3c", "H3CCoreSwitchConfig"),
+    ("H3C", "路由器"): ("src.ui.config_pages.h3c", "H3CRouterConfig"),
+    ("H3C", "AC控制器"): ("src.ui.config_pages.h3c", "H3CACConfig"),
+    ("思科", "接入交换机"): ("src.ui.config_pages.cisco", "CiscoAccessSwitchConfig"),
+    ("思科", "核心交换机"): ("src.ui.config_pages.cisco", "CiscoCoreSwitchConfig"),
+    ("思科", "路由器"): ("src.ui.config_pages.cisco", "CiscoRouterConfig"),
+    ("思科", "AC控制器"): ("src.ui.config_pages.cisco", "CiscoACConfig"),
+}
 
 from src.utils.resource_path import get_config_path, ensure_dirs
 from src.core.logger import netops_logger
@@ -50,34 +68,6 @@ MODULES: List[Tuple[str, str, str]] = [
     ("system", "模型设置", "⚙"),
     ("theme", "主题切换", "🎨"),
 ]
-
-# 厂商配置映射
-VENDOR_CONFIG_MAP: Dict[str, Dict[str, type]] = {
-    "锐捷": {
-        "接入交换机": RuijieAccessSwitchConfig,
-        "核心交换机": RuijieCoreSwitchConfig,
-        "路由器": RuijieRouterConfig,
-        "AC控制器": RuijieACConfig,
-    },
-    "华为": {
-        "接入交换机": HuaweiAccessSwitchConfig,
-        "核心交换机": HuaweiCoreSwitchConfig,
-        "路由器": HuaweiRouterConfig,
-        "AC控制器": HuaweiACConfig,
-    },
-    "H3C": {
-        "接入交换机": H3CAccessSwitchConfig,
-        "核心交换机": H3CCoreSwitchConfig,
-        "路由器": H3CRouterConfig,
-        "AC控制器": H3CACConfig,
-    },
-    "思科": {
-        "接入交换机": CiscoAccessSwitchConfig,
-        "核心交换机": CiscoCoreSwitchConfig,
-        "路由器": CiscoRouterConfig,
-        "AC控制器": CiscoACConfig,
-    },
-}
 
 
 class MainWindow(QMainWindow):
@@ -192,7 +182,7 @@ class MainWindow(QMainWindow):
         return main_widget
 
     def _create_module_stack(self, main_layout: QVBoxLayout):
-        """创建模块堆栈
+        """创建模块堆栈（轻量页面立即创建，重度页面延迟加载）
 
         Args:
             main_layout: 主布局
@@ -200,26 +190,47 @@ class MainWindow(QMainWindow):
         self.module_stack = QStackedWidget()
         main_layout.addWidget(self.module_stack)
 
-        # 创建各功能页面
-        self.system_page = SystemSettingsPage(self)
-        self.project_page = ProjectManagerPage(self)
-        self.ops_page = OpsToolboxPage(self)
-        self.single_page = SingleDevicePage(self)
-        self.ai_page = AIAnalysisPage(self)
+        # 延迟加载页面缓存
+        self._lazy_pages: Dict[str, QWidget] = {}
+
+        # 轻量页面立即创建
         from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
         self.batchcmd_page = BatchCmdGeneratorPage(self)
         self.theme_page = ThemeSwitcherPage(self)
         self.config_container = QWidget()
 
-        # 添加到堆栈
-        self.module_stack.addWidget(self.system_page)
-        self.module_stack.addWidget(self.project_page)
-        self.module_stack.addWidget(self.ops_page)
-        self.module_stack.addWidget(self.single_page)
-        self.module_stack.addWidget(self.ai_page)
+        # 重度页面占位（首次切换时才创建）
+        for module_id in _LAZY_PAGE_REGISTRY:
+            placeholder = QWidget()
+            self._lazy_pages[module_id] = placeholder
+            self.module_stack.addWidget(placeholder)
+
+        # 添加轻量页面到堆栈
         self.module_stack.addWidget(self.batchcmd_page)
         self.module_stack.addWidget(self.theme_page)
         self.module_stack.addWidget(self.config_container)
+
+    def _get_lazy_page(self, module_id: str) -> QWidget:
+        """获取延迟加载页面，首次访问时创建。"""
+        if module_id in _LAZY_PAGE_REGISTRY and module_id in self._lazy_pages:
+            page = self._lazy_pages[module_id]
+            # 占位 QWidget 没有 layout，说明还未真正创建
+            if page.layout() is None and not hasattr(page, '_lazy_loaded'):
+                import importlib
+                module_path, class_name = _LAZY_PAGE_REGISTRY[module_id]
+                mod = importlib.import_module(module_path)
+                cls = getattr(mod, class_name)
+                real_page = cls(self)
+                # 替换占位符
+                idx = self.module_stack.indexOf(page)
+                self.module_stack.removeWidget(page)
+                page.deleteLater()
+                self.module_stack.insertWidget(idx, real_page)
+                self._lazy_pages[module_id] = real_page
+                real_page._lazy_loaded = True
+                return real_page
+            return page
+        return None
 
     def _create_status_bar(self):
         t = self._theme_engine.current_theme
@@ -438,7 +449,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         font-weight: bold;
-                        padding: 4px 6px;
+                        padding: 3px 5px;
                     }}
                     QPushButton:hover {{
                         background-color: transparent;
@@ -453,7 +464,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
-                        padding: 4px 6px;
+                        padding: 3px 5px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
                 """)
@@ -468,7 +479,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         font-weight: bold;
-                        padding: 4px 6px;
+                        padding: 3px 5px;
                     }}
                     QPushButton:hover {{
                         background-color: transparent;
@@ -483,7 +494,7 @@ class MainWindow(QMainWindow):
                         border-radius: {r}px;
                         font-size: 10pt;
                         color: {t['text_secondary']};
-                        padding: 4px 6px;
+                        padding: 3px 5px;
                     }}
                     QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
                 """)
@@ -511,30 +522,30 @@ class MainWindow(QMainWindow):
         t = self._theme_engine.current_theme
 
         self._nav_bar = QWidget()
-        self._nav_bar.setFixedHeight(48)
+        self._nav_bar.setFixedHeight(44)
         self._nav_bar.setStyleSheet(f"""
             background-color: {t['nav_bg']};
             border-bottom: 1px solid {t['border']};
         """)
         nav_layout = QHBoxLayout()
-        nav_layout.setContentsMargins(16, 0, 16, 0)
+        nav_layout.setContentsMargins(12, 0, 12, 0)
         nav_layout.setSpacing(4)
         self._nav_bar.setLayout(nav_layout)
 
         self._logo_label = QLabel("  NetOps")
-        self._logo_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['primary_light']}; padding-right: 20px;")
+        self._logo_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['primary_light']}; padding-right: 16px;")
         nav_layout.addWidget(self._logo_label)
 
         self.nav_buttons = {}
         for module_id, module_name, icon in MODULES:
             btn = QPushButton(f" {icon}  {module_name}")
-            btn.setFixedHeight(26)
+            btn.setFixedHeight(24)
             btn.setStyleSheet(f"""
                 QPushButton {{
                     background-color: transparent;
                     border: none;
                     border-radius: {t['radius_sm']}px;
-                    padding: 3px 8px;
+                    padding: 2px 6px;
                     font-size: 11pt;
                     color: {t['text_secondary']};
                 }}
@@ -564,7 +575,7 @@ class MainWindow(QMainWindow):
 
         # 激活状态按钮
         self._activation_btn = QPushButton()
-        self._activation_btn.setFixedSize(90, 26)
+        self._activation_btn.setFixedSize(80, 24)
         self._activation_btn.setCursor(Qt.PointingHandCursor)
         self._activation_btn.clicked.connect(self._on_activation_btn_clicked)
         self._update_activation_btn_style()
@@ -572,13 +583,13 @@ class MainWindow(QMainWindow):
 
         # 账户管理按钮
         self._account_btn = QPushButton("账户管理")
-        self._account_btn.setFixedSize(72, 26)
+        self._account_btn.setFixedSize(64, 24)
         self._account_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
         self._account_btn.clicked.connect(self._show_account_dialog)
         nav_layout.addWidget(self._account_btn)
 
         self._about_btn = QPushButton("关于")
-        self._about_btn.setFixedSize(48, 26)
+        self._about_btn.setFixedSize(44, 24)
         self._about_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
         self._about_btn.clicked.connect(self.show_about_dialog)
         nav_layout.addWidget(self._about_btn)
@@ -590,22 +601,25 @@ class MainWindow(QMainWindow):
             self._show_trial_prompt()
             return
 
-        page_map = {
-            "system": self.system_page,
-            "project": self.project_page,
-            "ops": self.ops_page,
-            "single": self.single_page,
-            "ai": self.ai_page,
-            "batchcmd": self.batchcmd_page,
-            "theme": self.theme_page,
-            "config": self.config_container,
-        }
-        if module_id in page_map:
-            self.module_stack.setCurrentWidget(page_map[module_id])
+        # 延迟加载页面
+        page = self._get_lazy_page(module_id)
+        if page is None:
+            # 非延迟页面（batchcmd/theme/config）
+            fixed_map = {
+                "batchcmd": self.batchcmd_page,
+                "theme": self.theme_page,
+                "config": self.config_container,
+            }
+            page = fixed_map.get(module_id)
+
+        if page is not None:
+            self.module_stack.setCurrentWidget(page)
             self._update_nav_buttons(module_id)
             self.refresh_project_status()
             if module_id == "project":
-                self.project_page.refresh_project_list()
+                project_pg = self._lazy_pages.get("project")
+                if project_pg and hasattr(project_pg, 'refresh_project_list'):
+                    project_pg.refresh_project_list()
             module_names = {
                 "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
                 "single": "单点巡检", "ai": "AI分析", "config": "设备配置",
@@ -649,7 +663,7 @@ class MainWindow(QMainWindow):
         top_layout = QHBoxLayout()
         top_bar.setLayout(top_layout)
         top_bar.setStyleSheet(f'background-color: {t["card_bg"]}; border-bottom: 1px solid {t["border"]};')
-        top_layout.setContentsMargins(10, 4, 10, 4)
+        top_layout.setContentsMargins(8, 2, 8, 2)
         top_layout.setSpacing(0)
 
         vendor_layout = QHBoxLayout()
@@ -665,7 +679,7 @@ class MainWindow(QMainWindow):
 
         for name, vendor_id in zip(vendors, vendor_ids):
             button = QPushButton(name)
-            button.setFixedSize(80, 30)
+            button.setFixedSize(72, 28)
             button.setStyleSheet(f"""
                 QPushButton {{
                     background-color: transparent;
@@ -673,7 +687,7 @@ class MainWindow(QMainWindow):
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
                     color: {t['text_secondary']};
-                    padding: 4px 6px;
+                    padding: 3px 5px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['border_deep']}; color: {t['text_main']}; }}
             """)
@@ -694,7 +708,7 @@ class MainWindow(QMainWindow):
 
         for name, device_id in zip(devices, device_ids):
             button = QPushButton(name)
-            button.setFixedSize(100, 30)
+            button.setFixedSize(90, 28)
             button.setStyleSheet(f"""
                 QPushButton {{
                     background-color: transparent;
@@ -702,7 +716,7 @@ class MainWindow(QMainWindow):
                     border-radius: {t['radius_md']}px;
                     font-size: 10pt;
                     color: {t['text_secondary']};
-                    padding: 4px 6px;
+                    padding: 3px 5px;
                 }}
                 QPushButton:hover {{ border: 1px solid {t['border']}; color: {t['text_main']}; }}
             """)
@@ -786,6 +800,15 @@ class MainWindow(QMainWindow):
         if self.selected_vendor and self.selected_device:
             self.show_config_page(self.selected_vendor, self.selected_device)
 
+    # vendor_id → 厂商中文名（用于配置页延迟加载查找）
+    _VENDOR_ID_MAP = {
+        "ruijie": "锐捷", "huawei": "华为", "h3c": "H3C", "cisco": "思科",
+    }
+    _DEVICE_TYPE_MAP = {
+        "access_switch": "接入交换机", "core_switch": "核心交换机",
+        "router": "路由器", "ac": "AC控制器",
+    }
+
     def show_config_page(self, vendor, device_type):
         # 试用模式：仅允许锐捷接入交换机
         if self._trial_mode:
@@ -796,42 +819,17 @@ class MainWindow(QMainWindow):
         page_key = f"{vendor}_{device_type}"
         config_page = None
 
-        if vendor == 'ruijie':
-            if device_type == 'access_switch':
-                config_page = RuijieAccessSwitchConfig(self)
-            elif device_type == 'core_switch':
-                config_page = RuijieCoreSwitchConfig(self)
-            elif device_type == 'router':
-                config_page = RuijieRouterConfig(self)
-            elif device_type == 'ac':
-                config_page = RuijieACConfig(self)
-        elif vendor == 'huawei':
-            if device_type == 'access_switch':
-                config_page = HuaweiAccessSwitchConfig(self)
-            elif device_type == 'core_switch':
-                config_page = HuaweiCoreSwitchConfig(self)
-            elif device_type == 'router':
-                config_page = HuaweiRouterConfig(self)
-            elif device_type == 'ac':
-                config_page = HuaweiACConfig(self)
-        elif vendor == 'h3c':
-            if device_type == 'access_switch':
-                config_page = H3CAccessSwitchConfig(self)
-            elif device_type == 'core_switch':
-                config_page = H3CCoreSwitchConfig(self)
-            elif device_type == 'router':
-                config_page = H3CRouterConfig(self)
-            elif device_type == 'ac':
-                config_page = H3CACConfig(self)
-        elif vendor == 'cisco':
-            if device_type == 'access_switch':
-                config_page = CiscoAccessSwitchConfig(self)
-            elif device_type == 'core_switch':
-                config_page = CiscoCoreSwitchConfig(self)
-            elif device_type == 'router':
-                config_page = CiscoRouterConfig(self)
-            elif device_type == 'ac':
-                config_page = CiscoACConfig(self)
+        # 延迟导入配置页类
+        vendor_name = self._VENDOR_ID_MAP.get(vendor)
+        type_name = self._DEVICE_TYPE_MAP.get(device_type)
+        if vendor_name and type_name:
+            registry_key = (vendor_name, type_name)
+            if registry_key in _LAZY_CONFIG_REGISTRY:
+                import importlib
+                module_path, class_name = _LAZY_CONFIG_REGISTRY[registry_key]
+                mod = importlib.import_module(module_path)
+                cls = getattr(mod, class_name)
+                config_page = cls(self)
 
         if config_page:
             if page_key in self.config_pages:

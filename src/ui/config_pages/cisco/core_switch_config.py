@@ -1,4 +1,4 @@
-﻿from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                                QLineEdit, QCheckBox, QComboBox, QFrame, QTabWidget, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QRadioButton)
 from PyQt5.QtCore import Qt
 from src.ui.config_pages.base_config_page import BaseConfigPage
@@ -31,10 +31,10 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # 登录方式选择
         login_mode_layout = QHBoxLayout()
-        login_mode_layout.setSpacing(16)
+        login_mode_layout.setSpacing(4)
         
         label = QLabel('登录方式:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         login_mode_layout.addWidget(label)
         
@@ -54,28 +54,17 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # console密码输入
         pwd_layout = QHBoxLayout()
-        pwd_layout.setSpacing(16)
+        pwd_layout.setSpacing(4)
         
         label = QLabel('console密码:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         pwd_layout.addWidget(label)
         
         console_pwd_input = QLineEdit()
         console_pwd_input.setEchoMode(QLineEdit.Password)
         console_pwd_input.setPlaceholderText('请输入密码')
-        console_pwd_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        console_pwd_input.setStyleSheet(self._get_input_style())
         pwd_layout.addWidget(console_pwd_input)
         self.form_fields['console_password'] = console_pwd_input
         
@@ -84,50 +73,28 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # 用户名和密码输入
         user_pwd_layout = QHBoxLayout()
-        user_pwd_layout.setSpacing(16)
+        user_pwd_layout.setSpacing(4)
         
         label = QLabel('用户名:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_input = QLineEdit()
         user_input.setPlaceholderText('请输入用户名')
-        user_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        user_input.setStyleSheet(self._get_input_style())
         user_pwd_layout.addWidget(user_input)
         self.form_fields['console_username'] = user_input
         
         label = QLabel('密码:')
-        label.setFixedWidth(80)
+        label.setFixedWidth(72)
         label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_pwd_input = QLineEdit()
         user_pwd_input.setEchoMode(QLineEdit.Password)
         user_pwd_input.setPlaceholderText('请输入密码')
-        user_pwd_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        user_pwd_input.setStyleSheet(self._get_input_style())
         user_pwd_layout.addWidget(user_pwd_input)
         self.form_fields['console_user_password'] = user_pwd_input
         
@@ -173,90 +140,46 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         config_layout.setSpacing(24)
         
         interface_layout = QVBoxLayout()
-        interface_layout.setSpacing(12)
+        interface_layout.setSpacing(6)
         interface_label = QLabel('端口类型:')
         interface_label.setStyleSheet(self._get_label_secondary_style())
         interface_layout.addWidget(interface_label)
         interface_combo = QComboBox()
         interface_combo.addItems(['G0/', 'G1/', 'T0/'])
-        interface_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QComboBox:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        interface_combo.setStyleSheet(self._get_combo_style())
         interface_layout.addWidget(interface_combo)
         config_layout.addLayout(interface_layout)
         
         port_layout = QVBoxLayout()
-        port_layout.setSpacing(12)
+        port_layout.setSpacing(6)
         port_label = QLabel('端口范围:')
         port_label.setStyleSheet(self._get_label_secondary_style())
         port_layout.addWidget(port_label)
         port_range_layout = QHBoxLayout()
-        port_range_layout.setSpacing(12)
+        port_range_layout.setSpacing(6)
         start_input = QLineEdit()
         start_input.setPlaceholderText('开始端口')
         start_input.setFixedWidth(100)
-        start_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        start_input.setStyleSheet(self._get_input_style())
         port_range_layout.addWidget(start_input)
         port_range_layout.addWidget(QLabel('至'))
         end_input = QLineEdit()
         end_input.setPlaceholderText('结束端口')
         end_input.setFixedWidth(100)
-        end_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        end_input.setStyleSheet(self._get_input_style())
         port_range_layout.addWidget(end_input)
         port_layout.addLayout(port_range_layout)
         config_layout.addLayout(port_layout)
         
         vlan_layout = QVBoxLayout()
-        vlan_layout.setSpacing(12)
+        vlan_layout.setSpacing(6)
         vlan_label = QLabel('加入VLAN:')
         vlan_label.setStyleSheet(self._get_label_secondary_style())
         vlan_layout.addWidget(vlan_label)
         vlan_input = QLineEdit()
         vlan_input.setPlaceholderText('请输入VLAN ID')
         vlan_input.setFixedWidth(140)
-        vlan_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        vlan_input.setStyleSheet(self._get_input_style())
         vlan_layout.addWidget(vlan_input)
         config_layout.addLayout(vlan_layout)
         
@@ -274,16 +197,7 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         access_table.setHorizontalHeaderLabels(['端口', '开始端口', '结束端口', '加入VLAN', '操作'])
         access_table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         access_table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
-        access_table.horizontalHeader().setStyleSheet("""
-            QHeaderView::section {
-                background-color: {t['hover_bg']};
-                padding: 8px;
-                font-size: 10pt;
-                font-weight: bold;
-                color: {t['text_secondary']};
-                border: 1px solid {t['border']};
-            }
-        """)
+        access_table.horizontalHeader().setStyleSheet(self._get_table_header_style())
         access_table.setColumnWidth(0, 120)
         access_table.setColumnWidth(1, 100)
         access_table.setColumnWidth(2, 100)
@@ -302,90 +216,46 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         trunk_config_layout.setSpacing(24)
         
         trunk_interface_layout = QVBoxLayout()
-        trunk_interface_layout.setSpacing(12)
+        trunk_interface_layout.setSpacing(6)
         trunk_interface_label = QLabel('端口类型:')
         trunk_interface_label.setStyleSheet(self._get_label_secondary_style())
         trunk_interface_layout.addWidget(trunk_interface_label)
         trunk_interface_combo = QComboBox()
         trunk_interface_combo.addItems(['G0/', 'G1/', 'T0/'])
-        trunk_interface_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QComboBox:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        trunk_interface_combo.setStyleSheet(self._get_combo_style())
         trunk_interface_layout.addWidget(trunk_interface_combo)
         trunk_config_layout.addLayout(trunk_interface_layout)
         
         trunk_port_layout = QVBoxLayout()
-        trunk_port_layout.setSpacing(12)
+        trunk_port_layout.setSpacing(6)
         trunk_port_label = QLabel('端口范围:')
         trunk_port_label.setStyleSheet(self._get_label_secondary_style())
         trunk_port_layout.addWidget(trunk_port_label)
         trunk_port_range_layout = QHBoxLayout()
-        trunk_port_range_layout.setSpacing(12)
+        trunk_port_range_layout.setSpacing(6)
         trunk_start_input = QLineEdit()
         trunk_start_input.setPlaceholderText('开始端口')
         trunk_start_input.setFixedWidth(100)
-        trunk_start_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        trunk_start_input.setStyleSheet(self._get_input_style())
         trunk_port_range_layout.addWidget(trunk_start_input)
         trunk_port_range_layout.addWidget(QLabel('至'))
         trunk_end_input = QLineEdit()
         trunk_end_input.setPlaceholderText('结束端口')
         trunk_end_input.setFixedWidth(100)
-        trunk_end_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        trunk_end_input.setStyleSheet(self._get_input_style())
         trunk_port_range_layout.addWidget(trunk_end_input)
         trunk_port_layout.addLayout(trunk_port_range_layout)
         trunk_config_layout.addLayout(trunk_port_layout)
         
         trunk_vlan_layout = QVBoxLayout()
-        trunk_vlan_layout.setSpacing(12)
+        trunk_vlan_layout.setSpacing(6)
         trunk_vlan_label = QLabel('允许VLAN:')
         trunk_vlan_label.setStyleSheet(self._get_label_secondary_style())
         trunk_vlan_layout.addWidget(trunk_vlan_label)
         trunk_vlan_input = QLineEdit()
         trunk_vlan_input.setPlaceholderText('请输入VLAN列表')
         trunk_vlan_input.setFixedWidth(140)
-        trunk_vlan_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        trunk_vlan_input.setStyleSheet(self._get_input_style())
         trunk_vlan_layout.addWidget(trunk_vlan_input)
         trunk_config_layout.addLayout(trunk_vlan_layout)
         
@@ -403,16 +273,7 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         trunk_table.setHorizontalHeaderLabels(['端口', '开始端口', '结束端口', '允许VLAN', '操作'])
         trunk_table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         trunk_table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
-        trunk_table.horizontalHeader().setStyleSheet("""
-            QHeaderView::section {
-                background-color: {t['hover_bg']};
-                padding: 8px;
-                font-size: 10pt;
-                font-weight: bold;
-                color: {t['text_secondary']};
-                border: 1px solid {t['border']};
-            }
-        """)
+        trunk_table.horizontalHeader().setStyleSheet(self._get_table_header_style())
         trunk_table.setColumnWidth(0, 120)
         trunk_table.setColumnWidth(1, 100)
         trunk_table.setColumnWidth(2, 100)
@@ -430,11 +291,11 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # 配置区域
         config_layout = QHBoxLayout()
-        config_layout.setSpacing(16)
+        config_layout.setSpacing(4)
         
         # 聚合ID
         agg_id_layout = QVBoxLayout()
-        agg_id_layout.setSpacing(8)
+        agg_id_layout.setSpacing(4)
         agg_id_label = QLabel('聚合ID:')
         agg_id_label.setStyleSheet(self._get_label_secondary_style())
         agg_id_layout.addWidget(agg_id_label)
@@ -442,104 +303,56 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         self.agg_id_input.setPlaceholderText('1')
         self.agg_id_input.setText('1')
         self.agg_id_input.setFixedWidth(80)
-        self.agg_id_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_id_input.setStyleSheet(self._get_input_style())
         agg_id_layout.addWidget(self.agg_id_input)
         config_layout.addLayout(agg_id_layout)
         
         # 模式选择
         mode_layout = QVBoxLayout()
-        mode_layout.setSpacing(8)
+        mode_layout.setSpacing(4)
         mode_label = QLabel('模式:')
         mode_label.setStyleSheet(self._get_label_secondary_style())
         mode_layout.addWidget(mode_label)
         self.agg_mode_combo = QComboBox()
         self.agg_mode_combo.addItems(['LACP (动态)', 'Manual (静态)'])
-        self.agg_mode_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_mode_combo.setStyleSheet(self._get_combo_style())
         mode_layout.addWidget(self.agg_mode_combo)
         config_layout.addLayout(mode_layout)
         
         # 负载均衡
         lb_layout = QVBoxLayout()
-        lb_layout.setSpacing(8)
+        lb_layout.setSpacing(4)
         lb_label = QLabel('负载均衡:')
         lb_label.setStyleSheet(self._get_label_secondary_style())
         lb_layout.addWidget(lb_label)
         self.agg_lb_combo = QComboBox()
         self.agg_lb_combo.addItems(['src-dst-ip (推荐)', 'src-dst-mac', 'src-dst-port'])
-        self.agg_lb_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_lb_combo.setStyleSheet(self._get_combo_style())
         lb_layout.addWidget(self.agg_lb_combo)
         config_layout.addLayout(lb_layout)
         
         # 成员端口
         member_layout = QVBoxLayout()
-        member_layout.setSpacing(8)
+        member_layout.setSpacing(4)
         member_label = QLabel('成员端口:')
         member_label.setStyleSheet(self._get_label_secondary_style())
         member_layout.addWidget(member_label)
         member_port_layout = QHBoxLayout()
-        member_port_layout.setSpacing(8)
+        member_port_layout.setSpacing(4)
         self.agg_interface_combo = QComboBox()
         self.agg_interface_combo.addItems(['GigabitEthernet ', 'TenGigabitEthernet '])
-        self.agg_interface_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_interface_combo.setStyleSheet(self._get_combo_style())
         member_port_layout.addWidget(self.agg_interface_combo)
         self.agg_start_port = QLineEdit()
         self.agg_start_port.setPlaceholderText('开始')
         self.agg_start_port.setFixedWidth(60)
-        self.agg_start_port.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_start_port.setStyleSheet(self._get_input_style())
         member_port_layout.addWidget(self.agg_start_port)
         member_port_layout.addWidget(QLabel('至'))
         self.agg_end_port = QLineEdit()
         self.agg_end_port.setPlaceholderText('结束')
         self.agg_end_port.setFixedWidth(60)
-        self.agg_end_port.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_end_port.setStyleSheet(self._get_input_style())
         member_port_layout.addWidget(self.agg_end_port)
         member_layout.addLayout(member_port_layout)
         config_layout.addLayout(member_layout)
@@ -557,30 +370,12 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         self.agg_table = QTableWidget()
         self.agg_table.setColumnCount(5)
         self.agg_table.setHorizontalHeaderLabels(['聚合ID', '模式', '均衡方式', '成员', '操作'])
-        self.agg_table.horizontalHeader().setStyleSheet("""
-            QHeaderView::section {
-                background-color: {t['hover_bg']};
-                border: none;
-                padding: 8px;
-                font-size: 9pt;
-                color: {t['text_secondary']};
-            }
-        """)
-        self.agg_table.setStyleSheet(f"""
-            QTableWidget {
-                border: 1px solid {t['border']};
-                border-radius: {t['radius_md']}px;
-                background-color: {t['card_bg']};
-            }
-            QTableWidget::item {
-                padding: 8px;
-                font-size: 10pt;
-            }
-        """)
+        self.agg_table.horizontalHeader().setStyleSheet(self._get_table_header_style())
+        self.agg_table.setStyleSheet(self._get_table_style())
         self.agg_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.agg_table.verticalHeader().setDefaultSectionSize(32)
+        self.agg_table.verticalHeader().setDefaultSectionSize(28)
         self.agg_table.setRowCount(0)
         self.agg_table.setMinimumWidth(600)
         self.agg_table.setFixedHeight(50)
@@ -675,8 +470,8 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         container = QWidget()
         container.setStyleSheet(self._get_container_style())
         layout = QVBoxLayout()
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(16)
+        layout.setContentsMargins(8, 4, 8, 4)
+        layout.setSpacing(4)
         layout.setAlignment(Qt.AlignTop)
         container.setLayout(layout)
         
@@ -697,12 +492,12 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         card = QWidget()
         card.setStyleSheet(self._get_card_style())
         layout = QVBoxLayout()
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(16)
+        layout.setContentsMargins(12, 10, 12, 10)
+        layout.setSpacing(4)
         
         # 卡片标题与勾选框
         title_layout = QHBoxLayout()
-        title_layout.setSpacing(12)
+        title_layout.setSpacing(6)
         
         checkbox = QCheckBox()
         checkbox.setStyleSheet('QCheckBox::indicator { width: 18px; height: 18px; }')
@@ -738,10 +533,10 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
     def add_form_item(self, card, label_text, field_name, is_password=False, is_label=False, default_value=''):
         """添加表单项"""
         item_layout = QHBoxLayout()
-        item_layout.setSpacing(16)
+        item_layout.setSpacing(4)
         
         label = QLabel(f'{label_text}:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
@@ -753,7 +548,7 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         else:
             # 输入框模式
             input_field = QLineEdit()
-            input_field.setFixedHeight(26)
+            input_field.setFixedHeight(24)
             if is_password:
                 input_field.setEchoMode(QLineEdit.Password)
                 input_field.setPlaceholderText('请输入密码')
@@ -779,19 +574,7 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
                     input_field.setPlaceholderText('请输入用户名')
                 else:
                     input_field.setPlaceholderText(f'请输入{label_text}')
-            input_field.setStyleSheet(f"""
-                QLineEdit {
-                    border: 1px solid {t['input_border']};
-                    border-radius: {t['radius_md']}px;
-                    padding: 0 12px;
-                    font-size: 10pt;
-                    color: {t['text_main']};
-                }
-                QLineEdit:focus {
-                    border-color: {t['border']};
-                    outline: none;
-                }
-            """)
+            input_field.setStyleSheet(self._get_input_alt2_style())
             if default_value:
                 input_field.setText(default_value)
             item_layout.addWidget(input_field)
@@ -802,29 +585,17 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
     def add_combo_item(self, card, label_text, field_name, options):
         """添加下拉选择框"""
         item_layout = QHBoxLayout()
-        item_layout.setSpacing(16)
+        item_layout.setSpacing(4)
         
         label = QLabel(f'{label_text}:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
         combo = QComboBox()
         combo.addItems(options)
-        combo.setFixedHeight(26)
-        combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 0 12px;
-                font-size: 10pt;
-                color: {t['text_main']};
-            }
-            QComboBox:focus {
-                border-color: {t['border']};
-                outline: none;
-            }
-        """)
+        combo.setFixedHeight(24)
+        combo.setStyleSheet(self._get_combo_style())
         item_layout.addWidget(combo)
         self.form_fields[field_name] = combo
         
@@ -1146,18 +917,19 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # 添加删除按钮
         delete_button = QPushButton('删除')
+        t = self._theme_engine.current_theme
         delete_button.setStyleSheet(f"""
-            QPushButton {
+            QPushButton {{
                 background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
-                padding: 4px 8px;
+                padding: 3px 6px;
                 font-size: 9pt;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: transparent;
-            }
+            }}
         """)
         delete_button.clicked.connect(lambda: self.delete_port(table, row_position))
         
@@ -1204,18 +976,19 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         
         # 添加删除按钮
         delete_button = QPushButton('删除')
+        t = self._theme_engine.current_theme
         delete_button.setStyleSheet(f"""
-            QPushButton {
+            QPushButton {{
                 background-color: transparent;
                 color: {t['text_primary']};
                 border: none;
                 border-radius: {t['radius_md']}px;
-                padding: 4px 8px;
+                padding: 3px 6px;
                 font-size: 9pt;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: transparent;
-            }
+            }}
         """)
         delete_button.clicked.connect(lambda: self.delete_port(table, row_position))
         

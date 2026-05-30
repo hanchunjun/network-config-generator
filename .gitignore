@@ -38,6 +38,9 @@ test_*.py
 # Runtime generated config (user-specific)
 config/theme_config.json
 
+# Build artifacts (installer output)
+installer/*.exe
+
 # Temp screenshots & debug scripts
 *.png
 *.bmp

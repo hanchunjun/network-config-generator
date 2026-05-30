@@ -299,10 +299,10 @@ class TestThemeEngineCache:
 
     def test_component_qss_cache_hit(self):
         """相同 component + theme_id 第二次调用应命中缓存。"""
-        qss1 = self.engine.qss("primary_btn")
-        key = f"primary_btn@{self.engine._current}"
+        qss1 = self.engine.qss("btn_primary")
+        key = f"btn_primary@{self.engine._current}"
         assert key in self.engine._component_qss_cache
-        qss2 = self.engine.qss("primary_btn")
+        qss2 = self.engine.qss("btn_primary")
         assert qss1 is qss2  # 同一对象引用，证明命中缓存
 
     def test_cache_cleared_on_theme_switch(self):
@@ -310,7 +310,7 @@ class TestThemeEngineCache:
         app = QApplication.instance()
         # 生成缓存
         self.engine.apply(app, Theme.VSCODE)
-        self.engine.qss("primary_btn")
+        self.engine.qss("btn_primary")
         assert len(self.engine._global_qss_cache) > 0
         assert len(self.engine._component_qss_cache) > 0
         # 切换主题（apply 内部清空缓存后重建）

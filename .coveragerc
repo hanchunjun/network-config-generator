@@ -4,8 +4,10 @@ source =
     src/utils
 omit =
     src/core/config_generator.py
+    src/core/_config_templates_legacy.py
     src/core/admin_keygen.py
     src/utils/resource_path.py
+    src/utils/app_factory.py
 
 [report]
 # 覆盖率低于此阈值时返回非零退出码

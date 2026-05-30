@@ -78,8 +78,8 @@ class SystemSettingsPage(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(12)
+        layout.setContentsMargins(12, 10, 12, 10)
+        layout.setSpacing(8)
 
         self._title_label = QLabel("模型设置")
         self._title_label.setStyleSheet("font-size: 14pt; font-weight: bold; text-decoration: none;")

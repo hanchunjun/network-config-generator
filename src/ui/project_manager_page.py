@@ -33,14 +33,14 @@ PROJECT_SUBDIRS = ["config", "output", "output/single_exception", "output/troubl
 class ConnectionTestWorker(QThread):
     result_ready = pyqtSignal(str, str, bool, str)
 
-    def __init__(self, ip, protocol, username, password):
+    def __init__(self, ip: str, protocol: str, username: str, password: str) -> None:
         super().__init__()
         self.ip = ip
         self.protocol = protocol
         self.username = username
         self.password = password
 
-    def run(self):
+    def run(self) -> None:
         ping_ok = self._test_ping()
         if not ping_ok:
             self.result_ready.emit(self.ip, "ping", False, "无法Ping通")
@@ -53,7 +53,7 @@ class ConnectionTestWorker(QThread):
             try:
                 from netmiko import ConnectHandler
                 device = {
-                    "device_type": "cisco_ios" if self.protocol == "ssh" else "cisco_ios_telnet",
+                    "device_type": "cisco_ios",
                     "host": self.ip,
                     "username": self.username,
                     "password": self.password,
@@ -80,7 +80,7 @@ class ConnectionTestWorker(QThread):
             except Exception as e:
                 self.result_ready.emit(self.ip, "telnet", False, f"Telnet失败: {str(e)[:80]}")
 
-    def _test_ping(self):
+    def _test_ping(self) -> bool:
         try:
             param = "-n" if platform.system().lower() == "windows" else "-c"
             timeout_param = "-w" if platform.system().lower() == "windows" else "-W"
@@ -112,17 +112,17 @@ class ProjectManagerPage(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(12, 8, 12, 8)
-        layout.setSpacing(6)
+        layout.setContentsMargins(10, 6, 10, 6)
+        layout.setSpacing(4)
 
         workspace_group = QGroupBox("项目工作区")
         workspace_group.setStyleSheet(self._group_style())
         workspace_layout = QVBoxLayout()
-        workspace_layout.setContentsMargins(14, 6, 14, 10)
-        workspace_layout.setSpacing(6)
+        workspace_layout.setContentsMargins(10, 4, 10, 8)
+        workspace_layout.setSpacing(4)
 
         top_row = QHBoxLayout()
-        top_row.setSpacing(20)
+        top_row.setSpacing(16)
 
         create_section = QVBoxLayout()
         create_section.setSpacing(4)
@@ -131,14 +131,14 @@ class ProjectManagerPage(QWidget):
         create_section.addWidget(create_header)
 
         input_layout = QHBoxLayout()
-        input_layout.setSpacing(6)
+        input_layout.setSpacing(4)
         name_label = QLabel("项目名称")
         name_label.setFixedWidth(60)
         name_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_secondary']}; font-weight: normal;")
         input_layout.addWidget(name_label)
         self.project_name_input = QLineEdit()
         self.project_name_input.setFixedWidth(240)
-        self.project_name_input.setFixedHeight(28)
+        self.project_name_input.setFixedHeight(26)
         self.project_name_input.setPlaceholderText("请输入项目名称，如：栖霞区电子政务外网项目")
         self.project_name_input.setStyleSheet(self._input_style())
         input_layout.addWidget(self.project_name_input)
@@ -179,7 +179,7 @@ class ProjectManagerPage(QWidget):
         overview_section.addLayout(overview_header_row)
 
         self.overview_cards_layout = QHBoxLayout()
-        self.overview_cards_layout.setSpacing(6)
+        self.overview_cards_layout.setSpacing(4)
         overview_section.addLayout(self.overview_cards_layout)
         overview_section.addStretch()
 
@@ -193,7 +193,7 @@ class ProjectManagerPage(QWidget):
         workspace_layout.addWidget(separator)
 
         console_layout = QHBoxLayout()
-        console_layout.setSpacing(8)
+        console_layout.setSpacing(6)
 
         switch_label = QLabel("当前项目")
         switch_label.setFixedWidth(60)
@@ -201,7 +201,7 @@ class ProjectManagerPage(QWidget):
         console_layout.addWidget(switch_label)
         self.project_combo = QComboBox()
         self.project_combo.setFixedWidth(280)
-        self.project_combo.setFixedHeight(28)
+        self.project_combo.setFixedHeight(26)
         _tc = self._theme_engine.current_theme
         _r_md = _tc['radius_md']
         self.project_combo.setStyleSheet(f"""
@@ -219,19 +219,19 @@ class ProjectManagerPage(QWidget):
         console_layout.addWidget(self.project_combo)
 
         self.switch_btn = QPushButton("切换")
-        self.switch_btn.setFixedSize(56, 30)
+        self.switch_btn.setFixedSize(52, 28)
         self.switch_btn.setStyleSheet(self._primary_btn_style())
         self.switch_btn.clicked.connect(self.switch_project)
         console_layout.addWidget(self.switch_btn)
 
         self.refresh_btn = QPushButton("刷新")
-        self.refresh_btn.setFixedSize(56, 30)
+        self.refresh_btn.setFixedSize(52, 28)
         self.refresh_btn.setStyleSheet(self._secondary_btn_style())
         self.refresh_btn.clicked.connect(self.refresh_project_list)
         console_layout.addWidget(self.refresh_btn)
 
         self.edit_project_btn = QPushButton("编辑")
-        self.edit_project_btn.setFixedSize(56, 30)
+        self.edit_project_btn.setFixedSize(52, 28)
         self.edit_project_btn.setStyleSheet(self._secondary_btn_style())
         self.edit_project_btn.clicked.connect(self.edit_project)
         console_layout.addWidget(self.edit_project_btn)
@@ -262,7 +262,7 @@ class ProjectManagerPage(QWidget):
         device_group = QGroupBox("设备清单管理")
         device_group.setStyleSheet(self._group_style())
         device_layout = QVBoxLayout()
-        device_layout.setSpacing(6)
+        device_layout.setSpacing(4)
 
         table_btn_layout = QHBoxLayout()
         table_btn_layout.setSpacing(8)
@@ -274,43 +274,43 @@ class ProjectManagerPage(QWidget):
         table_btn_layout.addWidget(self.add_row_btn)
 
         self.edit_btn = QPushButton("编辑设备")
-        self.edit_btn.setFixedSize(90, 30)
+        self.edit_btn.setFixedSize(82, 28)
         self.edit_btn.setStyleSheet(self._secondary_btn_style())
         self.edit_btn.clicked.connect(self.edit_device_dialog)
         table_btn_layout.addWidget(self.edit_btn)
 
         self.del_row_btn = QPushButton("删除选中")
-        self.del_row_btn.setFixedSize(90, 30)
+        self.del_row_btn.setFixedSize(82, 28)
         self.del_row_btn.setStyleSheet(self._secondary_btn_style())
         self.del_row_btn.clicked.connect(self.delete_device_row)
         table_btn_layout.addWidget(self.del_row_btn)
 
         self.save_device_btn = QPushButton("保存清单")
-        self.save_device_btn.setFixedSize(90, 30)
+        self.save_device_btn.setFixedSize(82, 28)
         self.save_device_btn.setStyleSheet(self._primary_btn_style())
         self.save_device_btn.clicked.connect(self.save_device_list)
         table_btn_layout.addWidget(self.save_device_btn)
 
         self.import_btn = QPushButton("导入")
-        self.import_btn.setFixedSize(70, 30)
+        self.import_btn.setFixedSize(64, 28)
         self.import_btn.setStyleSheet(self._secondary_btn_style())
         self.import_btn.clicked.connect(self.import_device_list)
         table_btn_layout.addWidget(self.import_btn)
 
         self.export_btn = QPushButton("导出")
-        self.export_btn.setFixedSize(70, 30)
+        self.export_btn.setFixedSize(64, 28)
         self.export_btn.setStyleSheet(self._secondary_btn_style())
         self.export_btn.clicked.connect(self.export_device_list)
         table_btn_layout.addWidget(self.export_btn)
 
         self.template_btn = QPushButton("下载模板")
-        self.template_btn.setFixedSize(90, 30)
+        self.template_btn.setFixedSize(82, 28)
         self.template_btn.setStyleSheet(self._secondary_btn_style())
         self.template_btn.clicked.connect(self.download_template)
         table_btn_layout.addWidget(self.template_btn)
 
         self.template_lib_btn = QPushButton("模板库")
-        self.template_lib_btn.setFixedSize(80, 30)
+        self.template_lib_btn.setFixedSize(72, 28)
         t = self._theme_engine.current_theme
         self.template_lib_btn.setStyleSheet(f"""
             QPushButton {{
@@ -328,7 +328,7 @@ class ProjectManagerPage(QWidget):
         table_btn_layout.addWidget(self.template_lib_btn)
 
         self.discover_btn = QPushButton("批量发现")
-        self.discover_btn.setFixedSize(90, 30)
+        self.discover_btn.setFixedSize(82, 28)
         t = self._theme_engine.current_theme
         self.discover_btn.setStyleSheet(f"""
             QPushButton {{
@@ -346,7 +346,7 @@ class ProjectManagerPage(QWidget):
         table_btn_layout.addWidget(self.discover_btn)
 
         self.test_conn_btn = QPushButton("连接测试")
-        self.test_conn_btn.setFixedSize(90, 30)
+        self.test_conn_btn.setFixedSize(82, 28)
         t = self._theme_engine.current_theme
         self.test_conn_btn.setStyleSheet(f"""
             QPushButton {{
@@ -364,7 +364,7 @@ class ProjectManagerPage(QWidget):
         table_btn_layout.addWidget(self.test_conn_btn)
 
         self.history_btn = QPushButton("变更历史")
-        self.history_btn.setFixedSize(90, 30)
+        self.history_btn.setFixedSize(82, 28)
         self.history_btn.setStyleSheet(self._secondary_btn_style())
         self.history_btn.clicked.connect(self.show_history)
         table_btn_layout.addWidget(self.history_btn)
@@ -373,7 +373,7 @@ class ProjectManagerPage(QWidget):
         device_layout.addLayout(table_btn_layout)
 
         filter_layout = QHBoxLayout()
-        filter_layout.setSpacing(8)
+        filter_layout.setSpacing(6)
         filter_layout.addWidget(QLabel("分组筛选："))
         self.group_filter_combo = QComboBox()
         self.group_filter_combo.setFixedWidth(180)
@@ -1184,50 +1184,29 @@ class ProjectManagerPage(QWidget):
         if not devices_to_test:
             return
 
-        results = []
         self.test_conn_btn.setEnabled(False)
         self.test_conn_btn.setText("测试中...")
 
+        workers = []
+        results = []
+        total = len(devices_to_test)
+        finished = [0]
+
+        def _on_result(ip: str, kind: str, ok: bool, msg: str) -> None:
+            icon = "✅" if ok else "❌"
+            results.append(f"{icon} {ip} - {msg}")
+            finished[0] += 1
+            if finished[0] >= total * 2:
+                self.test_conn_btn.setEnabled(True)
+                self.test_conn_btn.setText("连接测试")
+                QMessageBox.information(self, "连接测试结果", "\n".join(results))
+
         for ip, protocol, username, password in devices_to_test:
             worker = ConnectionTestWorker(ip, protocol, username, password)
-            worker.run()
-
-            ping_ok = worker._test_ping()
-            if ping_ok:
-                results.append(f"✅ {ip} - Ping成功")
-                if protocol == "ssh":
-                    try:
-                        from netmiko import ConnectHandler
-                        device = {
-                            "device_type": "cisco_ios",
-                            "host": ip, "username": username, "password": password,
-                            "timeout": 10,
-                        }
-                        conn = ConnectHandler(**device)
-                        conn.disconnect()
-                        results.append(f"✅ {ip} - SSH连接成功")
-                    except Exception as e:
-                        results.append(f"❌ {ip} - SSH失败: {str(e)[:60]}")
-                else:
-                    try:
-                        from netmiko import ConnectHandler
-                        device = {
-                            "device_type": "cisco_ios_telnet",
-                            "host": ip, "username": username, "password": password,
-                            "timeout": 10,
-                        }
-                        conn = ConnectHandler(**device)
-                        conn.disconnect()
-                        results.append(f"✅ {ip} - Telnet连接成功")
-                    except Exception as e:
-                        results.append(f"❌ {ip} - Telnet失败: {str(e)[:60]}")
-            else:
-                results.append(f"❌ {ip} - Ping失败")
-
-        self.test_conn_btn.setEnabled(True)
-        self.test_conn_btn.setText("连接测试")
-
-        QMessageBox.information(self, "连接测试结果", "\n".join(results))
+            worker.result_ready.connect(_on_result)
+            worker.finished.connect(lambda w=worker: w.deleteLater())
+            workers.append(worker)
+            worker.start()
 
     def show_history(self):
         if not self.current_project:

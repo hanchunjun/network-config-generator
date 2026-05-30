@@ -25,8 +25,8 @@ class DeviceFormDialog(QDialog):
     def init_ui(self):
         t = self._theme_engine.current_theme
         layout = QVBoxLayout()
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(18, 16, 18, 16)
+        layout.setSpacing(10)
 
         title = QLabel("新增设备" if not self.device else "编辑设备")
         title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
@@ -37,14 +37,14 @@ class DeviceFormDialog(QDialog):
             QGroupBox {{
                 font-size: 14pt; font-weight: bold; color: {t['text_main']};
                 border: 1px solid {t['border']}; border-radius: {t['radius_md']}px;
-                margin-top: 8px; padding: 16px; background-color: {t['card_bg']};
+                margin-top: 8px; padding: 12px; background-color: {t['card_bg']};
             }}
             QGroupBox::title {{
                 subcontrol-origin: margin; left: 12px; padding: 0 6px;
             }}
         """)
         form_layout = QFormLayout()
-        form_layout.setSpacing(12)
+        form_layout.setSpacing(8)
         form_layout.setLabelAlignment(Qt.AlignRight)
 
         input_style = f"""
@@ -111,11 +111,11 @@ class DeviceFormDialog(QDialog):
         layout.addWidget(form_group)
 
         btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(12)
+        btn_layout.setSpacing(8)
         btn_layout.addStretch()
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 30)
+        cancel_btn.setFixedSize(88, 28)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; border: 1px solid {t['border']};
@@ -127,7 +127,7 @@ class DeviceFormDialog(QDialog):
         btn_layout.addWidget(cancel_btn)
 
         save_btn = QPushButton("保存")
-        save_btn.setFixedSize(100, 30)
+        save_btn.setFixedSize(88, 28)
         save_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; color: {t['text_main']};

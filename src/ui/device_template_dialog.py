@@ -21,8 +21,8 @@ class DeviceTemplateDialog(QDialog):
     def init_ui(self):
         t = self._theme_engine.current_theme
         layout = QVBoxLayout()
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(18, 16, 18, 16)
+        layout.setSpacing(8)
 
         title = QLabel("设备模板库")
         title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
@@ -94,7 +94,7 @@ class DeviceTemplateDialog(QDialog):
         btn_layout.addStretch()
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(88, 30)
+        cancel_btn.setFixedSize(80, 28)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; border: 1px solid {t['border']};
@@ -106,7 +106,7 @@ class DeviceTemplateDialog(QDialog):
         btn_layout.addWidget(cancel_btn)
 
         apply_btn = QPushButton("应用选中模板")
-        apply_btn.setFixedSize(128, 30)
+        apply_btn.setFixedSize(112, 28)
         apply_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; color: {t['text_main']};

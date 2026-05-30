@@ -111,8 +111,8 @@ class DeviceDiscoveryDialog(QDialog):
     def init_ui(self):
         t = self._theme_engine.current_theme
         layout = QVBoxLayout()
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(18, 16, 18, 16)
+        layout.setSpacing(8)
 
         title = QLabel("批量设备发现")
         title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
@@ -173,7 +173,7 @@ class DeviceDiscoveryDialog(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
         self.scan_btn = QPushButton("开始扫描")
-        self.scan_btn.setFixedSize(120, 30)
+        self.scan_btn.setFixedSize(100, 28)
         self.scan_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; color: {t['text_main']};
@@ -195,7 +195,7 @@ class DeviceDiscoveryDialog(QDialog):
         btn_layout.addWidget(self.scan_btn)
 
         self.stop_btn = QPushButton("停止")
-        self.stop_btn.setFixedSize(80, 30)
+        self.stop_btn.setFixedSize(72, 28)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
             QPushButton {{
@@ -282,7 +282,7 @@ class DeviceDiscoveryDialog(QDialog):
         add_layout.addStretch()
 
         self.add_selected_btn = QPushButton("添加选中设备到清单")
-        self.add_selected_btn.setFixedSize(180, 30)
+        self.add_selected_btn.setFixedSize(160, 28)
         self.add_selected_btn.setEnabled(False)
         self.add_selected_btn.setStyleSheet(f"""
             QPushButton {{
@@ -309,7 +309,7 @@ class DeviceDiscoveryDialog(QDialog):
         layout.addWidget(result_group)
 
         close_btn = QPushButton("关闭")
-        close_btn.setFixedSize(100, 30)
+        close_btn.setFixedSize(88, 28)
         close_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; border: 1px solid {t['border']};

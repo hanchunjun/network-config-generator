@@ -620,21 +620,21 @@ class TaskCard(QGroupBox):
         self.setMinimumWidth(280)
 
         layout = QVBoxLayout()
-        layout.setSpacing(6)
-        layout.setContentsMargins(8, 16, 8, 8)
+        layout.setSpacing(4)
+        layout.setContentsMargins(6, 12, 6, 6)
 
         self.status_label = QLabel("就绪")
         self.status_label.setStyleSheet(f"font-size: 10pt; color: {self._theme_engine.current_theme['text_tertiary']}; font-weight: normal;")
         layout.addWidget(self.status_label)
 
         self.progress_bar = QProgressBar()
-        self.progress_bar.setFixedHeight(16)
+        self.progress_bar.setFixedHeight(14)
         self.progress_bar.setStyleSheet(self._progress_style())
         layout.addWidget(self.progress_bar)
 
         btn_row = QHBoxLayout()
         self.run_btn = QPushButton("▶ 执行")
-        self.run_btn.setFixedHeight(28)
+        self.run_btn.setFixedHeight(26)
         self.run_btn.setStyleSheet(_primary_btn_style(self._theme_engine.current_theme))
         self.run_btn.clicked.connect(self._run_task)
         btn_row.addWidget(self.run_btn)
@@ -735,17 +735,17 @@ class FileResultTab(QWidget):
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
+        layout.setSpacing(6)
 
         splitter = QSplitter(Qt.Horizontal)
 
         left_panel = QWidget()
         left_layout = QVBoxLayout()
         left_layout.setContentsMargins(0, 0, 0, 0)
-        left_layout.setSpacing(6)
+        left_layout.setSpacing(4)
 
         btn_row = QHBoxLayout()
-        btn_row.setSpacing(4)
+        btn_row.setSpacing(3)
         t = self._theme_engine.current_theme
         self.refresh_btn = QPushButton("🔄 刷新")
         self.refresh_btn.setStyleSheet(_btn_style(t))
@@ -773,7 +773,7 @@ class FileResultTab(QWidget):
         right_panel = QWidget()
         right_layout = QVBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(6)
+        right_layout.setSpacing(4)
 
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
@@ -782,7 +782,7 @@ class FileResultTab(QWidget):
         right_layout.addWidget(self.preview_text)
 
         self.ai_btn_layout = QHBoxLayout()
-        self.ai_btn_layout.setSpacing(8)
+        self.ai_btn_layout.setSpacing(6)
         self.ai_btn_layout.addStretch()
 
         if tab_name in ("💾备份文件",):
@@ -1020,8 +1020,8 @@ class OpsToolboxPage(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(16, 12, 16, 12)
-        layout.setSpacing(6)
+        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(4)
 
         header_layout = QHBoxLayout()
         self.title_label = QLabel("项目运维")
@@ -1039,14 +1039,14 @@ class OpsToolboxPage(QWidget):
         header_layout.addWidget(self.project_combo)
 
         self.refresh_btn = QPushButton("🔄 刷新项目")
-        self.refresh_btn.setFixedSize(100, 30)
+        self.refresh_btn.setFixedSize(88, 28)
         self.refresh_btn.setStyleSheet(_btn_style(self._theme_engine.current_theme))
         self.refresh_btn.clicked.connect(self._refresh_projects)
         header_layout.addWidget(self.refresh_btn)
         layout.addLayout(header_layout)
 
         cards_layout = QHBoxLayout()
-        cards_layout.setSpacing(12)
+        cards_layout.setSpacing(8)
         self.backup_card = TaskCard("backup", self)
         cards_layout.addWidget(self.backup_card)
         self.inspect_card = TaskCard("inspect", self)

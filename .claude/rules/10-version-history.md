@@ -1,7 +1,16 @@
-# 版本更新历史（V0.0.9 ~ V0.3.7）
+# 版本更新历史（V0.0.9 ~ V0.4.1）
 
 > 本文件收纳 CLAUDE.md 版本更新历史章节。
 > 每次重大改动在 `CHANGELOG.md` 对应版本下追加条目，格式遵循 Keep a Changelog。
+
+## V0.4.1 Logo 设计与安装包版（2026-05-30）
+
+- ✅ **Logo 设计**：新增 `assets/netops.ico` — 华文行楷 "Net" 字样 + 深海蓝→科技蓝渐变背景 + 四角光点科技装饰
+- ✅ **图标生成脚本**：新增 `scripts/generate_icon.py` — 从 TTF 字体渲染多尺寸 ICO（16/32/48/64/128/256），支持 `--preview` 参数
+- ✅ **安装包构建**：新增 `installer/build_setup.py` — 自解压安装包构建脚本，生成带图标的 `NetOps_Setup_0.4.0.exe`
+- ✅ **安装包输出**：`installer/NetOps_Setup_0.4.0.exe`（62.7 MB，含 429 个文件）
+- ✅ **CLAUDE.md 更新**：新增 Logo 与图标章节、安装包构建流程、更新目录结构
+- ✅ **规则文件同步**：更新 `05-dev-build-rule.md` 和 `10-version-history.md`
 
 ## V0.3.7 性能优化版（2026-05-26）
 

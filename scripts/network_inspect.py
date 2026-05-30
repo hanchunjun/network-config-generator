@@ -245,13 +245,13 @@ def _save_single_report(ip, vendor, dev_mod, inspect_time, content):
     except Exception:
         pass
 
-def run_inspect(project_dir: str, progress_callback=None, max_workers: int = 5) -> List[str]:
+def run_inspect(project_dir: str, progress_callback=None, max_workers: int = 20) -> List[str]:
     """全网巡检（并发模式）。
 
     Args:
         project_dir: 项目目录路径
         progress_callback: 进度回调函数 (completed, total, message)
-        max_workers: 最大并发线程数（默认 5，单台设备不影响）
+        max_workers: 最大并发线程数（默认 20，单台设备不影响）
     """
     _resolve_paths(project_dir)
     init_folder()

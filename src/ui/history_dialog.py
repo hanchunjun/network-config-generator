@@ -19,8 +19,8 @@ class HistoryDialog(QDialog):
     def init_ui(self):
         t = self._theme_engine.current_theme
         layout = QVBoxLayout()
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(18, 16, 18, 16)
+        layout.setSpacing(8)
 
         title = QLabel("设备变更历史")
         title.setStyleSheet(f"font-size: 18pt; font-weight: bold; color: {t['text_main']};")
@@ -71,7 +71,7 @@ class HistoryDialog(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         close_btn = QPushButton("关闭")
-        close_btn.setFixedSize(100, 38)
+        close_btn.setFixedSize(88, 32)
         close_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent; border: 1px solid {t['border']};

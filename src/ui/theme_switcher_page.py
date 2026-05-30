@@ -141,8 +141,8 @@ class ThemeSwitcherPage(QWidget):
 
     def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(32, 24, 32, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(24, 18, 24, 18)
+        layout.setSpacing(10)
 
         # ── 标题 ──
         title = QLabel("🎨  主题切换")

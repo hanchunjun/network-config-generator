@@ -461,7 +461,7 @@ class ThemeEngine(QObject):
             background-color: {t['card_bg']};
             gridline-color: {t['border_deep']};
         }}
-        QTableWidget::item {{ padding: 6px 8px; color: {t['text_secondary']}; }}
+        QTableWidget::item {{ padding: 4px 6px; color: {t['text_secondary']}; }}
         QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
         QTableWidget::item:selected {{
             background-color: {t['selection_bg']};
@@ -471,10 +471,10 @@ class ThemeEngine(QObject):
             background-color: {t['toolbar_bg']};
             border: none;
             border-bottom: 1px solid {t['border_deep']};
-            padding: 8px;
+            padding: 6px;
             font-weight: bold;
             color: {t['text_main']};
-            font-size: 10pt;
+            font-size: 9pt;
         }}
 
         /* ── 标签页 ── */
@@ -489,7 +489,7 @@ class ThemeEngine(QObject):
             border-bottom: none;
             border-top-left-radius: {radius}px;
             border-top-right-radius: {radius}px;
-            padding: 6px 14px;
+            padding: 4px 10px;
             font-size: 11pt;
             color: {t['text_tertiary']};
             margin-right: 2px;
@@ -512,8 +512,8 @@ class ThemeEngine(QObject):
             color: {t['text_main']};
             border: 1px solid {t['border_deep']};
             border-radius: {t['radius_lg']}px;
-            margin-top: 10px;
-            padding: 14px;
+            margin-top: 8px;
+            padding: 10px;
             background-color: {t['card_bg']};
         }}
         QGroupBox::title {{
@@ -531,7 +531,7 @@ class ThemeEngine(QObject):
             outline: none;
             color: {t['text_secondary']};
         }}
-        QListWidget::item {{ padding: 5px 8px; }}
+        QListWidget::item {{ padding: 3px 6px; }}
         QListWidget::item:selected {{
             background-color: {t['selection_bg']};
             color: {t['text_primary']};
@@ -542,7 +542,7 @@ class ThemeEngine(QObject):
         QTextEdit {{
             border: 1px solid {t['border_deep']};
             border-radius: {radius}px;
-            padding: 10px;
+            padding: 8px;
             font-family: {t['font_mono']};
             font-size: 11pt;
             background-color: {t['code_bg']};
@@ -557,7 +557,7 @@ class ThemeEngine(QObject):
             background-color: {t['hover_bg']};
             font-size: 10pt;
             color: {t['text_tertiary']};
-            height: 16px;
+            height: 14px;
         }}
         QProgressBar::chunk {{
             background-color: {t['primary']};
@@ -754,6 +754,117 @@ class ThemeEngine(QObject):
                     font-size: 10pt;
                     color: {t['success']};
                     font-weight: bold;
+                }}
+            """,
+            # ── V0.3.8 三级按钮体系（DESIGN.md §4.1 唯一来源）──
+            "btn_primary": f"""
+                QPushButton {{
+                    background-color: transparent;
+                    border: 1px solid {t['primary_light']};
+                    border-radius: {r}px;
+                    font-size: 11pt;
+                    color: {t['primary_light']};
+                    font-weight: bold;
+                    padding: 5px 12px;
+                }}
+                QPushButton:hover {{
+                    background-color: {t['sidebar_bg']};
+                    border-color: {t['primary']};
+                    color: {t['primary']};
+                }}
+                QPushButton:pressed {{
+                    background-color: {t['hover_bg']};
+                    border-color: {t['primary_hover']};
+                    color: {t['primary_hover']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border-color: {t['border']};
+                    color: {t['text_tertiary']};
+                }}
+            """,
+            "btn_default": f"""
+                QPushButton {{
+                    background-color: transparent;
+                    border: 1px solid {t['border_deep']};
+                    border-radius: {r}px;
+                    font-size: 11pt;
+                    color: {t['text_main']};
+                    font-weight: bold;
+                    padding: 5px 12px;
+                }}
+                QPushButton:hover {{
+                    background-color: {t['hover_bg']};
+                    border-color: {t['text_secondary']};
+                    color: {t['text_secondary']};
+                }}
+                QPushButton:pressed {{
+                    background-color: {t['page_bg']};
+                    border-color: {t['text_main']};
+                    color: {t['text_main']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border-color: {t['border']};
+                    color: {t['text_tertiary']};
+                }}
+            """,
+            "btn_danger": f"""
+                QPushButton {{
+                    background-color: transparent;
+                    border: 1px solid {t['danger']};
+                    border-radius: {r}px;
+                    font-size: 11pt;
+                    color: {t['danger']};
+                    font-weight: bold;
+                    padding: 5px 12px;
+                }}
+                QPushButton:hover {{
+                    background-color: transparent;
+                    border-color: {t['danger_hover']};
+                    color: {t['danger_hover']};
+                }}
+                QPushButton:disabled {{
+                    background-color: transparent;
+                    border-color: {t['border']};
+                    color: {t['text_tertiary']};
+                }}
+            """,
+            "input_field": f"""
+                QLineEdit {{
+                    background-color: {t['input_bg']};
+                    border: 1px solid {t['border']};
+                    border-radius: {t['radius_sm']}px;
+                    padding: 4px 8px;
+                    font-size: 11pt;
+                    color: {t['text_main']};
+                }}
+                QLineEdit:focus {{
+                    border-color: {t['primary_light']};
+                }}
+            """,
+            "text_edit": f"""
+                QTextEdit {{
+                    background-color: {t['input_bg']};
+                    border: 1px solid {t['border']};
+                    border-radius: {r}px;
+                    padding: 6px;
+                    font-size: 10pt;
+                    color: {t['text_main']};
+                }}
+            """,
+            "group_box": f"""
+                QGroupBox {{
+                    background-color: {t['card_bg']};
+                    border: 1px solid {t['border']};
+                    border-radius: {r}px;
+                    font-size: 11pt;
+                    font-weight: bold;
+                    color: {t['text_main']};
+                    padding-top: 8px;
+                }}
+                QGroupBox::title {{
+                    color: {t['primary_light']};
                 }}
             """,
         }

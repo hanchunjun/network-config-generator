@@ -23,8 +23,8 @@ class ExportWarningDialog(QDialog):
         self.setMinimumHeight(400)
 
         layout = QVBoxLayout()
-        layout.setSpacing(15)
-        layout.setContentsMargins(25, 25, 25, 25)
+        layout.setSpacing(10)
+        layout.setContentsMargins(18, 16, 18, 16)
 
         # 警告图标和标题
         title_label = QLabel("⚠️ 导出操作将包含敏感信息")
@@ -79,7 +79,7 @@ class ExportWarningDialog(QDialog):
         button_layout.setSpacing(12)
 
         confirm_btn = QPushButton("确认导出")
-        confirm_btn.setFixedSize(120, 30)
+        confirm_btn.setFixedSize(100, 28)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;
@@ -109,7 +109,7 @@ class ExportWarningDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消导出")
-        cancel_btn.setFixedSize(120, 30)
+        cancel_btn.setFixedSize(88, 28)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;
@@ -152,8 +152,8 @@ class PasswordVisibilityDialog(QDialog):
         self.setMinimumWidth(450)
 
         layout = QVBoxLayout()
-        layout.setSpacing(15)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(10)
+        layout.setContentsMargins(18, 16, 18, 16)
 
         # 警告信息
         warning_label = QLabel(
@@ -175,7 +175,7 @@ class PasswordVisibilityDialog(QDialog):
         button_layout.setSpacing(10)
 
         confirm_btn = QPushButton("确认查看")
-        confirm_btn.setFixedSize(100, 30)
+        confirm_btn.setFixedSize(88, 28)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;
@@ -204,7 +204,7 @@ class PasswordVisibilityDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 30)
+        cancel_btn.setFixedSize(80, 28)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;
@@ -247,8 +247,8 @@ class DeleteDeviceDialog(QDialog):
         self.setMinimumWidth(450)
 
         layout = QVBoxLayout()
-        layout.setSpacing(15)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(10)
+        layout.setContentsMargins(18, 16, 18, 16)
 
         # 确认信息
         info_label = QLabel(
@@ -276,7 +276,7 @@ class DeleteDeviceDialog(QDialog):
         button_layout.setSpacing(10)
 
         confirm_btn = QPushButton("确认删除")
-        confirm_btn.setFixedSize(100, 30)
+        confirm_btn.setFixedSize(88, 28)
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;
@@ -305,7 +305,7 @@ class DeleteDeviceDialog(QDialog):
         )
 
         cancel_btn = QPushButton("取消")
-        cancel_btn.setFixedSize(100, 30)
+        cancel_btn.setFixedSize(80, 28)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: transparent;

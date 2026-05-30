@@ -50,8 +50,8 @@ class AccountManagerDialog(QDialog):
         r = t["radius_md"]
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(36, 28, 36, 28)
-        layout.setSpacing(12)
+        layout.setContentsMargins(28, 20, 28, 20)
+        layout.setSpacing(8)
 
         # ── 标题 ──
         title_label = QLabel("🔑  账户管理")

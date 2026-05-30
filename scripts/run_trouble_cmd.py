@@ -8,6 +8,7 @@
 import os
 import re
 import socket
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import List, Dict, Any, Tuple
 
@@ -157,7 +158,43 @@ def match_report_by_ip(ip):
                 return f.read()
     return ""
 
-def run_trouble(project_dir: str, progress_callback=None) -> List[str]:
+def _check_single_device(ip: str, dev_info: dict) -> Tuple[str, List[str]]:
+    """核查单台故障设备（供线程池调用）。
+
+    Returns:
+        (结果信息, 高危手动指令列表)
+    """
+    vendor = dev_info["vendor"]
+    user = dev_info["user"]
+    pwd = dev_info["pwd"]
+    secret = dev_info["secret"]
+
+    report_text = match_report_by_ip(ip)
+    if not report_text:
+        return f"未找到设备 {ip} 对应故障报告，跳过", []
+
+    cmd_list = extract_command_from_report(report_text)
+    auto_cmd, manual_cmd = classify_command(cmd_list)
+
+    if not auto_cmd:
+        return f"设备 {ip} 无可用自动排查指令", manual_cmd
+
+    res = exec_single_device(ip, vendor, user, pwd, secret, auto_cmd)
+    save_file = os.path.join(CHECK_RESULT_PATH, f"二次核查_{ip}.txt")
+    os.makedirs(os.path.dirname(save_file), exist_ok=True)
+    with open(save_file, "w", encoding="utf-8") as f:
+        f.write(res)
+    return f"设备 {ip} 二次核查完成", manual_cmd
+
+
+def run_trouble(project_dir: str, progress_callback=None, max_workers: int = 10) -> List[str]:
+    """故障二次核查（并发模式）。
+
+    Args:
+        project_dir: 项目目录路径
+        progress_callback: 进度回调函数 (completed, total, message)
+        max_workers: 最大并发线程数（默认 10）
+    """
     _resolve_paths(project_dir)
     init_folder()
     ip_dict = load_device_ip_dict()
@@ -169,52 +206,62 @@ def run_trouble(project_dir: str, progress_callback=None) -> List[str]:
         return ["未检测到故障设备，无需二次核查"]
 
     total = len(fault_ips)
-    results: List[str] = []
     all_manual_risk: List[str] = []
 
-    for idx, ip in enumerate(fault_ips):
+    # 过滤出在设备清单中的故障 IP
+    valid_ips = [ip for ip in fault_ips if ip in ip_dict]
+    skipped = [ip for ip in fault_ips if ip not in ip_dict]
+
+    results: List[str] = [f"设备 {ip} 不在设备清单中，跳过核查" for ip in skipped]
+
+    if not valid_ips:
+        _save_manual_task(all_manual_risk)
         if progress_callback:
-            progress_callback(idx + 1, total, f"正在核查 {ip} ...")
+            progress_callback(total, total, "故障二次核查完成")
+        return results
 
-        if ip not in ip_dict:
-            results.append(f"设备 {ip} 不在设备清单中，跳过核查")
-            continue
+    if len(valid_ips) <= 1 or max_workers <= 1:
+        # 单设备保持串行
+        for idx, ip in enumerate(valid_ips):
+            if progress_callback:
+                progress_callback(idx + 1, total, f"正在核查 {ip} ...")
+            msg, manual = _check_single_device(ip, ip_dict[ip])
+            results.append(msg)
+            all_manual_risk.extend(manual)
+    else:
+        # 多设备并发核查
+        completed = 0
+        with ThreadPoolExecutor(max_workers=min(max_workers, len(valid_ips))) as executor:
+            future_to_ip = {
+                executor.submit(_check_single_device, ip, ip_dict[ip]): ip
+                for ip in valid_ips
+            }
+            for future in as_completed(future_to_ip):
+                ip = future_to_ip[future]
+                try:
+                    msg, manual = future.result()
+                    results.append(msg)
+                    all_manual_risk.extend(manual)
+                except Exception as e:
+                    results.append(f"设备 {ip} 二次核查异常: {e}")
+                completed += 1
+                if progress_callback:
+                    progress_callback(completed, total, f"已完成 {ip}")
 
-        dev_info = ip_dict[ip]
-        vendor = dev_info["vendor"]
-        user = dev_info["user"]
-        pwd = dev_info["pwd"]
-        secret = dev_info["secret"]
-
-        report_text = match_report_by_ip(ip)
-        if not report_text:
-            results.append(f"未找到设备 {ip} 对应故障报告，跳过")
-            continue
-
-        cmd_list = extract_command_from_report(report_text)
-        auto_cmd, manual_cmd = classify_command(cmd_list)
-        all_manual_risk.extend(manual_cmd)
-
-        if not auto_cmd:
-            results.append(f"设备 {ip} 无可用自动排查指令")
-            continue
-
-        res = exec_single_device(ip, vendor, user, pwd, secret, auto_cmd)
-        save_file = os.path.join(CHECK_RESULT_PATH, f"二次核查_{ip}.txt")
-        os.makedirs(os.path.dirname(save_file), exist_ok=True)
-        with open(save_file, "w", encoding="utf-8") as f:
-            f.write(res)
-        results.append(f"设备 {ip} 二次核查完成")
-
-    os.makedirs(os.path.dirname(MANUAL_TASK_FILE), exist_ok=True)
-    with open(MANUAL_TASK_FILE, "w", encoding="utf-8") as f:
-        f.write("===== 高危配置操作清单【必须人工登录手动执行】=====\n")
-        for item in set(all_manual_risk):
-            f.write(item + "\n")
+    _save_manual_task(all_manual_risk)
 
     if progress_callback:
         progress_callback(total, total, "故障二次核查完成")
     return results
+
+
+def _save_manual_task(manual_risk: List[str]) -> None:
+    """保存高危人工操作清单。"""
+    os.makedirs(os.path.dirname(MANUAL_TASK_FILE), exist_ok=True)
+    with open(MANUAL_TASK_FILE, "w", encoding="utf-8") as f:
+        f.write("===== 高危配置操作清单【必须人工登录手动执行】=====\n")
+        for item in set(manual_risk):
+            f.write(item + "\n")
 
 
 def main():

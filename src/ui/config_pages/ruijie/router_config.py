@@ -1,4 +1,4 @@
-﻿from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                                QLineEdit, QCheckBox, QComboBox, QFrame, QTabWidget, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QRadioButton, QButtonGroup)
 from PyQt5.QtCore import Qt
 from src.ui.config_pages.base_config_page import BaseConfigPage
@@ -16,31 +16,7 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # 创建TabWidget
         tab_widget = QTabWidget()
-        tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: none;
-                background-color: {t['hover_bg']};
-            }
-            QTabBar::tab {
-                background-color: {t['card_bg']};
-                border: 1px solid {t['border']};
-                border-bottom: none;
-                padding: 10px 24px;
-                margin-right: 4px;
-                border-top-left-radius: 6px;
-                border-top-right-radius: 6px;
-                font-size: 10pt;
-                color: {t['text_secondary']};
-            }
-            QTabBar::tab:selected {
-                background-color: {t['page_bg']};
-                color: {t['card_bg']};
-                font-weight: bold;
-            }
-            QTabBar::tab:hover:!selected {
-                background-color: {t['hover_bg']};
-            }
-        """)
+        tab_widget.setStyleSheet(self._get_tab_style())
         
         # Tab1：基础管理配置
         tab1 = self.create_tab_content()
@@ -53,10 +29,10 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # 登录方式选择
         login_mode_layout = QHBoxLayout()
-        login_mode_layout.setSpacing(16)
+        login_mode_layout.setSpacing(4)
         
         label = QLabel('登录方式:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         login_mode_layout.addWidget(label)
         
@@ -76,28 +52,17 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # console密码输入
         pwd_layout = QHBoxLayout()
-        pwd_layout.setSpacing(16)
+        pwd_layout.setSpacing(4)
         
         label = QLabel('console密码:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         pwd_layout.addWidget(label)
         
         console_pwd_input = QLineEdit()
         console_pwd_input.setEchoMode(QLineEdit.Password)
         console_pwd_input.setPlaceholderText('请输入密码')
-        console_pwd_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        console_pwd_input.setStyleSheet(self._get_input_style())
         pwd_layout.addWidget(console_pwd_input)
         self.form_fields['console_password'] = console_pwd_input
         
@@ -106,50 +71,28 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # 用户名和密码输入
         user_pwd_layout = QHBoxLayout()
-        user_pwd_layout.setSpacing(16)
+        user_pwd_layout.setSpacing(4)
         
         label = QLabel('用户名:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_input = QLineEdit()
         user_input.setPlaceholderText('请输入用户名')
-        user_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        user_input.setStyleSheet(self._get_input_style())
         user_pwd_layout.addWidget(user_input)
         self.form_fields['console_username'] = user_input
         
         label = QLabel('密码:')
-        label.setFixedWidth(80)
+        label.setFixedWidth(72)
         label.setStyleSheet(self._get_label_secondary_style())
         user_pwd_layout.addWidget(label)
         
         user_pwd_input = QLineEdit()
         user_pwd_input.setEchoMode(QLineEdit.Password)
         user_pwd_input.setPlaceholderText('请输入密码')
-        user_pwd_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-            QLineEdit:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        user_pwd_input.setStyleSheet(self._get_input_style())
         user_pwd_layout.addWidget(user_pwd_input)
         self.form_fields['console_user_password'] = user_pwd_input
         
@@ -259,7 +202,7 @@ class RuijieRouterConfig(BaseConfigPage):
         self.telnet_user_pass_input = QLineEdit()
         self.telnet_user_pass_input.setPlaceholderText('请输入Telnet密码')
         self.telnet_user_pass_input.setEchoMode(QLineEdit.Password)
-        self.telnet_user_pass_input.setStyleSheet(self.get_input_style())
+        self.telnet_user_pass_input.setStyleSheet(self._get_input_style())
         
         self.telnet_user_layout.addWidget(telnet_user_label)
         self.telnet_user_layout.addWidget(self.telnet_user_input)
@@ -312,11 +255,11 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # 配置区域
         config_layout = QHBoxLayout()
-        config_layout.setSpacing(16)
+        config_layout.setSpacing(4)
         
         # 聚合ID
         agg_id_layout = QVBoxLayout()
-        agg_id_layout.setSpacing(8)
+        agg_id_layout.setSpacing(4)
         agg_id_label = QLabel('聚合ID:')
         agg_id_label.setStyleSheet(self._get_label_secondary_style())
         agg_id_layout.addWidget(agg_id_label)
@@ -324,104 +267,56 @@ class RuijieRouterConfig(BaseConfigPage):
         self.agg_id_input.setPlaceholderText('1')
         self.agg_id_input.setText('1')
         self.agg_id_input.setFixedWidth(80)
-        self.agg_id_input.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_id_input.setStyleSheet(self._get_input_style())
         agg_id_layout.addWidget(self.agg_id_input)
         config_layout.addLayout(agg_id_layout)
         
         # 模式选择
         mode_layout = QVBoxLayout()
-        mode_layout.setSpacing(8)
+        mode_layout.setSpacing(4)
         mode_label = QLabel('模式:')
         mode_label.setStyleSheet(self._get_label_secondary_style())
         mode_layout.addWidget(mode_label)
         self.agg_mode_combo = QComboBox()
         self.agg_mode_combo.addItems(['LACP (动态)', 'Manual (静态)'])
-        self.agg_mode_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_mode_combo.setStyleSheet(self._get_combo_style())
         mode_layout.addWidget(self.agg_mode_combo)
         config_layout.addLayout(mode_layout)
         
         # 负载均衡
         lb_layout = QVBoxLayout()
-        lb_layout.setSpacing(8)
+        lb_layout.setSpacing(4)
         lb_label = QLabel('负载均衡:')
         lb_label.setStyleSheet(self._get_label_secondary_style())
         lb_layout.addWidget(lb_label)
         self.agg_lb_combo = QComboBox()
         self.agg_lb_combo.addItems(['src-dst-ip (推荐)', 'src-dst-mac', 'src-dst-port'])
-        self.agg_lb_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_lb_combo.setStyleSheet(self._get_combo_style())
         lb_layout.addWidget(self.agg_lb_combo)
         config_layout.addLayout(lb_layout)
         
         # 成员端口
         member_layout = QVBoxLayout()
-        member_layout.setSpacing(8)
+        member_layout.setSpacing(4)
         member_label = QLabel('成员端口:')
         member_label.setStyleSheet(self._get_label_secondary_style())
         member_layout.addWidget(member_label)
         member_port_layout = QHBoxLayout()
-        member_port_layout.setSpacing(8)
+        member_port_layout.setSpacing(4)
         self.agg_interface_combo = QComboBox()
         self.agg_interface_combo.addItems(['GigabitEthernet ', 'TenGigabitEthernet '])
-        self.agg_interface_combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_interface_combo.setStyleSheet(self._get_combo_style())
         member_port_layout.addWidget(self.agg_interface_combo)
         self.agg_start_port = QLineEdit()
         self.agg_start_port.setPlaceholderText('开始')
         self.agg_start_port.setFixedWidth(60)
-        self.agg_start_port.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_start_port.setStyleSheet(self._get_input_style())
         member_port_layout.addWidget(self.agg_start_port)
         member_port_layout.addWidget(QLabel('至'))
         self.agg_end_port = QLineEdit()
         self.agg_end_port.setPlaceholderText('结束')
         self.agg_end_port.setFixedWidth(60)
-        self.agg_end_port.setStyleSheet(f"""
-            QLineEdit {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-            }
-        """)
+        self.agg_end_port.setStyleSheet(self._get_input_style())
         member_port_layout.addWidget(self.agg_end_port)
         member_layout.addLayout(member_port_layout)
         config_layout.addLayout(member_layout)
@@ -439,30 +334,12 @@ class RuijieRouterConfig(BaseConfigPage):
         self.agg_table = QTableWidget()
         self.agg_table.setColumnCount(5)
         self.agg_table.setHorizontalHeaderLabels(['聚合ID', '模式', '均衡方式', '成员', '操作'])
-        self.agg_table.horizontalHeader().setStyleSheet("""
-            QHeaderView::section {
-                background-color: {t['hover_bg']};
-                border: none;
-                padding: 8px;
-                font-size: 9pt;
-                color: {t['text_secondary']};
-            }
-        """)
-        self.agg_table.setStyleSheet(f"""
-            QTableWidget {
-                border: 1px solid {t['border']};
-                border-radius: {t['radius_md']}px;
-                background-color: {t['card_bg']};
-            }
-            QTableWidget::item {
-                padding: 8px;
-                font-size: 10pt;
-            }
-        """)
+        self.agg_table.horizontalHeader().setStyleSheet(self._get_table_header_style())
+        self.agg_table.setStyleSheet(self._get_table_style())
         self.agg_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.agg_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.agg_table.verticalHeader().setDefaultSectionSize(32)
+        self.agg_table.verticalHeader().setDefaultSectionSize(28)
         self.agg_table.setRowCount(0)
         self.agg_table.setMinimumWidth(600)
         self.agg_table.setFixedHeight(50)
@@ -609,8 +486,8 @@ class RuijieRouterConfig(BaseConfigPage):
         container = QWidget()
         container.setStyleSheet(self._get_container_style())
         layout = QVBoxLayout()
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(16)
+        layout.setContentsMargins(8, 4, 8, 4)
+        layout.setSpacing(4)
         layout.setAlignment(Qt.AlignTop)
         container.setLayout(layout)
         
@@ -631,12 +508,12 @@ class RuijieRouterConfig(BaseConfigPage):
         card = QWidget()
         card.setStyleSheet(self._get_card_style())
         layout = QVBoxLayout()
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(16)
+        layout.setContentsMargins(12, 10, 12, 10)
+        layout.setSpacing(4)
         
         # 卡片标题与勾选框
         title_layout = QHBoxLayout()
-        title_layout.setSpacing(12)
+        title_layout.setSpacing(6)
         
         checkbox = QCheckBox()
         checkbox.setStyleSheet('QCheckBox::indicator { width: 18px; height: 18px; }')
@@ -672,10 +549,10 @@ class RuijieRouterConfig(BaseConfigPage):
     def add_form_item(self, card, label_text, field_name, is_password=False, is_label=False, default_value=''):
         """添加表单项"""
         item_layout = QHBoxLayout()
-        item_layout.setSpacing(16)
+        item_layout.setSpacing(4)
         
         label = QLabel(f'{label_text}:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
@@ -686,18 +563,7 @@ class RuijieRouterConfig(BaseConfigPage):
         else:
             input_widget = QLineEdit()
             input_widget.setPlaceholderText(f'请输入{label_text}')
-            input_widget.setStyleSheet(f"""
-                QLineEdit {
-                    border: 1px solid {t['input_border']};
-                    border-radius: {t['radius_md']}px;
-                    padding: 8px 12px;
-                    font-size: 10pt;
-                    background-color: {t['card_bg']};
-                }
-                QLineEdit:focus {
-                    border: 1px solid {t['border']};
-                }
-            """)
+            input_widget.setStyleSheet(self._get_input_style())
             if is_password:
                 input_widget.setEchoMode(QLineEdit.Password)
             item_layout.addWidget(input_widget)
@@ -709,28 +575,16 @@ class RuijieRouterConfig(BaseConfigPage):
     def add_combo_item(self, card, label_text, field_name, options):
         """添加下拉选择项"""
         item_layout = QHBoxLayout()
-        item_layout.setSpacing(16)
+        item_layout.setSpacing(4)
         
         label = QLabel(f'{label_text}:')
-        label.setFixedWidth(160)
+        label.setFixedWidth(140)
         label.setStyleSheet(self._get_label_secondary_style())
         item_layout.addWidget(label)
         
         combo = QComboBox()
         combo.addItems(options)
-        combo.setStyleSheet(f"""
-            QComboBox {
-                border: 1px solid {t['input_border']};
-                border-radius: {t['radius_md']}px;
-                padding: 8px 12px;
-                font-size: 10pt;
-                background-color: {t['card_bg']};
-                min-width: 200px;
-            }
-            QComboBox:focus {
-                border: 1px solid {t['border']};
-            }
-        """)
+        combo.setStyleSheet(self._get_combo_style())
         item_layout.addWidget(combo)
         self.form_fields[field_name] = combo
         
@@ -1208,15 +1062,16 @@ class RuijieRouterConfig(BaseConfigPage):
         
         # 添加删除按钮
         delete_button = QPushButton("删除")
+        t = self._theme_engine.current_theme
         delete_button.setStyleSheet(f"""
-            QPushButton {
+            QPushButton {{
                 background-color: transparent;
                 border: none;
                 border-radius: {t['radius_md']}px;
                 color: {t['text_primary']};
-                padding: 4px 8px;
+                padding: 3px 6px;
                 font-size: 9pt;
-            }
+            }}
         """)
         delete_button.clicked.connect(lambda: self.remove_agg_port(agg_table, row_position))
         agg_table.setCellWidget(row_position, 4, delete_button)

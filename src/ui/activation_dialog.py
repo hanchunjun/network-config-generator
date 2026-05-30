@@ -67,8 +67,8 @@ class ActivationDialog(QDialog):
         r = t["radius_md"]
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(30, 25, 30, 25)
-        layout.setSpacing(16)
+        layout.setContentsMargins(24, 18, 24, 18)
+        layout.setSpacing(8)
 
         # ── 标题 ──
         title_label = QLabel("⚠️  软件未激活")
@@ -109,7 +109,7 @@ class ActivationDialog(QDialog):
         self._code_display.setReadOnly(True)
         self._code_display.setFont(QFont("Consolas", 11, QFont.Bold))
         self._code_display.setAlignment(Qt.AlignCenter)
-        self._code_display.setMinimumHeight(28)
+        self._code_display.setMinimumHeight(26)
         self._code_display.setStyleSheet(
             f"QLineEdit {{"
             f"  background-color: {t['code_bg']};"
@@ -123,7 +123,7 @@ class ActivationDialog(QDialog):
 
         copy_btn = QPushButton("📋 一键复制")
         copy_btn.setFont(QFont("Microsoft YaHei", 10))
-        copy_btn.setFixedSize(110, 30)
+        copy_btn.setFixedSize(96, 28)
         copy_btn.setCursor(Qt.PointingHandCursor)
         copy_btn.clicked.connect(self._copy_machine_code)
         copy_btn.setStyleSheet(
@@ -168,7 +168,7 @@ class ActivationDialog(QDialog):
         self._activation_input.setPlaceholderText("请输入16位或18位激活码")
         self._activation_input.setFont(QFont("Consolas", 12, QFont.Bold))
         self._activation_input.setAlignment(Qt.AlignCenter)
-        self._activation_input.setMinimumHeight(28)
+        self._activation_input.setMinimumHeight(26)
         self._activation_input.setMaxLength(18)
         self._activation_input.setStyleSheet(
             f"QLineEdit {{"
@@ -185,7 +185,7 @@ class ActivationDialog(QDialog):
         # ── 激活按钮 ──
         activate_btn = QPushButton("🔓  立即激活")
         activate_btn.setFont(QFont("Microsoft YaHei", 12, QFont.Bold))
-        activate_btn.setMinimumHeight(28)
+        activate_btn.setMinimumHeight(26)
         activate_btn.setCursor(Qt.PointingHandCursor)
         activate_btn.clicked.connect(self._on_activate)
         activate_btn.setStyleSheet(
@@ -213,7 +213,7 @@ class ActivationDialog(QDialog):
         if self._trial_mode:
             later_btn = QPushButton("稍后再说")
             later_btn.setFont(QFont("Microsoft YaHei", 10))
-            later_btn.setMinimumHeight(28)
+            later_btn.setMinimumHeight(26)
             later_btn.setCursor(Qt.PointingHandCursor)
             later_btn.clicked.connect(self._on_later)
             later_btn.setStyleSheet(
