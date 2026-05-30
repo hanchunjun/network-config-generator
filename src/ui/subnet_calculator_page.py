@@ -49,12 +49,12 @@ class CardFrame(QFrame):
         if self.highlight:
             self.setStyleSheet(
                 f"CardFrame {{"
-                f"  background: {t['ai_bg']};"
-                f"  border: 1px solid {t['ai_border']}; border-radius: {r_md}px;"
+                f"  background: {t['selection_bg']};"
+                f"  border: 1px solid {t['primary']}; border-radius: {r_md}px;"
                 f"}}"
             )
             self.value.setStyleSheet(
-                f"font-size: 14pt; color: {t['text_secondary']}; font-weight: bold; "
+                f"font-size: 14pt; color: {t['primary_light']}; font-weight: bold; "
                 f"font-family: Consolas, monospace;"
             )
         else:

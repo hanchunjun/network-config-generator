@@ -94,8 +94,6 @@ class PingWorker(QThread):
 
         self.finished.emit(results)
 
-        self.finished.emit(results)
-
 
 class DeviceDiscoveryDialog(QDialog):
     def __init__(self, parent=None):

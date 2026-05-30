@@ -65,8 +65,8 @@ def _get_cpu_serial() -> str:
             for line in result.stdout.splitlines():
                 if "ID:" in line:
                     return line.split("ID:")[-1].strip()
-    except Exception:
-        pass
+    except Exception as e:
+        netops_logger.get_logger().debug("CPU 序列号采集失败: {}".format(e))
     return ""
 
 
@@ -91,8 +91,8 @@ def _get_disk_serial() -> str:
             serial = result.stdout.strip()
             if serial:
                 return serial
-    except Exception:
-        pass
+    except Exception as e:
+        netops_logger.get_logger().debug("硬盘序列号采集失败: {}".format(e))
     return ""
 
 

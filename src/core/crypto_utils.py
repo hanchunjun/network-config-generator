@@ -48,13 +48,12 @@ def encrypt_password(plaintext: str) -> str:
     try:
         encrypted = encrypted_manager.encrypt(plaintext)
         logger = netops_logger.get_logger()
-        logger.debug(f"密码加密成功，长度: {len(plaintext)} -> {len(encrypted)}")
+        logger.debug("密码加密成功，长度: {} -> {}".format(len(plaintext), len(encrypted)))
         return encrypted
     except Exception as e:
         logger = netops_logger.get_logger()
-        logger.error(f"密码加密失败: {e}")
-        # 加密失败时返回原密码（避免数据丢失）
-        return plaintext
+        logger.error("密码加密失败: {}".format(e))
+        raise RuntimeError("密码加密失败，请检查密钥配置") from e
 
 
 def decrypt_password(stored: str) -> str:
@@ -82,8 +81,8 @@ def decrypt_password(stored: str) -> str:
     except Exception as e:
         logger = netops_logger.get_logger()
         logger.error(f"密码解密失败: {e}")
-        # 解密失败时返回原值（避免数据丢失）
-        return stored
+        # 解密失败时返回空字符串（不允许明文存储）
+        return ""
 
 
 def is_encrypted(stored: str) -> bool:
