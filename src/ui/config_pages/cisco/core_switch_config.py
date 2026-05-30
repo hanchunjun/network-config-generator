@@ -500,7 +500,7 @@ class CiscoCoreSwitchConfig(BaseConfigPage):
         title_layout.setSpacing(6)
         
         checkbox = QCheckBox()
-        checkbox.setStyleSheet('QCheckBox::indicator { width: 18px; height: 18px; }')
+        checkbox
         title_layout.addWidget(checkbox)
         
         title_label = QLabel(f'{icon} {title}')

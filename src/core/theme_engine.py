@@ -565,15 +565,10 @@ class ThemeEngine(QObject):
         }}
 
         /* ── 复选框 ──
-           仅设置文字样式和 checked 态边框高亮。
-           indicator 尺寸/背景保持 Qt 原生默认，确保勾选图标正常显示。 */
+           仅设置文字样式。indicator 完全不自定义，保留 Qt 原生勾选图标。
+           选中态通过 QCheckBox[checked="true"] 属性选择器设置文字颜色。 */
         QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; spacing: 6px; }}
-        QCheckBox::indicator:checked {{
-            border: 2px solid {t['primary']};
-        }}
-        QCheckBox::indicator:indeterminate {{
-            border: 2px solid {t['primary']};
-        }}
+        QCheckBox[checked="true"] {{ color: {t['primary_light']}; }}
 
         /* ── 滚动条 ── */
         QScrollBar:vertical {{

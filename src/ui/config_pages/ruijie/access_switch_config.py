@@ -865,7 +865,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         label.setStyleSheet(self._get_label_secondary_style())
         bdpu_layout.addWidget(label)
         bdpu_checkbox = QCheckBox()
-        bdpu_checkbox.setStyleSheet('QCheckBox::indicator { width: 18px; height: 18px; }')
+        bdpu_checkbox.setStyleSheet('QCheckBox { font-size: 11pt; }')
         bdpu_layout.addWidget(bdpu_checkbox)
         self.form_fields['bdpu_protection'] = bdpu_checkbox
         bdpu_layout.addStretch()
@@ -1218,7 +1218,7 @@ class RuijieAccessSwitchConfig(BaseConfigPage):
         title_layout.setSpacing(6)
         
         checkbox = QCheckBox()
-        checkbox.setStyleSheet('QCheckBox::indicator { width: 18px; height: 18px; }')
+        checkbox.setStyleSheet('QCheckBox { font-size: 11pt; }')
         title_layout.addWidget(checkbox)
         
         title_label = QLabel(f'{icon} {title}')

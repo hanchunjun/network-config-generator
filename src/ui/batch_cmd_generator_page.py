@@ -740,9 +740,8 @@ class BatchCmdGeneratorPage(QWidget):
             f"{_primary}"
             "}"
             "QCheckBox { spacing: 4px; }"
-            f"QCheckBox::indicator {{ width: 15px; height: 15px; border-radius: {r}px;"
+            f"px;"
             f"  border: 1px solid {t['border']}; background: {t['input_bg']}; }}"
-            f"QCheckBox::indicator:checked {{ background-color: {t['page_bg']}; border-color: {t['border']}; }}"
         )
         self.setStyleSheet(ss)
 
