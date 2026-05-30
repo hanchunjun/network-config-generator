@@ -575,11 +575,11 @@ class ThemeEngine(QObject):
         }}
         QCheckBox::indicator:checked {{
             border-color: {t['primary']};
-            image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2 6.3-6.8' stroke='{t['primary']}' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' stroke='%233B7CFF' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
         }}
         QCheckBox::indicator:indeterminate {{
             border-color: {t['primary']};
-            image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='{t['primary']}'/%3E%3C/svg%3E");
+            image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='%233B7CFF'/%3E%3C/svg%3E");
         }}
 
         /* ── 滚动条 ── */
