@@ -108,6 +108,17 @@
     - 如实说明无法实现的内容及原因，不隐瞒问题
     - Document blockers; propose workarounds when possible
     - 记录开发阻碍条件，尽可能给出替代解决方案
+13. **Full version sync on release**
+    **版本发布必须全量同步**
+
+    - When bumping version, update ALL hardcoded version strings in one pass
+    - 版本升级时，一次性同步所有硬编码版本号
+    - Check: CLAUDE.md, main.py, main_window.py (title + about), admin_tool_window.py, DESIGN.md, all .claude/rules/, all docs/CODEMAPS/, installer/, memory
+    - 检查范围：CLAUDE.md、main.py、main_window.py（标题+关于框）、admin_tool_window.py、DESIGN.md、所有 rules、所有 codemap、installer、memory
+    - Verify with grep before committing: `grep -rn "V0\." --include="*.md" --include="*.py"`
+    - 提交前用 grep 全局搜索确认无遗漏
+    - Lesson: V0.4.1 missed 6 version strings, required separate fix commit
+    - 教训：V0.4.1 遗漏了 6 处版本号，导致事后单独修复
 
 ## Project specifics (uncomment and customize for your repo)
 
