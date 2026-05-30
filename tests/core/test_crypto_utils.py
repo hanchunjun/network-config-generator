@@ -162,18 +162,19 @@ class TestConstants:
 class TestEncryptDecryptErrorHandling:
     """测试加密解密异常处理分支。"""
 
-    def test_encrypt_exception_returns_plaintext(self, monkeypatch):
-        """加密异常时应返回原文（不丢失数据）。"""
+    def test_encrypt_exception_raises_runtime_error(self, monkeypatch):
+        """加密异常时应抛出 RuntimeError（不允许明文存储）。"""
+        import pytest
         from src.core import crypto_utils
         monkeypatch.setattr(
             crypto_utils.encrypted_manager, "encrypt",
             lambda _exc=Exception("forced"): (_ for _ in ()).throw(_exc)
         )
-        result = encrypt_password("test_pass")
-        assert result == "test_pass"
+        with pytest.raises(RuntimeError, match="密码加密失败"):
+            encrypt_password("test_pass")
 
-    def test_decrypt_exception_returns_stored(self, monkeypatch):
-        """解密异常时应返回原值。"""
+    def test_decrypt_exception_returns_empty(self, monkeypatch):
+        """解密异常时应返回空字符串（不允许明文存储）。"""
         from src.core import crypto_utils
         enc = encrypt_password("test_pass")
         monkeypatch.setattr(
@@ -181,7 +182,7 @@ class TestEncryptDecryptErrorHandling:
             lambda _exc=Exception("forced"): (_ for _ in ()).throw(_exc)
         )
         result = decrypt_password(enc)
-        assert result == enc
+        assert result == ""
 
     def test_validate_key_returns_false_on_exception(self, monkeypatch):
         """密钥验证异常时应返回 False。"""
