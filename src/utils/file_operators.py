@@ -46,7 +46,9 @@ class AtomicFileWriter:
 
         try:
             # 确保临时文件已完全写入磁盘
-            self.temp_path.chmod(0o644)  # 设置权限
+            # Windows 不支持 POSIX 权限模型，跳过 chmod
+            if os.name != "nt":
+                self.temp_path.chmod(0o644)
 
             # 原子替换原文件
             self.temp_path.replace(self.file_path)

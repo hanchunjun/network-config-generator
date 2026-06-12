@@ -43,8 +43,12 @@ def create_application(argv=None):
     try:
         import ctypes
         ctypes.windll.shcore.SetProcessDpiAwareness(0)
-    except Exception:
-        pass
+    except Exception as e:
+        # DPI 设置失败不影响程序运行，记录日志便于排查
+        import logging
+        logging.getLogger("NetOps.AppFactory").warning(
+            f"设置DPI感知失败（可能影响高DPI显示）: {e}"
+        )
 
     app.setStyle("Fusion")
     font = app.font()

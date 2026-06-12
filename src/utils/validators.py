@@ -142,13 +142,26 @@ class ProjectValidator:
     @staticmethod
     def validate_project_path(path: str) -> Tuple[bool, Optional[str]]:
         """
-        验证项目路径
+        验证项目路径（防止路径遍历攻击）
 
         Returns:
             (是否有效, 错误消息)
         """
         if not path:
             return False, "项目路径不能为空"
+
+        # 防止路径遍历攻击
+        if ".." in path:
+            return False, "路径不能包含 '..'（防止路径遍历）"
+
+        # 防止符号链接攻击
+        try:
+            real_path = os.path.realpath(path)
+            # 确保解析后的路径不包含 ..
+            if ".." in real_path:
+                return False, "路径包含无效的符号链接"
+        except Exception:
+            pass
 
         try:
             import os

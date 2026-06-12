@@ -557,13 +557,28 @@ class BaseConfigPage(QWidget):
         clipboard.setText(self.preview_text.toPlainText())
 
     def export_config(self):
-        """导出配置"""
-        from PyQt5.QtWidgets import QFileDialog
+        """导出配置（安全确认 + 原子写入）"""
+        from PyQt5.QtWidgets import QFileDialog, QMessageBox
+        # 安全确认
+        reply = QMessageBox.question(
+            self, '安全确认',
+            '导出文件可能包含明文密码，请妥善保管。\n确认继续导出？',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply != QMessageBox.Yes:
+            return
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getSaveFileName(self, "导出配置", "", "配置文件 (*.txt);;所有文件 (*.*)", options=options)
         if file_name:
-            with open(file_name, 'w', encoding='utf-8') as f:
-                f.write(self.preview_text.toPlainText())
+            # 原子写入
+            import tempfile
+            import os
+            content = self.preview_text.toPlainText()
+            dir_name = os.path.dirname(file_name)
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.tmp', dir=dir_name, delete=False, encoding='utf-8') as tmp:
+                tmp.write(content)
+                tmp_path = tmp.name
+            os.replace(tmp_path, file_name)
 
     def reset_config(self):
         """重置配置"""
