@@ -1,7 +1,17 @@
-# 版本更新历史（V0.0.9 ~ V0.4.2）
+# 版本更新历史（V0.0.9 ~ V0.4.3）
 
 > 本文件收纳 CLAUDE.md 版本更新历史章节。
 > 每次重大改动在 `CHANGELOG.md` 对应版本下追加条目，格式遵循 Keep a Changelog。
+
+## V0.4.3 固定浅色主题版（2026-06-04）
+
+- ✅ **取消主题切换**：固定使用浅色商务风格（`Theme.LIGHT`），移除 `Theme.DARK`/`Theme.RAYCAST`/`Theme.VSCODE`/`Theme.BUSINESS` 枚举
+- ✅ **简化主题引擎**：`ThemeEngine.apply(app)` 签名改为只接受 `app` 参数
+- ✅ **全局 QSS 统一控制**：所有容器背景色使用 `!important` 标记，强制覆盖局部样式
+- ✅ **移除主题切换页面**：`ThemeSwitcherPage` 不再被引用
+- ✅ **简化各页面主题切换逻辑**：去掉 `findChildren` 遍历容器控件，只保留页面背景 + 按钮样式刷新
+- ✅ **修复模型设置页面**：添加缺失的 `_secondary_btn_style` 和 `_primary_btn_style` 方法
+- ✅ **文档更新**：CLAUDE.md、DESIGN.md、CHANGELOG.md、CODEMAPS 全部同步更新
 
 ## V0.4.2 按钮样式统一版（2026-05-30）
 

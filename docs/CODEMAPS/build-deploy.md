@@ -145,8 +145,7 @@ src.core.local_diagnostic_engine # 本地运行时诊断引擎
 src.core.account_manager         # 账户管理核心 ★V0.3.3新增
 src.ui.login_dialog              # 登录弹窗 ★V0.3.3新增
 src.ui.account_manager_dialog    # 账户管理弹窗 ★V0.3.3新增
-src.core.theme_engine            # 主题引擎 ★V0.3.5新增
-src.ui.theme_switcher_page       # 主题切换面板 ★V0.3.5新增
+src.core.theme_engine            # 主题引擎（V0.4.3 简化为固定浅色主题）
 cryptography.hazmat.primitives.ciphers.aead
 cryptography.hazmat.primitives.kdf.pbkdf2
 certifi
@@ -168,7 +167,7 @@ excludes=['tensorflow', 'torch', 'pandas', 'scipy',
 
 | 文件 | 位置 | 大小 | 用途 |
 |------|------|------|------|
-| `NetOps.exe` | `dist/NetOps/` | ~48MB | 用户端主程序（含三主题） |
+| `NetOps.exe` | `dist/NetOps/` | ~48MB | 用户端主程序（固定浅色主题） |
 | `AdminKeyGenTool.exe` | `dist/` | ~41MB | 管理员制码工具 |
 | `NetOps_Setup_0.4.0.exe` | `installer/` | ~62MB | 安装包（双击安装，含新 Logo） |
 | 构建日志 | `build/` | — | 分产品目录存储 |
@@ -217,6 +216,7 @@ EXE所在目录/
 
 | 版本 | 日期 | 关键变更 |
 |------|------|---------|
+| V0.4.3 固定浅色主题版 | 2026-06-04 | 取消主题切换 + 固定浅色商务风格 + 全局QSS统一控制 + 移除ThemeSwitcherPage + 简化各页面主题切换逻辑 |
 | V0.4.2 Logo 设计版 | 2026-05-30 | 华文行楷 "Net" Logo + 安装包构建脚本 + ICO 6帧 + 自解压安装包 |
 | V0.3.7 性能优化版 | 2026-05-26 | 6项Python针对性优化：WMIC去重 + 配置缓存修复 + 批量命令生成优化 + 死依赖清理 + SSH并发化 + QSS缓存 |
 | V0.3.6 主题增强版 | 2026-05-26 | Windows标题栏深色模式 + 导航栏刷新修复 + input_border输入框边框 + 默认主题Business |

@@ -278,7 +278,7 @@ class BatchCmdGeneratorPage(QWidget):
         self._refresh_template_combo()
         self._bind_events()
 
-        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
 
     # ─── 模板数据管理 ───
 
@@ -739,8 +739,9 @@ class BatchCmdGeneratorPage(QWidget):
     def _apply_style(self) -> None:
         t = self._theme
         r = t["radius_md"]
-        # 仅设置非按钮控件的样式
+        # 页面背景 + QTextEdit / QSpinBox 样式（按钮样式由 _on_theme_changed 统一处理）
         ss = (
+            f"BatchCmdGeneratorPage {{ background-color: {t['page_bg']}; }}"
             "QTextEdit {"
             f"  border: 1px solid {t['border']}; border-radius: {r}px; padding: 6px;"
             f"  background: {t['input_bg']}; font-size: 11pt; color: {t['text_main']};"
@@ -753,40 +754,28 @@ class BatchCmdGeneratorPage(QWidget):
             f"QSpinBox:focus {{ border-color: {t['border']}; }}"
         )
         self.setStyleSheet(ss)
-        # 按钮样式：统一灰色边框（与其他页面一致）
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """主题切换时刷新样式。容器背景色由全局 QSS 统一控制，此处只需刷新独立样式控件。"""
+        self._theme = ThemeEngine.get().current_theme
+        t = self._theme
+        # 页面自身背景
+        self.setStyleSheet(f"BatchCmdGeneratorPage {{ background-color: {t['page_bg']}; }}")
+        # QTextEdit / QSpinBox 样式（有独立样式，需重调）
+        self._apply_style()
+        # 状态栏
+        if hasattr(self, '_status_label') and self._status_label:
+            self._status_label.setStyleSheet(
+                f"background-color: {t['hover_bg']}; color: {t['text_tertiary']};"
+                f"font-size: 10pt; border: 1px solid {t['border']}; padding: 3px;"
+            )
+        # 按钮样式
         for btn in self.findChildren(QPushButton):
             obj_name = btn.objectName()
             if obj_name in ("tplDeleteBtn",):
                 btn.setStyleSheet(self._btn_style("danger"))
             else:
                 btn.setStyleSheet(self._btn_style("border"))
-
-    def _on_theme_changed(self, theme_id: str) -> None:
-        """主题切换时刷新样式。"""
-        self._theme = ThemeEngine.get().current_theme
-        self._apply_style()
-        # 刷新 ParamGroupWidget 样式
-        for pw in self._param_widgets:
-            pw.setStyleSheet(
-                f"QGroupBox {{"
-                f"  font-size: 10pt; font-weight: bold; color: {self._theme['text_main']};"
-                f"  border: 1px solid {self._theme['border']}; border-radius: {self._theme['radius_lg']}px;"
-                f"  margin-top: 8px; padding-top: 10px;"
-                f"}}"
-                f"QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 6px; }}"
-            )
-        # 刷新模板选择栏和状态栏
-        hint_color = self._theme['text_tertiary']
-        for lbl in self.findChildren(QLabel):
-            if lbl.text() and "%a" in lbl.text():
-                lbl.setStyleSheet(f"font-size: 10pt; color: {hint_color};")
-        if hasattr(self, '_status_label') and self._status_label:
-            t = self._theme
-            self._status_label.setStyleSheet(
-                f"background-color: {t['hover_bg']}; color: {t['text_tertiary']};"
-                f"font-size: 10pt; border: 1px solid {t['border']}; padding: 3px;"
-            )
-        self.update()
 
     def _bind_events(self) -> None:
         for btn in self.findChildren(QPushButton):

@@ -375,46 +375,35 @@ ParamGroupWidget:
 
 ---
 
-## 主题切换页（theme_switcher_page.py）— V0.3.5新增
-
-**文件：** `src/ui/theme_switcher_page.py`
-
-### 功能清单
-| 功能 | 说明 |
-|------|------|
-| 三个预览卡片 | `_PreviewCard(QFrame)` 使用 QPainter 自定义绘制主题预览（导航栏、内容块、按钮） |
-| 即时切换 | 点击卡片调用 `ThemeEngine.apply(app, theme_id)` 切换全局主题 |
-| 视觉反馈 | 选中卡片高亮边框，未选中卡片半透明 |
-| 三套主题 | VSCode（深蓝黑/直角）、Raycast（紫橙/毛玻璃/大圆角）、Business（浅灰白/品牌蓝） |
-
-### 关键类
-| 类 | 说明 |
-|----|------|
-| `ThemeSwitcherPage(QWidget)` | 主面板，水平排列三个 `_PreviewCard` |
-| `_PreviewCard(QFrame)` | 自定义绘制预览卡片，paintEvent 绘制迷你主题效果 |
-
----
-
-## 主题引擎（theme_engine.py）— V0.3.5新增
+## 主题引擎（theme_engine.py）— V0.4.3 简化为固定浅色主题
 
 **文件：** `src/core/theme_engine.py`
+
+> 主题切换页（`theme_switcher_page.py`）已于 V0.4.3 移除，固定使用浅色商务风格。
 
 ### 功能清单
 | 功能 | 说明 |
 |------|------|
 | 单例模式 | `ThemeEngine.get()` 全局唯一实例 |
-| 三主题管理 | `_THEMES` 字典存储三套完整配色（每套60+颜色变量） |
-| 信号广播 | `theme_changed = pyqtSignal(str)` 主题切换时通知所有UI |
-| 全局QSS | `apply(app, theme_id)` 设置全局样式表 |
-| 组件QSS | `qss(component)` 返回组件级QSS片段 |
+| 固定浅色主题 | 只保留 `Theme.LIGHT`（商务浅灰白风格） |
+| 全局 QSS | `apply(app)` 设置全局样式表（`!important` 强制覆盖局部样式） |
+| 信号广播 | `theme_changed = pyqtSignal(str)` 初始化时触发一次 |
 | 配置持久化 | `_save_config()` / `_load_config()` 读写 `config/theme_config.json` |
 
-### 三套主题
-| 主题ID | 名称 | 风格 | 主色调 |
-|--------|------|------|--------|
-| `vscode` | VSCode Dark | 深蓝黑/直角/技术感 | `#1E1E1E` / `#007ACC` |
-| `raycast` | Raycast | 紫橙渐变/毛玻璃/大圆角 | `#1A1025` / `#FF6363` |
-| `business` | Business | 浅灰白/品牌蓝/政企风 | `#F5F6FA` / `#1565C0` |
+### 浅色主题配色
+| 变量 | 色值 | 用途 |
+|------|------|------|
+| `page_bg` | `#F5F5F5` | 页面背景 |
+| `card_bg` | `#FFFFFF` | 卡片/面板背景 |
+| `input_bg` | `#FAFAFA` | 输入框背景 |
+| `primary` | `#1A73E8` | 主色（蓝） |
+| `text_main` | `#3C4043` | 正文文字 |
+| `border` | `#DADCE0` | 边框 |
+
+### 各页面职责
+- 只需设置页面自身背景色 + 刷新按钮样式
+- 不再需要 `findChildren` 遍历容器控件
+- 不再需要 `_group_style()`、`_combo_style()` 等方法（容器样式由全局 QSS 控制）
 
 ### 关键方法
 | 方法 | 说明 |

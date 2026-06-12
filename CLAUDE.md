@@ -1,4 +1,4 @@
-# NetOps V0.4.2 — 项目总纲
+# NetOps V0.4.3 — 项目总纲
 
 ## 开发规则
 
@@ -27,13 +27,15 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 | 6 | 命令生成 | 命令模板 + %a~%f参数 |
 | 7 | 模型设置 | AI多模型管理 + 加密存储 |
 
+**注意**：主题切换已取消（V0.4.3），固定使用浅色商务风格。
+
 ## 关键约束
 
 1. DPI：`app_factory.py` 统一入口，96dpi固定渲染
 2. QThread：必须存为实例变量 `self._xxx_thread`
 3. AI配置：用 `get_active_ai_config()`，不直接读文件
 4. 路径：用 `get_app_dir()` / `get_config_path()` / `ensure_dirs()`，禁止硬编码
-5. 主题：`ThemeEngine.get().current_theme`，禁止硬编码色值，按钮统一调用 `ThemeEngine.qss()`
+5. 主题：固定使用浅色主题（`Theme.LIGHT`），禁止硬编码色值
 6. 危险操作：必须确认对话框
 7. 文件写入：`.tmp` + `os.replace` 原子操作
 8. 日志：`logger`，禁止 `print()`
@@ -55,19 +57,19 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 
 **统一灰色边框风格**：所有按钮默认灰色边框+灰色文字，hover 时才显示对应颜色。
 
-| 级别 | 方法 | 默认边框 | hover 边框 | 用途 |
-|------|------|---------|-----------|------|
-| `btn_primary` | 灰色边框+灰色文字 | `border_deep` | `primary`（蓝） | 主操作（生成/保存/创建）|
-| `btn_default` | 灰色边框+灰色文字 | `border_deep` | `text_secondary` | 辅助（清空/刷新/导出）|
-| `btn_danger` | 灰色边框+灰色文字 | `border_deep` | `danger`（红） | 破坏性（删除/移除）|
+| 级别 | 默认边框 | hover 边框 | 用途 |
+|------|---------|-----------|------|
+| 主按钮 | `border_deep`（灰） | `primary`（蓝） | 主操作（生成/保存/创建）|
+| 辅助按钮 | `border_deep`（灰） | `text_secondary` | 辅助（清空/刷新/导出）|
+| 危险按钮 | `border_deep`（灰） | `danger`（红） | 破坏性（删除/移除）|
 
 **使用方式**：
 ```python
 t = ThemeEngine.get().current_theme
-btn.setStyleSheet(t['qss']('btn_primary'))
+btn.setStyleSheet(f"QPushButton {{ background-color: transparent; border: 1px solid {t['border']}; ...")
 ```
 
-**注意**：禁止在页面级 setStyleSheet 中覆盖 QPushButton 默认样式，应使用 ThemeEngine.qss() 或针对单个按钮设置。
+**注意**：主题切换已取消，固定使用浅色主题。全局 QSS 统一控制容器背景色（`!important`），各页面只需设置页面自身背景 + 刷新按钮样式。
 
 ## 目录结构
 

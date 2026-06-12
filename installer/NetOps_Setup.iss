@@ -44,7 +44,7 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加选项:"
+Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加选项:"; Flags: checkedonce
 Name: "quicklaunchicon"; Description: "创建快速启动栏快捷方式"; GroupDescription: "附加选项:"; Flags: unchecked
 
 [Files]
@@ -76,8 +76,8 @@ Name: "{autodesktop}\{#MyAppFullName}"; Filename: "{app}\{#MyAppExeName}"; Tasks
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppFullName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-; 安装完成后可选启动
-Filename: "{app}\{#MyAppExeName}"; Description: "启动 NetOps 企业网络自动化运维平台"; Flags: nowait postinstall skipifsilent
+; 安装完成后自动启动（用户可在安装界面取消勾选）
+Filename: "{app}\{#MyAppExeName}"; Description: "启动 NetOps 企业网络自动化运维平台"; Flags: nowait postinstall skipifsilent unchecked
 
 [UninstallDelete]
 ; 卸载时清理日志（用户数据 config/projects/single/activation 保留）

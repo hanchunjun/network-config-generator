@@ -107,7 +107,7 @@ class ProjectManagerPage(QWidget):
         self._theme_engine = ThemeEngine.get()
         self.init_ui()
         self.refresh_project_list()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
 
     def init_ui(self):
@@ -1349,57 +1349,12 @@ class ProjectManagerPage(QWidget):
         self._refresh_overview()
 
     def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景 + 刷新按钮。"""
         if self._theme_engine is None:
             return
         t = self._theme_engine.current_theme
-        # 页面级背景
-        self.setStyleSheet(f"""
-            ProjectManagerPage {{
-                background-color: {t['page_bg']};
-                font-family: {t['font_ui']};
-            }}
-        """)
-        # QGroupBox
-        if hasattr(self, 'workspace_group'):
-            self.workspace_group.setStyleSheet(self._group_style())
-        if hasattr(self, 'device_group'):
-            self.device_group.setStyleSheet(self._group_style())
-        # QComboBox
-        if hasattr(self, 'project_combo'):
-            self.project_combo.setStyleSheet(self._combo_style())
-        if hasattr(self, 'group_filter_combo'):
-            self.group_filter_combo.setStyleSheet(self._combo_style())
-        # QTableWidget
-        if hasattr(self, 'device_table'):
-            self.device_table.setStyleSheet(self._table_style())
-        # QLineEdit
-        if hasattr(self, 'project_name_input'):
-            self.project_name_input.setStyleSheet(self._input_style())
-        # 分隔线
-        if hasattr(self, 'separator'):
-            self.separator.setStyleSheet(f"QFrame {{ color: {t['border']}; max-height: 1px; }}")
-        # 标签颜色
-        _lc = f"color: {t['text_secondary']}; font-weight: normal;"
-        _lm = f"color: {t['text_main']};"
-        _lt = f"color: {t['text_tertiary']};"
-        _labels_main = ('create_header', 'overview_header')
-        _labels_tertiary = ('info_path', 'info_devices', 'info_logs', 'stats_label', 'overview_stats_label')
-        for attr_name in [
-            'create_header', 'name_label', 'path_label', 'overview_header',
-            'overview_stats_label', 'switch_label', 'info_path', 'info_devices',
-            'info_logs', 'stats_label',
-        ]:
-            lbl = getattr(self, attr_name, None)
-            if lbl is not None:
-                if attr_name in _labels_main:
-                    lbl.setStyleSheet(f"font-size: 10pt; font-weight: bold; {_lm}")
-                elif attr_name in _labels_tertiary:
-                    lbl.setStyleSheet(f"font-size: 10pt; {_lt}; font-weight: normal;")
-                else:
-                    lbl.setStyleSheet(f"font-size: 10pt; {_lc}; font-weight: normal;")
-        # QCheckBox
-        if hasattr(self, 'show_pwd_cb'):
-            self.show_pwd_cb.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']};")
+        # 页面自身背景
+        self.setStyleSheet(f"ProjectManagerPage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
         # 按钮样式刷新
         for attr, style_fn in [
             ('create_btn', self._primary_btn_style),

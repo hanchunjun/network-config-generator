@@ -1,250 +1,109 @@
-# QSS 主题系统与信号联动开发规范（V0.4.2）
+# QSS 全局样式规范（V0.4.3）
 
-> 本文件记录 V0.3.5~V0.3.6 主题切换功能开发中暴露的问题及其规范约束，
-> 后续涉及 QSS 样式、主题切换、信号联动的新功能开发，必须遵守本文件。
+> 本文件记录 V0.4.3 主题系统简化后的开发规范。
+> 主题切换已取消，固定使用浅色商务风格。全局 QSS 统一控制所有容器背景色。
 
 ---
 
-## 一、踩坑记录
+## 一、核心设计
 
-### 坑 1：自定义 paintEvent 组件不响应主题切换
+### 1.1 固定浅色主题
 
-**现象**：`_PreviewCard` 使用 `paintEvent` 自绘预览图，切换主题后卡片颜色不变。
+- 主题引擎只保留 `Theme.LIGHT`（商务浅灰白风格）
+- `ThemeEngine.apply(app)` 签名只接受 `app` 参数
+- 全局 QSS 使用 `!important` 标记强制覆盖局部样式
 
-**根因**：构造时 `self._theme = ThemeEngine.get().get_theme(theme_id)` 保存了配色快照，`paintEvent` 永远使用这份快照数据，不随主题切换更新。
+### 1.2 全局 QSS 统一控制容器背景色
+
+全局 QSS 中定义了以下容器的背景色（使用 `!important`）：
+
+| 容器 | 背景色 | 说明 |
+|------|--------|------|
+| `QMainWindow` | `page_bg` | 窗口底色 |
+| `QScrollArea` 及其子控件 | `page_bg` | 解决 viewport 默认白色 |
+| `QTabWidget::pane` | `card_bg` | 标签页内容区 |
+| `QTabBar::tab` | `toolbar_bg` | 标签栏 |
+| `QGroupBox` | `card_bg` | 分组框 |
+| `QLineEdit` | `input_bg` | 输入框 |
+| `QComboBox` | `input_bg` | 下拉框 |
+| `QTableWidget` | `card_bg` | 表格 |
+| `QListWidget` | `card_bg` | 列表 |
+| `QTextEdit` | `code_bg` | 文本编辑区 |
+| `QProgressBar` | `hover_bg` | 进度条 |
+| `QStatusBar` | `toolbar_bg` | 状态栏 |
+| `QMenu` | `card_bg` | 菜单 |
+| `QDialog` | `card_bg` | 对话框 |
+| `QSplitter::handle` | `border` | 分割线 |
+| `QLabel` | transparent | 标签背景透明 |
+
+### 1.3 各页面职责
+
+- **只需设置页面自身背景色**：`self.setStyleSheet(f"PageName {{ background-color: {t['page_bg']}; }}")`
+- **只需刷新按钮样式**：遍历按钮，调用 `btn.setStyleSheet(...)`
+- **禁止 `findChildren` 遍历容器控件**：容器样式由全局 QSS 控制
+- **禁止在局部 `setStyleSheet` 中设置 `color` 属性**：文字颜色由全局 QSS 控制
+
+---
+
+## 二、踩坑记录
+
+### 坑 1：局部 setStyleSheet 覆盖全局 QSS
+
+**现象**：某些控件样式不更新。
+
+**根因**：局部 `setStyleSheet` 优先级高于全局 QSS。
 
 **教训**：
-- **自定义绘制组件（paintEvent）必须实时从引擎获取配色数据，禁止构造时快照**
+- **全局 QSS 使用 `!important` 标记**
+- **各页面不在局部设置容器背景色**
 
-**正确做法**：
-```python
-class _PreviewCard(QFrame):
-    def __init__(self, theme_id: str, engine: ThemeEngine, parent=None) -> None:
-        super().__init__(parent)
-        self._theme_id = theme_id
-        self._engine = engine  # 持有引擎引用，不持有配色快照
-        # 注意：不连接 theme_changed 信号，避免与 clicked 信号嵌套导致死锁
-        # 卡片刷新由父组件 ThemeSwitcherPage._on_theme_changed 集中调用
+### 坑 2：setStyleSheet 替换所有样式
 
-    def paintEvent(self, event) -> None:
-        t = self._engine.get_theme(self._theme_id)  # 实时获取，非快照
-        # ... 使用 t 绘制
-```
-
----
-
-### 坑 2：局部 setStyleSheet 覆盖全局 QSS
-
-**现象**：主题切换后，`ThemeSwitcherPage` 内的子控件（QLabel、QPushButton）样式不更新。
-
-**根因**：`_apply_theme_style()` 中执行 `self.setStyleSheet("QWidget { color: ... }")`，设置了 `color` 属性。**QWidget 的局部 setStyleSheet 优先级高于 QApplication 的全局 setStyleSheet**，导致全局 QSS 对子控件的样式设置被覆盖。
+**现象**：调用 `self.setStyleSheet(...)` 后，之前设置的样式全部丢失。
 
 **教训**：
-- **局部 setStyleSheet 只允许设置页面级属性（背景色、字体），禁止设置 color 属性**
-- 如果需要对子控件设置颜色，必须使用具体的选择器（如 `QLabel#title`），不能用 `QWidget` 全局选择器
-- 更安全的做法：局部样式表只设置 `background-color` 和 `font-family`，其他全部交给全局 QSS
+- **合并所有样式到一次 `setStyleSheet` 调用**
+- **避免多次调用 `setStyleSheet`**
 
-**正确做法**：
-```python
-def _apply_theme_style(self) -> None:
-    t = self._engine.current_theme
-    # ✅ 只设置页面级背景，不碰 color
-    self.setStyleSheet(f"""
-        ThemeSwitcherPage {{
-            background-color: {t['page_bg']};
-            font-family: {t['font_ui']};
-        }}
-    """)
-    # ✅ 需要设置特定控件颜色时，用具体选择器
-    self._title_label.setStyleSheet(f"color: {t['text_main']};")
-```
+### 坑 3：简化时遗漏方法
 
-**错误做法**：
-```python
-# ❌ QWidget 全局 color 会覆盖所有子控件的文字颜色
-self.setStyleSheet(f"""
-    QWidget {{
-        color: {t['text_main']};  /* 危险！覆盖全局 QSS */
-    }}
-""")
-```
-
----
-
-### 坑 3：信号链路未全覆盖（V0.3.5 首轮实现）
-
-**现象**：`ThemeSwitcherPage` 连接了 `theme_changed` 信号，但 `_PreviewCard` 没有连接，导致卡片预览不刷新。
-
-**根因**：父组件连接了信号，但子组件未连接，信号链路断裂。
-
-**教训（修正）**：
-- 子组件**禁止直接连接** `theme_changed` 信号并调用 `self.update()`，否则会导致事件循环死锁（见坑 4）
-- 正确做法：子组件不连接信号，由父组件在 `_on_theme_changed` 中集中调用 `card.update()`
-
----
-
-### 坑 4：信号嵌套触发事件循环死锁（V0.3.5 致命 Bug）
-
-**现象**：点击主题卡片后程序挂起，日志显示 `主题已切换: VS Code 风格` 后无后续输出。
-
-**根因**：
-```
-_PreviewCard.mousePressEvent()
-  → clicked.emit()
-    → ThemeSwitcherPage._switch_theme()
-      → ThemeEngine.apply()
-        → theme_changed.emit()
-          → _PreviewCard._on_theme_changed()
-            → self.update()    ← 在 clicked 信号发射过程中调用，触发事件循环嵌套
-```
-当父组件同时有 `setStyleSheet()` 设置时，`self.update()` 与 `clicked.emit()` 的事件循环嵌套导致 PyQt5 挂起。
+**现象**：简化 `_apply_theme_style` 时去掉了 `_secondary_btn_style` 等方法，但调用处未同步修改。
 
 **教训**：
-- **子组件绝对禁止在 `theme_changed` 回调中调用 `self.update()`**，如果子组件同时通过其他信号（如 `clicked`）触发主题切换
-- **集中刷新原则**：所有子组件的刷新由父组件在 `_on_theme_changed` 中统一调用 `card.update()`
-- **信号连接审查**：新增信号连接时，必须审查是否存在"信号 A 触发 → 槽内发射信号 B → 信号 B 的槽内调用 UI 方法"的嵌套路径
-
-**正确做法**：
-```python
-# 子组件：不连接 theme_changed 信号
-class _PreviewCard(QFrame):
-    def __init__(self, theme_id, engine, parent=None):
-        super().__init__(parent)
-        self._theme_id = theme_id
-        self._engine = engine
-        # 不连接 theme_changed，避免死锁
-
-# 父组件：集中刷新所有子组件
-class ThemeSwitcherPage(QWidget):
-    def _on_theme_changed(self, theme_id: str) -> None:
-        self._apply_theme_style()
-        self._update_card_selection()
-        # 集中刷新所有预览卡片
-        for card in self._cards.values():
-            card.update()
-```
-
-**错误做法**：
-```python
-# ❌ 子组件连接 theme_changed 并在回调中调用 self.update()
-class _PreviewCard(QFrame):
-    def __init__(self, theme_id, engine, parent=None):
-        super().__init__(parent)
-        self._engine = engine
-        self._engine.theme_changed.connect(self._on_theme_changed)  # 危险！
-
-    def _on_theme_changed(self, theme_id: str) -> None:
-        self.update()  # 与 clicked.emit() 嵌套时导致死锁
-```
+- **简化时必须检查所有引用**
+- **添加 `hasattr` 类型检查**
 
 ---
 
-## 二、强制规范
+## 三、强制规范
 
-### 规范 1：自定义绘制组件必须实时获取主题数据
+### 规范 1：全局 QSS 使用 `!important`
 
 | 项目 | 要求 |
 |------|------|
-| 适用场景 | 任何使用 `paintEvent` 自绘的组件 |
-| 强制规则 | 禁止在 `__init__` 中保存配色快照；`paintEvent` 内必须实时从 `ThemeEngine` 获取数据 |
-| 信号要求 | **禁止**直接连接 `theme_changed` 信号并调用 `self.update()`（避免死锁）；刷新由父组件在 `_on_theme_changed` 中集中调用 `card.update()` |
+| 适用场景 | 全局 QSS 中所有背景色属性 |
+| 强制规则 | 所有容器背景色必须使用 `!important` 标记 |
 
-### 规范 2：局部 setStyleSheet 禁止设置 color 属性
-
-| 项目 | 要求 |
-|------|------|
-| 适用场景 | 任何页面的 `_apply_theme_style` 或类似方法 |
-| 强制规则 | 局部 `setStyleSheet` 只能设置 `background-color`、`font-family`、`border` 等几何/背景属性 |
-| 禁止规则 | 禁止在局部样式表中使用 `QWidget { color: ... }` 全局选择器覆盖文字颜色 |
-| 例外 | 可以使用具体选择器（如 `QLabel#xxx`、`QPushButton.yyy_class`）设置特定控件颜色 |
-
-### 规范 3：信号连接必须审查嵌套路径
+### 规范 2：各页面只设置页面背景 + 按钮样式
 
 | 项目 | 要求 |
 |------|------|
-| 适用场景 | 任何组件连接 `theme_changed` 或其他全局信号 |
-| 强制规则 | 子组件禁止连接 `theme_changed` 并在回调中调用 `self.update()`，如果该子组件同时通过其他信号触发主题切换 |
-| 正确做法 | 父组件在 `_on_theme_changed` 中集中调用 `card.update()` 刷新所有子组件 |
-| 审查要点 | 检查是否存在"信号 A → 槽内发射信号 B → 信号 B 的槽内调用 UI 方法"的嵌套路径 |
+| 适用场景 | 所有页面的 `_on_theme_changed` / `_apply_theme_style` |
+| 强制规则 | 只设置页面自身背景色和按钮样式 |
+| 禁止规则 | 禁止 `findChildren(QGroupBox)` 等遍历容器控件 |
 
-### 规范 4：新模块集成必须全链路验证
-
-| 项目 | 要求 |
-|------|------|
-| 适用场景 | 新增页面/模块集成到主窗口导航 |
-| 检查项 | 1. `MODULES` 列表 2. `_create_module_stack` 3. `page_map` 4. `keyPressEvent` 快捷键 5. 状态栏文案 |
-| 验证要求 | 代码审查时必须逐项勾选，缺一不可 |
-
-### 规范 5：功能上线前必须端到端验证
+### 规范 3：局部 setStyleSheet 禁止设置 color 属性
 
 | 项目 | 要求 |
 |------|------|
-| 适用场景 | 任何涉及 UI 交互的新功能 |
-| 最低验证 | 1. 代码审查通过 2. 单元测试通过 3. **实际运行程序手动操作一遍完整流程** |
-| 禁止行为 | 仅凭"代码逻辑正确"就打包发布，不进行实际操作验证 |
+| 适用场景 | 任何页面的 `_apply_theme_style` |
+| 强制规则 | 只能设置 `background-color`、`font-family`、`border` 等几何/背景属性 |
+| 禁止规则 | 禁止使用 `QWidget { color: ... }` 全局选择器 |
 
 ---
 
-## 三、V0.3.5 主题切换功能测试清单
+## 四、版本信息
 
-打包前，必须手动操作验证以下场景，全部通过方可发布：
-
-- [ ] 启动程序，导航栏显示「🎨 主题切换」按钮
-- [ ] 点击「🎨 主题切换」按钮，页面切换到主题切换面板
-- [ ] Ctrl+8 快捷键可切换到主题切换面板
-- [ ] 主题切换面板显示三张预览卡片（Raycast / VS Code / Business）
-- [ ] 当前激活的卡片有选中高亮边框
-- [ ] 点击 Raycast 卡片 → 全局界面切换为紫橙渐变风格
-- [ ] 点击 VS Code 卡片 → 全局界面切换为深蓝黑风格
-- [ ] 点击 Business 卡片 → 全局界面切换为浅灰白风格，文字清晰可读
-- [ ] 切换主题后，预览卡片的选中高亮跟随变化
-- [ ] 关闭程序重启后，主题设置自动恢复
-- [ ] Business 主题下所有页面文字对比度足够（无"白底灰字"现象）
-
----
-
-## 四、V0.3.6 新增踩坑记录
-
-### 坑 5：导航栏控件主题切换不刷新
-
-**现象**：切换主题后，导航栏（Logo、导航按钮、账户管理/关于按钮）颜色不变。
-
-**根因**：导航栏控件（`nav_bar`、`logo_label`、`account_btn`、`about_btn`）是局部变量，`_refresh_nav_style()` 使用 `findChildren` 查找不可靠，导致刷新失败。
-
-**教训**：
-- **导航栏控件必须保存为实例变量**（`self._xxx`），主题切换时直接通过引用刷新
-- **禁止在 `_refresh_xxx_style()` 中使用 `findChildren` 查找控件**，应保存实例变量引用
-
-**正确做法**：
-```python
-# 创建时保存引用
-self._nav_bar = QWidget()
-self._logo_label = QLabel("NetOps")
-
-# 刷新时直接使用
-def _refresh_nav_style(self):
-    t = self._theme_engine.current_theme
-    if self._nav_bar is not None:
-        self._nav_bar.setStyleSheet(f"background-color: {t['nav_bg']};")
-    if self._logo_label is not None:
-        self._logo_label.setStyleSheet(f"color: {t['primary_light']};")
-```
-
-### 坑 6：Windows 原生标题栏不跟随主题
-
-**现象**：切换到 VS Code/Raycast 主题后，Windows 标题栏仍然是白色。
-
-**根因**：Windows 原生标题栏颜色由系统主题控制，QSS 无法影响。
-
-**教训**：
-- **深色主题必须调用 `DwmSetWindowAttribute(hwnd, 20, ...)` 设置标题栏深色模式**
-- `DWMWA_USE_IMMERSIVE_DARK_MODE = 20`，值 1 = 深色，0 = 浅色
-
----
-
-## 五、版本信息
-
-- **版本**：NetOps V0.4.2 Logo 设计版
-- **日期**：2026年5月30日
-- **触发事件**：用户提出性能优化需求，经分析采用 Python 针对性优化方案（方案 C）
-- **根因**：启动阶段重复 WMIC、配置缓存 Bug、批量命令生成热循环、死依赖、串行 SSH、QSS 重复生成
+- **版本**：NetOps V0.4.3 固定浅色主题版
+- **日期**：2026年6月4日
+- **变更**：取消主题切换，固定浅色商务风格

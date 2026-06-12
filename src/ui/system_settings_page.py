@@ -72,7 +72,7 @@ class SystemSettingsPage(QWidget):
         self._is_new_profile: bool = False
         self._theme_engine = ThemeEngine.get()
         self.init_ui()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
         self.load_config()
 
@@ -226,201 +226,24 @@ class SystemSettingsPage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景 + 刷新按钮。"""
         t = self._theme_engine.current_theme
-        primary = t["primary"]
-        primary_hover = t["primary_hover"]
-        success = t["success"]
-        success_hover = t["success_hover"]
-        danger = t["danger"]
-        danger_hover = t["danger_hover"]
-        text_main = t["text_main"]
-        text_secondary = t["text_secondary"]
-        text_tertiary = t["text_tertiary"]
-        text_primary = t["text_primary"]
-        border = t["border"]
-        border_deep = t["border_deep"]
-        input_bg = t["input_bg"]
-        hover_bg = t["hover_bg"]
-        card_bg = t["card_bg"]
-        radius_md = t["radius_md"]
-        radius_lg = t["radius_lg"]
-
-        # 标题
-        self._title_label.setStyleSheet(
-            f"font-size: 14pt; font-weight: bold; color: {text_main}; text-decoration: none;"
-        )
-
-        # 选择器标签
-        self._sel_label.setStyleSheet(f"font-size: 11pt; color: {text_secondary};")
-        self.profile_count_lbl.setStyleSheet(f"font-size: 11pt; color: {text_tertiary};")
-
-        # 配置选择栏按钮（次要按钮样式）
-        secondary_btn = f"""
-            QPushButton {{
-                background-color: transparent;
-                color: {text_secondary};
-                border: 1px solid {border};
-                border-radius: {radius_md}px;
-                font-size: 11pt;
-                padding: 5px 8px;
-                min-height: 28px;
-            }}
-            QPushButton:hover {{ background-color: transparent; border-color: {border_deep}; }}
-        """
-        self.add_btn.setStyleSheet(secondary_btn)
-        self.del_btn.setStyleSheet(secondary_btn)
-        self.rename_btn.setStyleSheet(secondary_btn)
-
-        # 下拉框样式
-        combo_style = f"""
-            QComboBox {{
-                border: 1px solid {t['input_border']};
-                border-radius: {radius_md}px;
-                padding: 6px 14px;
-                font-size: 11pt;
-                background-color: {card_bg};
-                color: {text_main};
-            }}
-            QComboBox:hover {{ border-color: {primary}; }}
-            QComboBox::drop-down {{ border: none; width: 28px; }}
-            QComboBox::down-arrow {{ image: none; border: none; }}
-            QComboBox QAbstractItemView {{
-                border: 1px solid {border};
-                selection-background-color: {hover_bg};
-                background-color: {card_bg};
-                color: {text_main};
-            }}
-        """
-        self.profile_combo.setStyleSheet(combo_style)
-        self.vendor_combo.setStyleSheet(f"""
-            QComboBox {{
-                border: 1px solid {t['input_border']};
-                border-radius: {radius_md}px;
-                padding: 4px 8px;
-                font-size: 11pt;
-                background-color: {input_bg};
-                color: {text_main};
-            }}
-            QComboBox:hover {{ border: 1px solid {primary}; }}
-            QComboBox::drop-down {{ border: none; }}
-        """)
-
-        # 输入框通用样式
-        line_style = f"""
-            QLineEdit {{
-                border: 1px solid {t['input_border']};
-                border-radius: {radius_md}px;
-                padding: 4px 8px;
-                font-size: 11pt;
-                background-color: {input_bg};
-                color: {text_main};
-            }}
-            QLineEdit:focus {{ border: 1px solid {primary}; background-color: {card_bg}; }}
-        """
-        self.url_input.setStyleSheet(line_style)
-        self.key_input.setStyleSheet(line_style)
-        self.model_input.setStyleSheet(line_style)
-
-        # 显示/隐藏按钮
-        self.show_key_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: transparent;
-                border: 1px solid {border};
-                border-radius: {radius_md}px;
-                font-size: 11pt;
-                color: {text_secondary};
-            }}
-            QPushButton:hover {{ border-color: {primary}; color: {primary}; }}
-        """)
-
-        # 保存按钮（次要按钮样式，统一无色）
-        self.save_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: transparent;
-                color: {text_secondary};
-                border: 1px solid {border};
-                border-radius: {radius_md}px;
-                font-size: 11pt;
-                padding: 5px 8px;
-            }}
-            QPushButton:hover {{
-                background-color: transparent;
-                border-color: {border_deep};
-                color: {text_main};
-            }}
-        """)
-
-        # 测试连通性按钮（次要按钮样式，统一无色）
-        self.test_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: transparent;
-                color: {text_secondary};
-                border: 1px solid {border};
-                border-radius: {radius_md}px;
-                font-size: 11pt;
-                padding: 5px 8px;
-            }}
-            QPushButton:hover {{
-                background-color: transparent;
-                border-color: {border_deep};
-                color: {text_main};
-            }}
-            QPushButton:disabled {{
-                background-color: transparent;
-                border-color: {border};
-                color: {text_tertiary};
-            }}
-        """)
-
+        # 页面自身背景
+        self.setStyleSheet(f"SystemSettingsPage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
+        # 按钮样式刷新
+        for attr, style_fn in [
+            ('add_btn', self._secondary_btn_style),
+            ('del_btn', self._secondary_btn_style),
+            ('rename_btn', self._secondary_btn_style),
+            ('show_key_btn', self._secondary_btn_style),
+            ('save_btn', self._secondary_btn_style),
+            ('test_btn', self._secondary_btn_style),
+        ]:
+            btn = getattr(self, attr, None)
+            if btn is not None:
+                btn.setStyleSheet(style_fn())
         # 测试状态标签
-        self.test_status.setStyleSheet(f"font-size: 11pt; color: {text_tertiary};")
-
-        # AI 模型配置分组框
-        self._ai_group.setStyleSheet(f"""
-            QGroupBox {{
-                font-size: 12pt;
-                font-weight: bold;
-                color: {text_main};
-                border: 1px solid {border};
-                border-radius: {radius_lg}px;
-                margin-top: 10px;
-                padding: 18px 14px 10px 14px;
-                background-color: {card_bg};
-            }}
-            QGroupBox::title {{
-                subcontrol-origin: margin;
-                left: 16px;
-                padding: 0 8px;
-            }}
-        """)
-
-        # 字段标签（模型厂商/BaseURL/API Key/模型名称）
-        for lbl in self._ai_group.findChildren(QLabel):
-            lbl.setStyleSheet(f"font-size: 11pt; color: {text_secondary}; font-weight: normal;")
-
-        # 全局设置分组框
-        self._general_group.setStyleSheet(f"""
-            QGroupBox {{
-                font-size: 12pt;
-                font-weight: bold;
-                color: {text_main};
-                border: 1px solid {border};
-                border-radius: {radius_lg}px;
-                margin-top: 10px;
-                padding: 18px 14px 10px 14px;
-                background-color: {card_bg};
-            }}
-            QGroupBox::title {{
-                subcontrol-origin: margin;
-                left: 16px;
-                padding: 0 8px;
-            }}
-        """)
-
-        # 复选框
-        self.tips_checkbox.setStyleSheet(
-            f"font-size: 11pt; color: {text_secondary}; font-weight: normal;"
-        )
+        self.test_status.setStyleSheet(f"font-size: 11pt; color: {t['text_tertiary']};")
 
     def on_vendor_changed(self, index):
         if index < len(AI_VENDORS):
@@ -479,6 +302,33 @@ class SystemSettingsPage(QWidget):
         self.del_btn.setEnabled(len(self.profiles) > 1)
         self.rename_btn.setEnabled(len(self.profiles) > 0)
         self.profile_count_lbl.setText(f"共 {len(self.profiles)} 个配置")
+
+    def _primary_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        r = t["radius_md"]
+        return (
+            f"QPushButton {{ background-color: transparent; color: {t['text_main']};"
+            f" border: 1px solid {t['border']}; border-radius: {r}px; font-size: 11pt; }}"
+            f"QPushButton:hover {{ background-color: {t['hover_bg']}; }}"
+        )
+
+    def _secondary_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        r = t["radius_md"]
+        return (
+            f"QPushButton {{ background-color: transparent; color: {t['text_secondary']};"
+            f" border: 1px solid {t['border']}; border-radius: {r}px; font-size: 10pt; }}"
+            f"QPushButton:hover {{ background-color: {t['hover_bg']}; }}"
+        )
+
+    def _danger_btn_style(self) -> str:
+        t = self._theme_engine.current_theme
+        r = t["radius_md"]
+        return (
+            f"QPushButton {{ background-color: transparent; color: {t['danger']};"
+            f" border: 1px solid {t['danger']}; border-radius: {r}px; font-size: 10pt; }}"
+            f"QPushButton:hover {{ background-color: {t['danger_bg']}; }}"
+        )
 
     def _load_active_to_form(self):
         profile = None

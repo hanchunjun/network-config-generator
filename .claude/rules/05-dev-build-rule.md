@@ -20,10 +20,9 @@
 
 ### V0.3.5 三主题切换系统（2026年5月25日）
 
-1. **主题引擎核心**：新增 `src/core/theme_engine.py` — 单例模式，管理三套完整配色方案（VSCode/Raycast/Business，每套60+颜色变量），`theme_changed` 信号广播，`apply()` 全局QSS设置，`qss()` 组件级QSS生成，配置持久化至 `config/theme_config.json`
-2. **主题切换面板**：新增 `src/ui/theme_switcher_page.py` — 三个 `_PreviewCard`（QPainter自定义绘制主题预览），点击即时切换，调用 `ThemeEngine.apply()`
-3. **全局UI重构**：main_window/login_dialog/activation_dialog/account_manager_dialog/batch_cmd_generator_page 全部硬编码QSS色值替换为 `t['xxx']` 动态引用，连接 `theme_changed` 信号刷新
-4. **spec更新**：新增 `theme_engine`/`theme_switcher_page` hiddenimports，输出文件名改为 `NetOps.exe`
+1. **主题引擎核心**：新增 `src/core/theme_engine.py` — 单例模式，管理浅色商务风格配色方案，`apply()` 全局QSS设置，配置持久化至 `config/theme_config.json`
+2. **全局UI重构**：main_window/login_dialog/activation_dialog/account_manager_dialog/batch_cmd_generator_page 全部硬编码QSS色值替换为 `t['xxx']` 动态引用
+3. **spec更新**：新增 `theme_engine` hiddenimports，输出文件名改为 `NetOps.exe`
 
 ### V0.3.3 登录认证 + 账户管理（2026年5月22日）
 

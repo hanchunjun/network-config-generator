@@ -18,7 +18,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QKeySequence
 
 # UI页面导入（轻量页面立即导入，重度页面延迟加载）
-from src.ui.theme_switcher_page import ThemeSwitcherPage
+# 主题切换已取消，固定使用浅色主题
 
 # 重度页面延迟导入注册表：module_id → (module_path, class_name)
 _LAZY_PAGE_REGISTRY: Dict[str, Tuple[str, str]] = {
@@ -52,7 +52,7 @@ _LAZY_CONFIG_REGISTRY: Dict[Tuple[str, str], Tuple[str, str]] = {
 from src.utils.resource_path import get_config_path, ensure_dirs
 from src.core.logger import netops_logger
 from src.core.activation_engine import check_activation
-from src.core.theme_engine import ThemeEngine, Theme
+from src.core.theme_engine import ThemeEngine
 from src.utils.validators import ProjectValidator
 from src.utils.file_operators import JSONFileManager
 
@@ -66,7 +66,6 @@ MODULES: List[Tuple[str, str, str]] = [
     ("ai", "专家工作站", "🤖"),
     ("batchcmd", "命令生成", "📜"),
     ("system", "模型设置", "⚙"),
-    ("theme", "主题切换", "🎨"),
 ]
 
 
@@ -80,7 +79,7 @@ class MainWindow(QMainWindow):
         self._theme_engine = ThemeEngine.get()
         app = QApplication.instance()
         if app is not None:
-            self._theme_engine.apply(app, self._theme_engine.current_theme_id)
+            self._theme_engine.apply(app)
 
         # 直接使用 main.py 传入的激活结果，避免重复 check_activation 调用
         self._trial_mode: bool = not is_active
@@ -88,7 +87,7 @@ class MainWindow(QMainWindow):
         if self._trial_mode:
             netops_logger.get_logger().info("试用模式：仅开放锐捷接入交换机配置和批量命令生成")
 
-        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.4.1' + (' [试用模式]' if self._trial_mode else ''))
+        self.setWindowTitle('NetOps 企业网络自动化运维平台 V0.4.3' + (' [试用模式]' if self._trial_mode else ''))
 
         # 初始化窗口尺寸
         screen = QApplication.primaryScreen().availableGeometry()
@@ -124,7 +123,7 @@ class MainWindow(QMainWindow):
         self._load_current_project()
 
         # 监听主题变化，动态更新硬编码样式的组件
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，固定使用浅色主题
 
     def _init_window_geometry(self, screen):
         """初始化窗口几何尺寸
@@ -196,7 +195,7 @@ class MainWindow(QMainWindow):
         # 轻量页面立即创建
         from src.ui.batch_cmd_generator_page import BatchCmdGeneratorPage
         self.batchcmd_page = BatchCmdGeneratorPage(self)
-        self.theme_page = ThemeSwitcherPage(self)
+        # 主题切换已取消
         self.config_container = QWidget()
 
         # 重度页面占位（首次切换时才创建）
@@ -207,7 +206,7 @@ class MainWindow(QMainWindow):
 
         # 添加轻量页面到堆栈
         self.module_stack.addWidget(self.batchcmd_page)
-        self.module_stack.addWidget(self.theme_page)
+        # 主题切换已取消
         self.module_stack.addWidget(self.config_container)
 
     def _get_lazy_page(self, module_id: str) -> QWidget:
@@ -245,7 +244,7 @@ class MainWindow(QMainWindow):
             }}
         """)
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("就绪 | Ctrl+1~8 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 专家工作站 · Ctrl+6 命令生成 · Ctrl+7 模型设置 · Ctrl+8 主题切换")
+        self.status_bar.showMessage("就绪 | Ctrl+1~7 切换模块 | Ctrl+1 设备配置 · Ctrl+2 新建项目 · Ctrl+3 运维工具箱 · Ctrl+4 单点巡检 · Ctrl+5 专家工作站 · Ctrl+6 命令生成 · Ctrl+7 模型设置")
 
     def keyPressEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:
@@ -258,7 +257,7 @@ class MainWindow(QMainWindow):
                 Qt.Key_5: "ai",
                 Qt.Key_6: "batchcmd",
                 Qt.Key_7: "system",
-                Qt.Key_8: "theme",
+                # 主题切换已取消
             }
             if key in shortcuts:
                 if self._trial_mode and shortcuts[key] not in ("config", "batchcmd"):
@@ -268,7 +267,7 @@ class MainWindow(QMainWindow):
                 module_names = {
                     "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
                     "single": "单点巡检", "ai": "专家工作站", "config": "设备配置",
-                    "batchcmd": "命令生成", "theme": "主题切换",
+                    "batchcmd": "命令生成",
                 }
                 self.status_bar.showMessage(f"已切换到：{module_names[shortcuts[key]]} | Ctrl+1~7 切换模块", 3000)
                 return
@@ -354,33 +353,7 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-    def _on_theme_changed(self, theme_id: str) -> None:
-        """主题切换后更新硬编码样式的组件。"""
-        t = self._theme_engine.current_theme
-        # 更新状态栏样式
-        self.status_bar.setStyleSheet(f"""
-            QStatusBar {{
-                background-color: {t['toolbar_bg']};
-                border-top: 1px solid {t['border_deep']};
-                font-size: 10pt;
-                color: {t['text_tertiary']};
-                padding: 2px 12px;
-            }}
-        """)
-        # 刷新导航栏
-        self._refresh_nav_style()
-        # 刷新配置选择栏
-        self._refresh_config_bar_style()
-        # 刷新激活按钮
-        self._update_activation_btn_style()
-        # 刷新项目状态标签
-        if self.current_project:
-            name = self.current_project.get("name", "")
-            self._update_project_status_label(name)
-        else:
-            self._update_project_status_label(None)
-        # 刷新 Windows 原生标题栏颜色
-        self._update_native_title_bar()
+    # 主题切换已取消，固定使用浅色主题
 
     def _refresh_nav_style(self) -> None:
         """刷新导航栏按钮样式（主题切换时调用）。"""
@@ -425,7 +398,23 @@ class MainWindow(QMainWindow):
                     }}
                 """)
         # 账户管理和关于按钮
-        toolbar_btn_qss = self._theme_engine.qss("toolbar_btn")
+        toolbar_btn_qss = f"""
+            QPushButton {{
+                background-color: transparent;
+                border: 1px solid {self._theme_engine.current_theme['border']};
+                border-radius: {self._theme_engine.current_theme['radius_sm']}px;
+                font-size: 10pt;
+                color: {self._theme_engine.current_theme['text_secondary']};
+                padding: 3px 8px;
+            }}
+            QPushButton:hover {{
+                background-color: {self._theme_engine.current_theme['hover_bg']};
+                border-color: {self._theme_engine.current_theme['border_deep']};
+            }}
+            QPushButton:disabled {{
+                color: {self._theme_engine.current_theme['text_disabled']};
+            }}
+        """
         if self._account_btn is not None:
             self._account_btn.setStyleSheet(toolbar_btn_qss)
         if self._about_btn is not None:
@@ -583,13 +572,45 @@ class MainWindow(QMainWindow):
         # 账户管理按钮
         self._account_btn = QPushButton("账户管理")
         self._account_btn.setFixedSize(64, 24)
-        self._account_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
+        self._account_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: transparent;
+                border: 1px solid {self._theme_engine.current_theme['border']};
+                border-radius: {self._theme_engine.current_theme['radius_sm']}px;
+                font-size: 10pt;
+                color: {self._theme_engine.current_theme['text_secondary']};
+                padding: 3px 8px;
+            }}
+            QPushButton:hover {{
+                background-color: {self._theme_engine.current_theme['hover_bg']};
+                border-color: {self._theme_engine.current_theme['border_deep']};
+            }}
+            QPushButton:disabled {{
+                color: {self._theme_engine.current_theme['text_disabled']};
+            }}
+        """)
         self._account_btn.clicked.connect(self._show_account_dialog)
         nav_layout.addWidget(self._account_btn)
 
         self._about_btn = QPushButton("关于")
         self._about_btn.setFixedSize(44, 24)
-        self._about_btn.setStyleSheet(self._theme_engine.qss("toolbar_btn"))
+        self._about_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: transparent;
+                border: 1px solid {self._theme_engine.current_theme['border']};
+                border-radius: {self._theme_engine.current_theme['radius_sm']}px;
+                font-size: 10pt;
+                color: {self._theme_engine.current_theme['text_secondary']};
+                padding: 3px 8px;
+            }}
+            QPushButton:hover {{
+                background-color: {self._theme_engine.current_theme['hover_bg']};
+                border-color: {self._theme_engine.current_theme['border_deep']};
+            }}
+            QPushButton:disabled {{
+                color: {self._theme_engine.current_theme['text_disabled']};
+            }}
+        """)
         self._about_btn.clicked.connect(self.show_about_dialog)
         nav_layout.addWidget(self._about_btn)
 
@@ -606,7 +627,7 @@ class MainWindow(QMainWindow):
             # 非延迟页面（batchcmd/theme/config）
             fixed_map = {
                 "batchcmd": self.batchcmd_page,
-                "theme": self.theme_page,
+                # 主题切换已取消
                 "config": self.config_container,
             }
             page = fixed_map.get(module_id)
@@ -622,7 +643,7 @@ class MainWindow(QMainWindow):
             module_names = {
                 "system": "模型设置", "project": "新建项目", "ops": "运维工具箱",
                 "single": "单点巡检", "ai": "AI分析", "config": "设备配置",
-                "batchcmd": "命令生成", "theme": "主题切换",
+                "batchcmd": "命令生成",
             }
             self.status_bar.showMessage(f"当前模块：{module_names.get(module_id, '')} | Ctrl+1~8 切换模块")
 

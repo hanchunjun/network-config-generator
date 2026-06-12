@@ -69,7 +69,6 @@
 | `account_manager_dialog.py` | 账户管理弹窗（修改用户名/密码） ★V0.3.3新增 | 对话框 |
 | `subnet_calculator_page.py` | 子网掩码计算器 ★V0.3.1新增 | 🔢 子网计算（试用模式开放） |
 | `batch_cmd_generator_page.py` | 批量命令生成器 ★V0.3.1新增 | 📜 命令生成（试用模式开放） |
-| `theme_switcher_page.py` | 主题切换面板（QPainter预览卡片） ★V0.3.5新增 | 🎨 主题切换 |
 
 ### 业务脚本层（scripts/）— 相对独立
 

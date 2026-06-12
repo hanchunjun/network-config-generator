@@ -126,7 +126,7 @@ class BaseConfigPage(QWidget):
         self.cards = []
         self.form_fields = {}
         self.init_ui()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
 
     def _load_cli_template(self):
@@ -142,22 +142,26 @@ class BaseConfigPage(QWidget):
     # ------------------------------------------------------------------
     def _on_theme_changed(self, theme_id: str) -> None:
         self._apply_theme_style()
+
+    def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景 + 独立样式控件。"""
+        t = self._theme_engine.current_theme
+        self.setStyleSheet(f"background-color: {t['page_bg']};")
+        # 刷新所有有独立样式的子控件
         self._refresh_child_styles()
 
     def _refresh_child_styles(self) -> None:
-        """刷新所有子控件的样式，子类可覆写此方法"""
+        """刷新所有子控件的配色方案。容器背景色由全局 QSS 统一控制，
+        此处只需刷新有独立样式的控件：按钮、自定义卡片。"""
         t = self._theme_engine.current_theme
-        # 刷新所有 QTabWidget
-        for tab in self.findChildren(QTabWidget):
-            tab.setStyleSheet(self._get_tab_style())
-        # 刷新所有 QTableWidget
-        for table in self.findChildren(QTableWidget):
-            table.setStyleSheet(self._get_table_style())
-            table.horizontalHeader().setStyleSheet(self._get_table_header_style())
-
-    def _apply_theme_style(self) -> None:
-        t = self._theme_engine.current_theme
-        self.setStyleSheet(f"background-color: {t['page_bg']};")
+        # 卡片（直接遍历 self.cards，避免 findChildren 全树遍历）
+        for card in self.cards:
+            card.setStyleSheet(self._get_card_style())
+        # QPushButton（刷新无 objectName 的通用按钮）
+        for btn in self.findChildren(QPushButton):
+            name = btn.objectName() or ''
+            if not name:
+                btn.setStyleSheet(self._get_primary_button_style())
 
     # ------------------------------------------------------------------
     # 动态样式生成器
@@ -572,6 +576,7 @@ class BaseConfigPage(QWidget):
     def create_card(self, title, icon, description):
         """创建配置卡片"""
         card = QWidget()
+        card.setObjectName("config_card")
         card.setStyleSheet(self._get_card_style())
         card_layout = QVBoxLayout()
         card_layout.setContentsMargins(0, 0, 0, 0)
@@ -597,6 +602,7 @@ class BaseConfigPage(QWidget):
         card_layout.addLayout(form_layout)
 
         card.setLayout(card_layout)
+        self.cards.append(card)
         return card
 
     def add_form_item(self, card, label_text, field_name, is_password=False, is_label=False, default_value=''):

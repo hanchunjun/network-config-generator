@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NetOps 主题引擎（ThemeEngine）
+NetOps 主题引擎 — 固定浅色商务风格
 
-支持三套 UI 主题一键切换：
-  - raycast  : Raycast 风格（紫橙渐变、毛玻璃、大圆角）
-  - vscode   : VS Code 风格（深蓝黑、锐利、开发者工具感）
-  - business : 商务沉稳风格（浅灰白底、品牌蓝、政企级）
-
-用法：
-    from src.core.theme_engine import ThemeEngine, Theme
-    theme = ThemeEngine.get()
-    theme.apply(app, Theme.VSCODE)
-    qss = theme.qss("primary_btn")
+设计原则：全局 QSS 统一控制所有容器背景色，各页面只需设置页面自身背景 + 有独立样式的控件。
 """
 
 from __future__ import annotations
 
 import json
 import os
-from enum import Enum
 from typing import Dict, Optional
 
 from PyQt5.QtWidgets import QApplication
@@ -29,455 +19,145 @@ from src.utils.resource_path import get_config_path
 from src.core.logger import netops_logger
 
 
-class Theme(str, Enum):
-    """主题枚举。"""
-    RAYCAST = "raycast"
-    VSCODE = "vscode"
-    BUSINESS = "business"
+# ── 浅色商务风格配色数据 ──────────────────────────────────────────────────────
 
-
-# ── 三套主题完整配色数据 ──────────────────────────────────────────────────────
-
-_THEMES: Dict[str, dict] = {
-    # ── Raycast 风格 ──────────────────────────────────────────────────────────
-    "raycast": {
-        "name": "Raycast",
-        "display_name": "Raycast 风格",
-        "description": "紫橙渐变 · 毛玻璃 · 大圆角 · 新锐科技感",
-        "page_bg": "#1C1C1E",
-        "card_bg": "#2C2C2E",
-        "sidebar_bg": "#38383A",
-        "hover_bg": "#48484A",
-        "code_bg": "#252528",
-        "input_bg": "#2C2C2E",
-        "nav_bg": "#38383A",
-        "toolbar_bg": "#38383A",
-        "primary": "#A855F7",
-        "primary_hover": "#9333EA",
-        "primary_pressed": "#7E22CE",
-        "primary_light": "#C084FC",
-        "accent": "#F97316",
-        "accent_hover": "#EA580C",
-        "accent_light": "#FB923C",
-        "selection_bg": "rgba(168,85,247,0.15)",
-        "ai_bg": "rgba(249,115,22,0.15)",
-        "ai_border": "#F97316",
-        "ai_text": "#FB923C",
-        "success": "#34D399",
-        "success_hover": "#059669",
-        "success_bg": "rgba(52,211,153,0.12)",
-        "warning": "#FBBF24",
-        "warning_hover": "#D97706",
-        "warning_bg": "rgba(251,191,36,0.12)",
-        "danger": "#F87171",
-        "danger_hover": "#DC2626",
-        "danger_bg": "rgba(248,113,113,0.12)",
-        "info": "#60A5FA",
-        "info_hover": "#3B82F6",
-        "text_primary": "#FFFFFF",
-        "text_main": "#E4E4E7",
-        "text_secondary": "#A1A1AA",
-        "text_tertiary": "#71717A",
-        "text_disabled": "#71717A",
-        "border": "#52525B",
-        "input_border": "#6B6B73",
-        "border_deep": "#3F3F46",
-        "border_deepest": "#27272A",
-        "border_glass": "rgba(255,255,255,0.08)",
-        "scrollbar_bg": "#2C2C2E",
-        "scrollbar_handle": "#52525B",
-        "status_ready": "#71717A",
-        "status_running": "#60A5FA",
-        "status_done": "#34D399",
-        "status_error": "#F87171",
-        "device_online": "#34D399",
-        "device_offline": "#52525B",
-        "device_testing": "#60A5FA",
-        "radius_sm": 3,
-        "radius_md": 5,
-        "radius_lg": 8,
-        "radius_xl": 10,
-        "radius_xxl": 12,
-        "radius_pill": 999,
-        "font_ui": "'Inter', 'SF Pro Display', 'Microsoft YaHei', sans-serif",
-        "font_mono": "'JetBrains Mono', 'Consolas', 'Courier New', monospace",
-        "gradient_primary": "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #A855F7, stop:1 #F97316)",
-        "gradient_primary_hover": "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #9333EA, stop:1 #EA580C)",
-    },
-
-    # ── VS Code 风格 ──────────────────────────────────────────────────────────
-    "vscode": {
-        "name": "VS Code",
-        "display_name": "VS Code 风格",
-        "description": "深蓝黑 · 锐利 · 开发者工具感 · 长时间不疲劳",
-        "page_bg": "#1E1E1E",
-        "card_bg": "#2D2D2D",
-        "sidebar_bg": "#252526",
-        "hover_bg": "#2A2D2E",
-        "code_bg": "#1E1E1E",
-        "input_bg": "#3C3C3C",
-        "nav_bg": "#252526",
-        "toolbar_bg": "#2D2D30",
-        "primary": "#007ACC",
-        "primary_hover": "#0062A3",
-        "primary_pressed": "#004F86",
-        "primary_light": "#3794FF",
-        "accent": "#4EC9B0",
-        "accent_hover": "#3DA28F",
-        "accent_light": "#4EC9B0",
-        "selection_bg": "rgba(0,122,204,0.12)",
-        "ai_bg": "rgba(0,122,204,0.12)",
-        "ai_border": "#007ACC",
-        "ai_text": "#3794FF",
-        "success": "#4EC9B0",
-        "success_hover": "#3DA28F",
-        "success_bg": "rgba(78,201,176,0.12)",
-        "warning": "#DCDCAA",
-        "warning_hover": "#B8A030",
-        "warning_bg": "rgba(220,220,170,0.10)",
-        "danger": "#F44747",
-        "danger_hover": "#CC3E3E",
-        "danger_bg": "rgba(244,71,71,0.12)",
-        "info": "#569CD6",
-        "info_hover": "#3794FF",
-        "text_primary": "#FFFFFF",
-        "text_main": "#CCCCCC",
-        "text_secondary": "#D4D4D4",
-        "text_tertiary": "#9D9D9D",
-        "text_disabled": "#808080",
-        "border": "#3E3E42",
-        "input_border": "#5A5A62",
-        "border_deep": "#333337",
-        "border_deepest": "#2D2D30",
-        "border_glass": "rgba(255,255,255,0.06)",
-        "scrollbar_bg": "#1E1E1E",
-        "scrollbar_handle": "#424242",
-        "status_ready": "#808080",
-        "status_running": "#569CD6",
-        "status_done": "#4EC9B0",
-        "status_error": "#F44747",
-        "device_online": "#4EC9B0",
-        "device_offline": "#808080",
-        "device_testing": "#569CD6",
-        "radius_sm": 2,
-        "radius_md": 3,
-        "radius_lg": 5,
-        "radius_xl": 6,
-        "radius_xxl": 8,
-        "radius_pill": 999,
-        "font_ui": "'Segoe UI', 'Microsoft YaHei', sans-serif",
-        "font_mono": "'Cascadia Code', 'Consolas', 'Courier New', monospace",
-        "gradient_primary": None,
-        "gradient_primary_hover": None,
-    },
-
-    # ── 商务沉稳风格 ──────────────────────────────────────────────────────────
-    "business": {
-        "name": "Business",
-        "display_name": "商务沉稳风格",
-        "description": "浅灰白底 · 品牌蓝 · 政企级 · 专业可信",
-        "page_bg": "#F5F5F5",
-        "card_bg": "#FFFFFF",
-        "sidebar_bg": "#F0F0F0",
-        "hover_bg": "#E8EAED",
-        "code_bg": "#F3F4F6",
-        "input_bg": "#FAFAFA",
-        "nav_bg": "#F0F0F0",
-        "toolbar_bg": "#E8E8E8",
-        "primary": "#1A73E8",
-        "primary_hover": "#1557B0",
-        "primary_pressed": "#0D47A1",
-        "primary_light": "#4285F4",
-        "accent": "#5F6368",
-        "accent_hover": "#3C4043",
-        "accent_light": "#9AA0A6",
-        "selection_bg": "rgba(26,115,232,0.08)",
-        "ai_bg": "rgba(26,115,232,0.08)",
-        "ai_border": "#4285F4",
-        "ai_text": "#1A73E8",
-        "success": "#0F9D58",
-        "success_hover": "#0B8043",
-        "success_bg": "rgba(15,157,88,0.08)",
-        "warning": "#F4B400",
-        "warning_hover": "#F09300",
-        "warning_bg": "rgba(244,180,0,0.08)",
-        "danger": "#DB4437",
-        "danger_hover": "#C5221F",
-        "danger_bg": "rgba(219,68,55,0.08)",
-        "info": "#4285F4",
-        "info_hover": "#1A73E8",
-        "text_primary": "#202124",
-        "text_main": "#3C4043",
-        "text_secondary": "#4A4A4A",
-        "text_tertiary": "#808080",
-        "text_disabled": "#9AA0A6",
-        "border": "#DADCE0",
-        "input_border": "#B0B0B8",
-        "border_deep": "#E8EAED",
-        "border_deepest": "#F1F3F4",
-        "border_glass": "rgba(0,0,0,0.06)",
-        "scrollbar_bg": "#F0F0F0",
-        "scrollbar_handle": "#DADCE0",
-        "status_ready": "#9AA0A6",
-        "status_running": "#4285F4",
-        "status_done": "#0F9D58",
-        "status_error": "#DB4437",
-        "device_online": "#0F9D58",
-        "device_offline": "#9AA0A6",
-        "device_testing": "#4285F4",
-        "radius_sm": 3,
-        "radius_md": 5,
-        "radius_lg": 8,
-        "radius_xl": 8,
-        "radius_xxl": 8,
-        "radius_pill": 999,
-        "font_ui": "'Segoe UI', 'Microsoft YaHei', sans-serif",
-        "font_mono": "'Consolas', 'Courier New', monospace",
-        "gradient_primary": None,
-        "gradient_primary_hover": None,
-    },
+_THEME: dict = {
+    "name": "light",
+    "display_name": "商务浅色",
+    "description": "浅灰白底 · 品牌蓝 · 政企级 · 专业可信",
+    # ── 背景色 ──
+    "page_bg": "#F5F5F5",
+    "card_bg": "#FFFFFF",
+    "sidebar_bg": "#F0F0F0",
+    "toolbar_bg": "#E8E8E8",
+    "hover_bg": "#E8EAED",
+    "code_bg": "#F3F4F6",
+    "input_bg": "#FAFAFA",
+    "nav_bg": "#F0F0F0",
+    # ── 功能色 ──
+    "primary": "#1A73E8",
+    "primary_hover": "#1557B0",
+    "primary_pressed": "#0D47A1",
+    "primary_light": "#4285F4",
+    "accent": "#5F6368",
+    "accent_hover": "#3C4043",
+    "accent_light": "#9AA0A6",
+    "selection_bg": "rgba(26,115,232,0.08)",
+    "ai_bg": "rgba(26,115,232,0.08)",
+    "ai_border": "#4285F4",
+    "ai_text": "#1A73E8",
+    "success": "#0F9D58",
+    "success_hover": "#0B8043",
+    "success_bg": "rgba(15,157,88,0.08)",
+    "warning": "#F4B400",
+    "warning_hover": "#F09300",
+    "warning_bg": "rgba(244,180,0,0.08)",
+    "danger": "#DB4437",
+    "danger_hover": "#C5221F",
+    "danger_bg": "rgba(219,68,55,0.08)",
+    "info": "#4285F4",
+    "info_hover": "#1A73E8",
+    # ── 文字色 ──
+    "text_primary": "#202124",
+    "text_main": "#3C4043",
+    "text_secondary": "#4A4A4A",
+    "text_tertiary": "#808080",
+    "text_disabled": "#9AA0A6",
+    # ── 边框色 ──
+    "border": "#DADCE0",
+    "input_border": "#B0B0B8",
+    "border_deep": "#E8EAED",
+    "border_deepest": "#F1F3F4",
+    # ── 滚动条 ──
+    "scrollbar_bg": "#F0F0F0",
+    "scrollbar_handle": "#DADCE0",
+    # ── 状态色 ──
+    "status_ready": "#9AA0A6",
+    "status_running": "#4285F4",
+    "status_done": "#0F9D58",
+    "status_error": "#DB4437",
+    "device_online": "#0F9D58",
+    "device_offline": "#9AA0A6",
+    "device_testing": "#4285F4",
+    # ── 圆角 ──
+    "radius_sm": 3,
+    "radius_md": 5,
+    "radius_lg": 8,
+    "radius_xl": 8,
+    "radius_xxl": 8,
+    "radius_pill": 999,
+    # ── 字体 ──
+    "font_ui": "'Segoe UI', 'Microsoft YaHei', sans-serif",
+    "font_mono": "'Consolas', 'Courier New', monospace",
 }
 
 
 class ThemeEngine(QObject):
-    """主题引擎单例。
-
-    管理三套 UI 主题的加载、切换、持久化。
-    切换主题时发射 theme_changed 信号，通知所有监听者更新样式。
+    """主题引擎单例 — 固定浅色商务风格。
 
     Signals:
-        theme_changed(str): 主题切换完成，参数为主题 ID
+        theme_changed(str): 主题切换完成（仅用于初始化时通知）
     """
 
     theme_changed = pyqtSignal(str)
 
     _instance: Optional[ThemeEngine] = None
-    _config_path: str = get_config_path("config/theme_config.json")
-    _global_qss_cache: Dict[str, str] = {}       # 全局 QSS 缓存（键: theme_id）
-    _component_qss_cache: Dict[str, str] = {}    # 组件 QSS 缓存（键: component@theme_id）
 
     def __init__(self) -> None:
         super().__init__()
-        self._current: str = Theme.BUSINESS
-        self._load_config()
+        self._current = _THEME
 
     # ── 单例 ────────────────────────────────────────────────────────────────
 
     @classmethod
     def get(cls) -> ThemeEngine:
-        """获取主题引擎单例。"""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
-
-    # ── 配置持久化 ──────────────────────────────────────────────────────────
-
-    def _load_config(self) -> None:
-        """从配置文件加载当前主题。"""
-        try:
-            if os.path.exists(self._config_path):
-                with open(self._config_path, "r", encoding="utf-8") as f:
-                    cfg = json.load(f)
-                theme_id = cfg.get("theme", Theme.BUSINESS)
-                if theme_id in _THEMES:
-                    self._current = theme_id
-        except Exception as e:
-            netops_logger.get_logger().warning(f"主题配置加载失败: {e}")
-
-    def _save_config(self) -> None:
-        """保存当前主题到配置文件。"""
-        try:
-            os.makedirs(os.path.dirname(self._config_path), exist_ok=True)
-            with open(self._config_path, "w", encoding="utf-8") as f:
-                json.dump({"theme": self._current}, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            netops_logger.get_logger().warning(f"主题配置保存失败: {e}")
 
     # ── 公共 API ────────────────────────────────────────────────────────────
 
     @property
     def current_theme_id(self) -> str:
-        """当前主题 ID。"""
-        return self._current
+        return "light"
 
     @property
     def current_theme(self) -> dict:
-        """当前主题配色数据。"""
-        return _THEMES[self._current]
+        return self._current
 
-    @property
-    def available_themes(self) -> Dict[str, str]:
-        """可用主题列表 {theme_id: display_name}。"""
-        return {tid: data["display_name"] for tid, data in _THEMES.items()}
-
-    def get_theme(self, theme_id: str) -> dict:
-        """获取指定主题的配色数据。"""
-        if theme_id not in _THEMES:
-            raise ValueError(f"未知主题: {theme_id}，可用: {list(_THEMES.keys())}")
-        return _THEMES[theme_id]
-
-    def apply(self, app: QApplication, theme_id: str) -> None:
-        """切换主题并应用到整个应用程序。
-
-        Args:
-            app: QApplication 实例
-            theme_id: 主题 ID（Theme.RAYCAST / Theme.VSCODE / Theme.BUSINESS）
-        """
-        if theme_id not in _THEMES:
-            raise ValueError(f"未知主题: {theme_id}")
-
-        self._current = theme_id
-        self._save_config()
-
-        # 主题切换时清除 QSS 缓存
-        ThemeEngine._global_qss_cache.clear()
-        ThemeEngine._component_qss_cache.clear()
-
-        t = _THEMES[theme_id]
-        radius = t["radius_md"]
-
-        # ── 构建全局 QSS ──────────────────────────────────────────────────
-        qss = self._build_global_qss(theme_id, t, radius)
+    def apply(self, app: QApplication) -> None:
+        """应用浅色主题到整个应用程序。"""
+        radius = self._current["radius_md"]
+        qss = self._build_global_qss(self._current, radius)
         app.setStyleSheet(qss)
+        netops_logger.get_logger().info("主题已应用: 商务浅色")
 
-        self.theme_changed.emit(theme_id)
-        netops_logger.get_logger().info(f"主题已切换: {t['display_name']}")
+    def _build_global_qss(self, t: dict, radius: int) -> str:
+        """构建全局 QSS 样式表（统一控制所有容器背景色）。"""
+        return f"""
+        /* ═══════════════════════════════════════════════
+           NetOps 全局 QSS — 浅色商务风格
+           ═══════════════════════════════════════════════ */
 
-    def _build_global_qss(self, theme_id: str, t: dict, radius: int) -> str:
-        """构建全局 QSS 样式表（带缓存）。"""
-        if theme_id in ThemeEngine._global_qss_cache:
-            return ThemeEngine._global_qss_cache[theme_id]
-        # 主按钮样式（Raycast 用渐变，其他用纯色；统一加 primary 色边框，背景不变）
-        if t.get("gradient_primary"):
-            primary_btn = f"""
-            QPushButton {{
-                background: {t['gradient_primary']};
-                color: {t['text_primary']};
-                border: 1px solid {t['primary']};
-                border-radius: {t['radius_md']}px;
-                font-size: 11pt;
-                font-weight: bold;
-                padding: 5px 8px;
-            }}
-            QPushButton:hover {{
-                background: {t['gradient_primary_hover']};
-                border: 1px solid {t['primary_hover']};
-            }}
-            QPushButton:pressed {{
-                background: {t['primary_pressed']};
-            }}
-            QPushButton:disabled {{
-                background: {t['border_deep']};
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
-            }}"""
-        else:
-            primary_btn = f"""
-            QPushButton {{
-                background-color: {t['primary']};
-                color: {t['text_primary']};
-                border: 1px solid {t['primary']};
-                border-radius: {radius}px;
-                font-size: 11pt;
-                padding: 5px 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {t['primary_hover']};
-                border: 1px solid {t['primary_hover']};
-            }}
-            QPushButton:pressed {{ background-color: {t['primary_pressed']}; }}
-            QPushButton:disabled {{
-                background-color: {t['border']};
-                border: 1px solid {t['border']};
-                color: {t['text_disabled']};
-            }}"""
-
-        qss = f"""
-        /* ── 全局基础 ── */
+        /* ── 窗口背景 ── */
         QMainWindow {{ background-color: {t['page_bg']}; }}
+
+        /* ── 全局字体/文字 ── */
         QWidget {{
             font-family: {t['font_ui']};
             font-size: 11pt;
             color: {t['text_main']};
         }}
 
-        /* ── 主按钮 ── */
-        {primary_btn}
-
-        /* ── 次要按钮 ── */
-        QPushButton.secondary {{
-            background-color: {t['hover_bg']};
-            border: 1px solid {t['border']};
-            border-radius: {radius}px;
-            font-size: 11pt;
-            color: {t['text_secondary']};
-            padding: 5px 8px;
-        }}
-        QPushButton.secondary:hover {{
-            border-color: {t['primary']};
-            color: {t['text_main']};
-        }}
-
-        /* ── 输入框 ── */
-        QLineEdit {{
-            border: 1px solid {t['input_border']};
-            border-radius: {radius}px;
-            padding: 4px 8px;
-            font-size: 11pt;
-            background-color: {t['input_bg']};
-            color: {t['text_secondary']};
-            min-height: 26px;
-        }}
-        QLineEdit:focus {{ border-color: {t['primary']}; }}
-        QLineEdit:disabled {{
-            background-color: {t['border_deepest']};
-            color: {t['text_disabled']};
-        }}
-
-        /* ── 下拉框 ── */
-        QComboBox {{
-            border: 1px solid {t['input_border']};
-            border-radius: {radius}px;
-            padding: 4px 8px;
-            font-size: 11pt;
-            background-color: {t['input_bg']};
-            color: {t['text_secondary']};
-            min-height: 26px;
-        }}
-        QComboBox:hover {{ border-color: {t['primary']}; }}
-        QComboBox::drop-down {{ border: none; width: 28px; }}
-        QComboBox QAbstractItemView {{
-            border: 1px solid {t['border']};
-            border-radius: {radius}px;
-            selection-background-color: {t['selection_bg']};
-            background-color: {t['card_bg']};
-            outline: none;
-        }}
-
-        /* ── 表格 ── */
-        QTableWidget {{
-            border: 1px solid {t['border_deep']};
-            border-radius: {radius}px;
-            background-color: {t['card_bg']};
-            gridline-color: {t['border_deep']};
-        }}
-        QTableWidget::item {{ padding: 4px 6px; color: {t['text_secondary']}; }}
-        QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
-        QTableWidget::item:selected {{
-            background-color: {t['selection_bg']};
-            color: {t['text_primary']};
-        }}
-        QHeaderView::section {{
-            background-color: {t['toolbar_bg']};
+        /* ── QScrollArea ── */
+        QScrollArea,
+        QScrollArea > QWidget,
+        QScrollArea > QWidget > QWidget {{
+            background-color: {t['page_bg']};
             border: none;
-            border-bottom: 1px solid {t['border_deep']};
-            padding: 6px;
-            font-weight: bold;
-            color: {t['text_main']};
-            font-size: 9pt;
         }}
 
-        /* ── 标签页 ── */
+        /* ── QTabWidget ── */
         QTabWidget::pane {{
             border: 1px solid {t['border_deep']};
             border-radius: {radius}px;
@@ -505,7 +185,7 @@ class ThemeEngine(QObject):
             color: {t['text_secondary']};
         }}
 
-        /* ── 分组框 ── */
+        /* ── QGroupBox ── */
         QGroupBox {{
             font-size: 11pt;
             font-weight: bold;
@@ -522,7 +202,61 @@ class ThemeEngine(QObject):
             padding: 0 6px;
         }}
 
-        /* ── 列表 ── */
+        /* ── QLineEdit ── */
+        QLineEdit {{
+            border: 1px solid {t['input_border']};
+            border-radius: {radius}px;
+            padding: 4px 8px;
+            font-size: 11pt;
+            background-color: {t['input_bg']};
+            color: {t['text_secondary']};
+            min-height: 26px;
+        }}
+        QLineEdit:focus {{ border-color: {t['primary']}; }}
+
+        /* ── QComboBox ── */
+        QComboBox {{
+            border: 1px solid {t['input_border']};
+            border-radius: {radius}px;
+            padding: 4px 8px;
+            font-size: 11pt;
+            background-color: {t['input_bg']};
+            color: {t['text_secondary']};
+            min-height: 26px;
+        }}
+        QComboBox:hover {{ border-color: {t['primary']}; }}
+        QComboBox QAbstractItemView {{
+            border: 1px solid {t['border']};
+            border-radius: {radius}px;
+            selection-background-color: {t['selection_bg']};
+            background-color: {t['card_bg']};
+            outline: none;
+        }}
+
+        /* ── QTableWidget ── */
+        QTableWidget {{
+            border: 1px solid {t['border_deep']};
+            border-radius: {radius}px;
+            background-color: {t['card_bg']};
+            gridline-color: {t['border_deep']};
+        }}
+        QTableWidget::item {{ padding: 4px 6px; color: {t['text_secondary']}; }}
+        QTableWidget::item:alternate {{ background-color: {t['hover_bg']}; }}
+        QTableWidget::item:selected {{
+            background-color: {t['selection_bg']};
+            color: {t['text_primary']};
+        }}
+        QHeaderView::section {{
+            background-color: {t['toolbar_bg']};
+            border: none;
+            border-bottom: 1px solid {t['border_deep']};
+            padding: 6px;
+            font-weight: bold;
+            color: {t['text_main']};
+            font-size: 9pt;
+        }}
+
+        /* ── QListWidget ── */
         QListWidget {{
             border: 1px solid {t['border_deep']};
             border-radius: {radius}px;
@@ -531,14 +265,13 @@ class ThemeEngine(QObject):
             outline: none;
             color: {t['text_secondary']};
         }}
-        QListWidget::item {{ padding: 3px 6px; }}
         QListWidget::item:selected {{
             background-color: {t['selection_bg']};
             color: {t['text_primary']};
         }}
         QListWidget::item:hover {{ background-color: {t['hover_bg']}; }}
 
-        /* ── 文本编辑区 ── */
+        /* ── QTextEdit ── */
         QTextEdit {{
             border: 1px solid {t['border_deep']};
             border-radius: {radius}px;
@@ -549,7 +282,7 @@ class ThemeEngine(QObject):
             color: {t['text_secondary']};
         }}
 
-        /* ── 进度条 ── */
+        /* ── QProgressBar ── */
         QProgressBar {{
             border: 1px solid {t['border']};
             border-radius: {t['radius_sm']}px;
@@ -564,12 +297,8 @@ class ThemeEngine(QObject):
             border-radius: {t['radius_sm']}px;
         }}
 
-        /* ── 复选框 ──
-           仅设置文字样式，完全不自定义 indicator。
-           保留 Qt 原生勾选图标（Fusion 样式默认行为）。
-           选中态通过属性选择器设置文字颜色。 */
+        /* ── QCheckBox ── */
         QCheckBox {{ font-size: 11pt; color: {t['text_secondary']}; spacing: 6px; }}
-        QCheckBox[checked="true"] {{ color: {t['primary_light']}; }}
 
         /* ── 滚动条 ── */
         QScrollBar:vertical {{
@@ -582,7 +311,6 @@ class ThemeEngine(QObject):
             border-radius: {t['radius_sm']}px;
             min-height: 20px;
         }}
-        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0; }}
         QScrollBar:horizontal {{
             background-color: {t['scrollbar_bg']};
             height: 10px;
@@ -593,11 +321,16 @@ class ThemeEngine(QObject):
             border-radius: {t['radius_sm']}px;
             min-width: 20px;
         }}
-        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{ width: 0; }}
 
         /* ── 分割线 ── */
         QFrame[frameShape="4"] {{ color: {t['border_deep']}; max-height: 1px; }}
         QFrame[frameShape="5"] {{ color: {t['border_deep']}; max-width: 1px; }}
+
+        /* ── QSplitter handle ── */
+        QSplitter::handle {{ background-color: {t['border']}; }}
+
+        /* ── QLabel ── */
+        QLabel {{ color: {t['text_main']}; background-color: transparent; }}
 
         /* ── 工具提示 ── */
         QToolTip {{
@@ -625,7 +358,6 @@ class ThemeEngine(QObject):
             border-radius: {radius}px;
             color: {t['text_secondary']};
         }}
-        QMenu::item {{ padding: 6px 20px; }}
         QMenu::item:selected {{
             background-color: {t['selection_bg']};
             color: {t['text_primary']};
@@ -639,273 +371,15 @@ class ThemeEngine(QObject):
         }}
         """
 
-        ThemeEngine._global_qss_cache[theme_id] = qss
-        return qss
-
-    # ── 便捷方法 ──────────────────────────────────────────────────────────
-
-    def qss(self, component: str) -> str:
-        """获取指定组件的 QSS 片段（用于局部控件样式覆盖，带缓存）。
-
-        Args:
-            component: 组件名称，如 "btn", "nav_btn", "toolbar_btn",
-                       "status_btn_trial", "status_btn_expiring", "status_btn_active"
-
-        Returns:
-            QSS 字符串
-        """
-        cache_key = f"{component}@{self._current}"
-        if cache_key in ThemeEngine._component_qss_cache:
-            return ThemeEngine._component_qss_cache[cache_key]
-
-        t = self.current_theme
-        r = t["radius_md"]
-
-        _qss_map = {
-            # ── 所有按钮统一样式 ──
-            "btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    color: {t['text_secondary']};
-                    padding: 5px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    border-color: {t['border_deep']};
-                }}
-                QPushButton:disabled {{
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "nav_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: none;
-                    border-radius: {t['radius_xxl']}px;
-                    padding: 5px 8px;
-                    font-size: 11pt;
-                    color: {t['text_secondary']};
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    color: {t['text_main']};
-                }}
-                QPushButton[selected="true"] {{
-                    background-color: {t['selection_bg']};
-                    color: {t['primary_light']};
-                    font-weight: bold;
-                }}
-            """,
-            "toolbar_btn": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: 1px solid {t['border']};
-                    border-radius: {t['radius_sm']}px;
-                    font-size: 10pt;
-                    color: {t['text_secondary']};
-                    padding: 3px 8px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    border-color: {t['border_deep']};
-                }}
-                QPushButton:disabled {{
-                    color: {t['text_disabled']};
-                }}
-            """,
-            "status_btn_trial": f"""
-                QPushButton {{
-                    background-color: {t['danger_bg']};
-                    border: 1px solid {t['danger']};
-                    border-radius: {r}px;
-                    font-size: 10pt;
-                    color: {t['danger']};
-                    font-weight: bold;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['danger_bg']};
-                }}
-            """,
-            "status_btn_expiring": f"""
-                QPushButton {{
-                    background-color: {t['warning_bg']};
-                    border: 1px solid {t['warning']};
-                    border-radius: {r}px;
-                    font-size: 10pt;
-                    color: {t['warning']};
-                    font-weight: bold;
-                }}
-            """,
-            "status_btn_active": f"""
-                QPushButton {{
-                    background-color: {t['success_bg']};
-                    border: 1px solid {t['success']};
-                    border-radius: {r}px;
-                    font-size: 10pt;
-                    color: {t['success']};
-                    font-weight: bold;
-                }}
-            """,
-            # ── V0.3.8 三级按钮体系（DESIGN.md §4.1 唯一来源）──
-            "btn_primary": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: 1px solid {t['border_deep']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    color: {t['text_main']};
-                    font-weight: bold;
-                    padding: 4px 10px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary']};
-                }}
-                QPushButton:pressed {{
-                    background-color: {t['page_bg']};
-                    border-color: {t['primary_hover']};
-                    color: {t['primary_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border-color: {t['border']};
-                    color: {t['text_tertiary']};
-                }}
-                QPushButton[selected="true"] {{
-                    background-color: {t['selection_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary_light']};
-                    font-weight: bold;
-                }}
-            """,
-            "btn_default": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: 1px solid {t['border_deep']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    color: {t['text_main']};
-                    font-weight: bold;
-                    padding: 4px 10px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    border-color: {t['text_secondary']};
-                    color: {t['text_main']};
-                }}
-                QPushButton:pressed {{
-                    background-color: {t['page_bg']};
-                    border-color: {t['text_main']};
-                    color: {t['text_main']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border-color: {t['border']};
-                    color: {t['text_tertiary']};
-                }}
-                QPushButton[selected="true"] {{
-                    background-color: {t['selection_bg']};
-                    border-color: {t['primary']};
-                    color: {t['primary_light']};
-                    font-weight: bold;
-                }}
-            """,
-            "btn_danger": f"""
-                QPushButton {{
-                    background-color: transparent;
-                    border: 1px solid {t['border_deep']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    color: {t['text_main']};
-                    font-weight: bold;
-                    padding: 4px 10px;
-                }}
-                QPushButton:hover {{
-                    background-color: {t['hover_bg']};
-                    border-color: {t['danger']};
-                    color: {t['danger']};
-                }}
-                QPushButton:pressed {{
-                    background-color: {t['page_bg']};
-                    border-color: {t['danger_hover']};
-                    color: {t['danger_hover']};
-                }}
-                QPushButton:disabled {{
-                    background-color: transparent;
-                    border-color: {t['border']};
-                    color: {t['text_tertiary']};
-                }}
-                QPushButton[selected="true"] {{
-                    background-color: {t['danger_bg']};
-                    border-color: {t['danger']};
-                    color: {t['danger']};
-                    font-weight: bold;
-                }}
-            """,
-            "input_field": f"""
-                QLineEdit {{
-                    background-color: {t['input_bg']};
-                    border: 1px solid {t['border']};
-                    border-radius: {t['radius_sm']}px;
-                    padding: 4px 8px;
-                    font-size: 11pt;
-                    color: {t['text_main']};
-                }}
-                QLineEdit:focus {{
-                    border-color: {t['primary_light']};
-                }}
-            """,
-            "text_edit": f"""
-                QTextEdit {{
-                    background-color: {t['input_bg']};
-                    border: 1px solid {t['border']};
-                    border-radius: {r}px;
-                    padding: 6px;
-                    font-size: 10pt;
-                    color: {t['text_main']};
-                }}
-            """,
-            "group_box": f"""
-                QGroupBox {{
-                    background-color: {t['card_bg']};
-                    border: 1px solid {t['border']};
-                    border-radius: {r}px;
-                    font-size: 11pt;
-                    font-weight: bold;
-                    color: {t['text_main']};
-                    padding-top: 8px;
-                }}
-                QGroupBox::title {{
-                    color: {t['primary_light']};
-                }}
-            """,
-        }
-
-        if component not in _qss_map:
-            raise ValueError(f"未知组件: {component}，可用: {list(_qss_map.keys())}")
-        result = _qss_map[component]
-        ThemeEngine._component_qss_cache[cache_key] = result
-        return result
-
     def status_color(self, status: str) -> str:
-        """获取状态指示颜色。
-
-        Args:
-            status: 状态名称 - "ready", "running", "done", "error",
-                    "online", "offline", "testing"
-        """
-        t = self.current_theme
+        """获取状态指示颜色。"""
         _map = {
-            "ready": t["status_ready"],
-            "running": t["status_running"],
-            "done": t["status_done"],
-            "error": t["status_error"],
-            "online": t["device_online"],
-            "offline": t["device_offline"],
-            "testing": t["device_testing"],
+            "ready": self._current["status_ready"],
+            "running": self._current["status_running"],
+            "done": self._current["status_done"],
+            "error": self._current["status_error"],
+            "online": self._current["device_online"],
+            "offline": self._current["device_offline"],
+            "testing": self._current["device_testing"],
         }
-        return _map.get(status, t["text_tertiary"])  # type: ignore[no-any-return]
+        return _map.get(status, self._current["text_tertiary"])

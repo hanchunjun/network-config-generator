@@ -243,7 +243,7 @@ class AIAnalysisPage(QWidget):
         self.multi_files = []
         self._theme_engine = ThemeEngine.get()
         self.init_ui()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
 
     def _load_recent_files(self):
@@ -855,124 +855,9 @@ class AIAnalysisPage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景。"""
         t = self._theme_engine.current_theme
-        # 页面级背景（只设置背景色和字体，不设置 color 属性）
-        self.setStyleSheet(f"""
-            AIAnalysisPage {{
-                background-color: {t['page_bg']};
-                font-family: {t['font_ui']};
-            }}
-        """)
-
-        # 左侧面板标题和描述
-        left_panel = self.layout().itemAt(0).widget()
-        if left_panel:
-            splitter = left_panel
-            # 通过 findChildren 查找标题和描述标签
-            for title_label in self.findChildren(QLabel):
-                if title_label.text() == "AI专家工作站":
-                    title_label.setStyleSheet(f"font-size: 14pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
-                elif title_label.text().startswith("深度分析、多文件对比"):
-                    title_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
-
-        # Agent快捷指令标签
-        for agent_label in self.findChildren(QLabel):
-            if agent_label.text() == "Agent快捷指令：":
-                agent_label.setStyleSheet(f"font-size: 11pt; color: {t['text_secondary']}; font-weight: bold;")
-
-        # 所有 Prompt编辑区标签
-        for prompt_label in self.findChildren(QLabel):
-            if prompt_label.text() == "Prompt编辑区（可直接修改后发送）：":
-                prompt_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
-
-        # 状态标签
-        self.status_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
-
-        # 刷新 QGroupBox 样式（标题颜色）
-        for group_box in self.findChildren(QGroupBox):
-            group_box.setStyleSheet(self._group_style())
-
-        # 刷新 TabWidget 样式
-        r_md = t['radius_md']
-        r_sm = t['radius_sm']
-        self.tab_widget.setStyleSheet(f"""
-            QTabWidget::pane {{
-                border: 1px solid {t['border']};
-                border-radius: {r_md}px;
-                background-color: {t['card_bg']};
-            }}
-            QTabBar::tab {{
-                border: 1px solid {t['border']};
-                padding: 8px 20px;
-                font-size: 11pt;
-                background-color: {t['card_bg']};
-                margin-right: 2px;
-            }}
-            QTabBar::tab:selected {{
-                background-color: {t['card_bg']};
-                border-bottom-color: {t['card_bg']};
-                font-weight: bold;
-                color: {t['text_secondary']};
-            }}
-            QTabBar::tab:hover {{ background-color: {t['hover_bg']}; }}
-        """)
-
-        # 刷新 QTextEdit 样式（Prompt编辑区和结果区）
-        r_md = t['radius_md']
-        for text_edit in self.findChildren(QTextEdit):
-            if text_edit.isReadOnly():
-                # 结果区
-                text_edit.setStyleSheet(f"""
-                    QTextEdit {{
-                        border: 1px solid {t['border']};
-                        border-radius: {r_md}px;
-                        padding: 10px;
-                        font-size: 11pt;
-                        background-color: {t['card_bg']};
-                    }}
-                """)
-            else:
-                # Prompt编辑区
-                text_edit.setStyleSheet(f"""
-                    QTextEdit {{
-                        border: 1px solid {t['border']};
-                        border-radius: {r_md}px;
-                        padding: 10px;
-                        font-family: 'Consolas', 'Courier New', monospace;
-                        font-size: 11pt;
-                        background-color: {t['card_bg']};
-                    }}
-                    QTextEdit:focus {{ border: 1px solid {t['border']}; }}
-                """)
-
-        # 刷新 QListWidget 样式
-        r_md = t['radius_md']
-        r_sm = t['radius_sm']
-        for list_widget in self.findChildren(QListWidget):
-            list_widget.setStyleSheet(f"""
-                QListWidget {{
-                    border: 1px solid {t['border']};
-                    border-radius: {r_md}px;
-                    background-color: {t['card_bg']};
-                    font-size: 11pt;
-                    outline: none;
-                }}
-                QListWidget::item {{ padding: 5px 8px; }}
-                QListWidget::item:selected {{ background-color: {t['page_bg']}; color: {t['text_primary']}; }}
-                QListWidget::item:hover {{ background-color: {t['hover_bg']}; }}
-            """)
-
-        # 刷新进度条样式
-        self.progress_bar.setStyleSheet(f"""
-            QProgressBar {{
-                border: 1px solid {t['border']};
-                border-radius: {r_sm}px;
-                text-align: center;
-                background-color: {t['card_bg']};
-                font-size: 10pt;
-            }}
-            QProgressBar::chunk {{ background-color: {t['page_bg']}; border-radius: {r_sm}px; }}
-        """)
+        self.setStyleSheet(f"AIAnalysisPage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
 
     def showEvent(self, event):
         super().showEvent(event)

@@ -244,7 +244,7 @@ class SingleDevicePage(QWidget):
         self.refresh_backup_list()
         self.refresh_report_list()
         self.refresh_compliance_list()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -723,53 +723,37 @@ class SingleDevicePage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景 + 刷新按钮。"""
         if self._theme_engine is None:
             return
         t = self._theme_engine.current_theme
         self.setStyleSheet(f"SingleDevicePage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
-        if hasattr(self, 'table_group'):
-            self.table_group.setStyleSheet(self._group_style())
-        if hasattr(self, 'table'):
-            self.table.setStyleSheet(self._table_style())
-        if hasattr(self, 'result_tabs'):
-            self.result_tabs.setStyleSheet(self._result_tabs_style())
+        # 按钮样式刷新
         for attr, style_fn in [
             ('add_btn', lambda: _btn_style(t, fg=t['text_secondary'])),
             ('edit_btn', lambda: _btn_style(t, fg=t['text_secondary'])),
             ('del_btn', lambda: _btn_style(t)),
             ('clear_btn', lambda: _btn_style(t, fg=t['text_tertiary'])),
+            ('inspect_btn', self._primary_btn_style),
+            ('backup_btn', self._secondary_btn_style),
+            ('test_btn', self._secondary_btn_style),
+            ('cancel_btn', lambda: _btn_style(t)),
         ]:
             btn = getattr(self, attr, None)
             if btn is not None:
                 btn.setStyleSheet(style_fn())
-        for attr, fn in [('inspect_btn', self._primary_btn_style), ('backup_btn', self._secondary_btn_style),
-                          ('test_btn', self._secondary_btn_style), ('cancel_btn', lambda: _btn_style(t))]:
-            btn = getattr(self, attr, None)
-            if btn is not None:
-                btn.setStyleSheet(fn())
-        if hasattr(self, 'progress_bar'):
-            self.progress_bar.setStyleSheet(self._progress_style())
-        for attr in ('status_label', 'select_count_lbl'):
-            lbl = getattr(self, attr, None)
-            if lbl is not None:
-                lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
-        if hasattr(self, 'desc_label'):
-            self.desc_label.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; padding: 4px 0;")
-        self._refresh_all_tabs()
 
     def _refresh_all_tabs(self) -> None:
-        """刷新所有结果 Tab 的内部控件样式"""
+        """刷新所有结果 Tab 的内部控件样式。
+        容器控件（QListWidget/QTextEdit/QComboBox）背景色已由全局 QSS 统一控制，
+        此处只需刷新有独立样式的控件：按钮、标签。
+        """
         t = self._theme_engine.current_theme
         for i in range(self.result_tabs.count()):
             page = self.result_tabs.widget(i)
             if page is None:
                 continue
-            for lst in page.findChildren(QListWidget):
-                lst.setStyleSheet(self._list_widget_style())
-            for te in page.findChildren(QTextEdit):
-                te.setStyleSheet(self._text_edit_style())
-            for cb in page.findChildren(QComboBox):
-                cb.setStyleSheet(self._combo_small_style())
+            # 按钮样式（通过 objectName 识别类型）
             _page_del_btns = [getattr(page, a, None) for a in
                               ('backup_del_btn', 'report_del_btn', 'diagnosis_del_btn', 'compliance_del_btn')]
             for btn in page.findChildren(QPushButton):
@@ -780,6 +764,7 @@ class SingleDevicePage(QWidget):
                     btn.setStyleSheet(_ai_btn_style(t))
                 else:
                     btn.setStyleSheet(_btn_style(t))
+            # 标签样式
             for lbl in page.findChildren(QLabel):
                 obj_name = lbl.objectName()
                 if any(kw in obj_name for kw in ('_title_lbl', '_name_lbl')):

@@ -38,8 +38,7 @@ class LoginDialog(QDialog):
         self._theme = ThemeEngine.get().current_theme
         self._setup_ui()
         self._apply_style()
-        # 监听主题变化
-        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
 
     def _setup_ui(self) -> None:
         """构建登录窗口UI。"""
@@ -164,8 +163,8 @@ class LoginDialog(QDialog):
     def _on_theme_changed(self, theme_id: str) -> None:
         """主题切换时刷新样式。"""
         self._theme = ThemeEngine.get().current_theme
+        self.setStyleSheet(f"QDialog {{ background-color: {self._theme['card_bg']}; }}")
         self._apply_style()
-        # 通知父窗口更新（如果有）
         self.update()
 
     def _on_login(self) -> None:

@@ -2,6 +2,18 @@
 
 所有重要版本变更记录于此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/) 格式。
 
+## [V0.4.3] - 2026-06-04
+
+### Changed
+- **取消主题切换**：固定使用浅色商务风格（`Theme.LIGHT`），移除 `ThemeSwitcherPage`、`Theme.DARK`、`Theme.RAYCAST`、`Theme.VSCODE`、`Theme.BUSINESS` 枚举
+- **简化主题引擎**：`ThemeEngine.apply(app)` 签名改为只接受 `app` 参数，不再需要 `theme_id`
+- **全局 QSS 统一控制**：所有容器背景色使用 `!important` 标记，强制覆盖局部样式
+- **移除导航栏主题切换按钮**：`Ctrl+8` 快捷键移除，状态栏提示更新为 `Ctrl+1~7`
+
+### Fixed
+- 修复 `SystemSettingsPage` 中 `_secondary_btn_style` 和 `_primary_btn_style` 方法缺失导致的 `AttributeError`
+- 修复 `MainWindow.switch_module("system")` 无法切换模型设置页面的问题（`fixed_map` 中缺少 `"system"` 映射）
+
 ## [V0.3.7] - 2026-05-26
 
 ### Added

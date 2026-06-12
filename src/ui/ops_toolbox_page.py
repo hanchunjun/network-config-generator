@@ -719,7 +719,7 @@ class TaskCard(QGroupBox):
                 font-size: 10pt;
             }}
             QProgressBar::chunk {{
-                background-color: {t['page_bg']};
+                background-color: {t['primary']};
                 border-radius: {r}px;
             }}
         """
@@ -1015,7 +1015,7 @@ class OpsToolboxPage(QWidget):
         self._ai_diagnostic_thread = None
         self._theme_engine = ThemeEngine.get()
         self.init_ui()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
         self._apply_theme_style()
 
     def init_ui(self):
@@ -1082,29 +1082,11 @@ class OpsToolboxPage(QWidget):
         self._apply_theme_style()
 
     def _apply_theme_style(self) -> None:
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景。"""
         if self._theme_engine is None:
             return
         t = self._theme_engine.current_theme
-        self.setStyleSheet(f"""
-            OpsToolboxPage {{
-                background-color: {t['page_bg']};
-                font-family: {t['font_ui']};
-            }}
-        """)
-        if hasattr(self, 'project_combo'):
-            self.project_combo.setStyleSheet(self._combo_style())
-        if hasattr(self, 'tab_widget'):
-            self.tab_widget.setStyleSheet(self._tab_style())
-        # 标题和描述标签
-        if hasattr(self, 'title_label'):
-            self.title_label.setStyleSheet(
-                f"font-size: 14pt; font-weight: bold; color: {t['text_main']}; text-decoration: none;")
-        if hasattr(self, 'proj_label'):
-            self.proj_label.setStyleSheet(
-                f"font-size: 11pt; color: {t['text_secondary']}; font-weight: normal;")
-        if hasattr(self, 'desc_label'):
-            self.desc_label.setStyleSheet(
-                f"font-size: 10pt; color: {t['text_tertiary']}; padding: 2px 0;")
+        self.setStyleSheet(f"OpsToolboxPage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
         # 刷新按钮
         if hasattr(self, 'refresh_btn'):
             self.refresh_btn.setStyleSheet(_btn_style(t))
@@ -1156,16 +1138,7 @@ class OpsToolboxPage(QWidget):
             btn = getattr(tab, attr, None)
             if btn is not None:
                 btn.setStyleSheet(_ai_btn_style(t))
-        # QSplitter handle 颜色（中间竖线）
-        for sp in tab.findChildren(QSplitter):
-            sp.setStyleSheet(
-                f"QSplitter::handle {{ background-color: {t['border']}; }}"
-                f"QSplitter::handle:horizontal {{ width: 2px; }}"
-                f"QSplitter::handle:vertical {{ height: 2px; }}"
-            )
-        # Tab 内 QLabel（"设备筛选：" 等）
-        for lbl in tab.findChildren(QLabel):
-            lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']};")
+        # QSplitter handle 和 QLabel 样式已由全局 QSS 统一控制，无需单独设置
 
     def _combo_style(self) -> str:
         t = self._theme_engine.current_theme

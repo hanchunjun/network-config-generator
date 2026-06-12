@@ -147,6 +147,147 @@ def create_shortcut(target, shortcut_path, working_dir="", icon_path=""):
         return os.path.exists(shortcut_path)
 
 
+def _register_uninstall(install_dir):
+    """写入注册表卸载信息，使程序出现在控制面板「程序和功能」中"""
+    try:
+        import winreg
+    except ImportError:
+        return  # 非 Windows 跳过
+    exe_path = os.path.join(install_dir, "NetOps.exe")
+    # 卸载命令：UninstallString 带弹窗确认，QuietUninstallString 静默执行
+    uninstall_cmd = '"{}" --uninstall "{}"'.format(exe_path, install_dir)
+    silent_uninstall_cmd = '"{}" --uninstall-silent "{}"'.format(exe_path, install_dir)
+    # 优先写入 HKLM（所有用户可见），权限不足时回退 HKCU
+    for hkey, key_path in [
+        (winreg.HKEY_LOCAL_MACHINE,
+         r"Software\Microsoft\Windows\CurrentVersion\Uninstall\NetOps"),
+        (winreg.HKEY_CURRENT_USER,
+         r"Software\Microsoft\Windows\CurrentVersion\Uninstall\NetOps"),
+    ]:
+        try:
+            key = winreg.CreateKeyEx(hkey, key_path, 0, winreg.KEY_WRITE)
+            winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ,
+                              APP_FULL_NAME)
+            winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "0.4.2")
+            winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "NetOps")
+            winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, install_dir)
+            winreg.SetValueEx(key, "UninstallString", 0, winreg.REG_SZ, uninstall_cmd)
+            winreg.SetValueEx(key, "QuietUninstallString", 0, winreg.REG_SZ,
+                              silent_uninstall_cmd)
+            winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, exe_path)
+            winreg.SetValueEx(key, "NoModify", 0, winreg.REG_DWORD, 1)
+            winreg.SetValueEx(key, "NoRepair", 0, winreg.REG_DWORD, 1)
+            winreg.CloseKey(key)
+            print("[OK] 卸载注册: {}".format(key_path))
+            return
+        except PermissionError:
+            continue
+        except Exception as e:
+            print("[WARN] 卸载注册失败: {}".format(e))
+            continue
+    print("[WARN] 无法写入卸载注册表（可能需要管理员权限）")
+
+
+def perform_uninstall(install_dir):
+    """执行卸载：删除程序文件，保留用户数据"""
+    install_path = Path(install_dir)
+    if not install_path.exists():
+        print("[WARN] 安装目录不存在: {}".format(install_dir))
+        return
+
+    # ── 第1步：清理快捷方式（先于文件删除，避免依赖程序文件）──
+    desktop_sc = os.path.join(DESKTOP, "{}.lnk".format(APP_FULL_NAME))
+    if os.path.exists(desktop_sc):
+        try:
+            os.remove(desktop_sc)
+        except Exception:
+            pass
+    startmenu_sc = os.path.join(START_MENU, "{}.lnk".format(APP_FULL_NAME))
+    if os.path.exists(startmenu_sc):
+        try:
+            os.remove(startmenu_sc)
+        except Exception:
+            pass
+    # 清理开始菜单卸载快捷方式
+    unins_sc = os.path.join(START_MENU, "卸载 NetOps.lnk")
+    if os.path.exists(unins_sc):
+        try:
+            os.remove(unins_sc)
+        except Exception:
+            pass
+    # 清理开始菜单目录
+    if os.path.exists(START_MENU) and not os.listdir(START_MENU):
+        try:
+            os.rmdir(START_MENU)
+        except Exception:
+            pass
+
+    # ── 第2步：清理注册表 ──
+    try:
+        import winreg
+        for hkey, key_path in [
+            (winreg.HKEY_LOCAL_MACHINE,
+             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\NetOps"),
+            (winreg.HKEY_CURRENT_USER,
+             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\NetOps"),
+        ]:
+            try:
+                winreg.DeleteKey(hkey, key_path)
+                print("[OK] 注册表清理: {}".format(key_path))
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                print("[WARN] 注册表清理失败: {}".format(e))
+    except ImportError:
+        pass
+
+    # ── 第3步：删除程序文件（保留数据目录）──
+    exe_path = str(install_path / "NetOps.exe")
+    for item in install_path.iterdir():
+        name = item.name
+        if name in DATA_DIRS:
+            continue  # 保留用户数据
+        if str(item) == exe_path:
+            continue  # 自身最后删除
+        try:
+            if item.is_dir():
+                shutil.rmtree(str(item))
+            else:
+                item.unlink()
+        except Exception as e:
+            print("[WARN] 删除失败: {} ({})".format(name, e))
+
+    # ── 第4步：删除自身（NetOps.exe），使用 MoveFileEx 延迟删除 ──
+    try:
+        import ctypes
+        # MOVEFILE_DELAY_UNTIL_REBOOT = 0x4
+        kernel32 = ctypes.windll.kernel32
+        result = kernel32.MoveFileExW(
+            exe_path, None, 0x4
+        )
+        if result:
+            print("[OK] 自身删除已延迟到重启后")
+        else:
+            # 回退：直接删除
+            os.remove(exe_path)
+    except Exception:
+        try:
+            os.remove(exe_path)
+        except Exception as e:
+            print("[WARN] 自身删除失败: {}".format(e))
+
+    # ── 第5步：如果目录仅剩数据目录，保留；否则尝试删除空目录 ──
+    remaining = list(install_path.iterdir())
+    non_data = [x for x in remaining if x.name not in DATA_DIRS]
+    if not non_data:
+        print("[OK] 用户数据已保留: {}".format(install_dir))
+    else:
+        # 还有非数据文件（删除失败的），保留目录
+        pass
+
+    print("[OK] 卸载完成")
+
+
 def perform_install(install_dir, create_desktop, create_startmenu, launch_after):
     """执行实际安装（可被 GUI 或命令行调用）"""
     install_path = Path(install_dir)
@@ -171,6 +312,25 @@ def perform_install(install_dir, create_desktop, create_startmenu, launch_after)
         os.makedirs(START_MENU, exist_ok=True)
         sc = os.path.join(START_MENU, "{}.lnk".format(APP_FULL_NAME))
         create_shortcut(exe_path, sc, str(install_path), exe_path)
+        # 创建开始菜单卸载快捷方式
+        unins_sc = os.path.join(START_MENU, "卸载 NetOps.lnk")
+        unins_target = os.path.join(install_dir, "NetOps.exe")
+        create_shortcut(
+            unins_target, unins_sc, install_dir,
+            unins_target,  # 图标用主程序图标
+        )
+        # 写入卸载快捷方式的参数（通过 PowerShell 设置 Arguments）
+        try:
+            import win32com.client
+            shell = win32com.client.Dispatch("WScript.Shell")
+            sc_obj = shell.CreateShortCut(unins_sc)
+            sc_obj.Arguments = '--uninstall "{}"'.format(install_dir)
+            sc_obj.save()
+        except Exception:
+            pass  # win32com 不可用时静默跳过
+
+    # 注册卸载信息到注册表（控制面板「程序和功能」）
+    _register_uninstall(install_dir)
 
     print("[OK] 安装完成: {}".format(exe_path))
 
@@ -222,14 +382,13 @@ def run_gui():
                               bg=bg, padx=10, pady=8)
     opt_frame.pack(fill="x", padx=20, pady=5)
 
-    desktop_var = tk.BooleanVar(value=True)
     startmenu_var = tk.BooleanVar(value=True)
-    launch_var = tk.BooleanVar(value=True)
-    tk.Checkbutton(opt_frame, text="创建桌面快捷方式", variable=desktop_var,
-                   font=("Microsoft YaHei", 9), bg=bg).pack(anchor="w")
+    launch_var = tk.BooleanVar(value=False)
+    tk.Label(opt_frame, text="✓ 安装完成后自动创建桌面快捷方式",
+             font=("Microsoft YaHei", 9), bg=bg, fg="#333").pack(anchor="w")
     tk.Checkbutton(opt_frame, text="创建开始菜单快捷方式", variable=startmenu_var,
                    font=("Microsoft YaHei", 9), bg=bg).pack(anchor="w")
-    tk.Checkbutton(opt_frame, text="安装完成后启动", variable=launch_var,
+    tk.Checkbutton(opt_frame, text="安装完成后启动程序", variable=launch_var,
                    font=("Microsoft YaHei", 9), bg=bg).pack(anchor="w")
 
     tk.Label(root, text="提示：安装到 Program Files 需要管理员权限",
@@ -282,15 +441,12 @@ def run_gui():
         try:
             perform_install(
                 install_dir,
-                desktop_var.get(),
+                True,
                 startmenu_var.get(),
                 launch_var.get()
             )
-            messagebox.showinfo("安装完成",
-                "安装成功！\n\n程序路径：{}\n\n{}".format(
-                    os.path.join(install_dir, "NetOps.exe"),
-                    "桌面快捷方式已创建" if desktop_var.get() else ""))
-            root.destroy()
+            status_var.set("✓ 安装完成！")
+            root.after(800, root.destroy)
         except Exception as e:
             messagebox.showerror("安装失败", "错误：{}".format(str(e)))
             install_btn.config(state="normal")
@@ -307,9 +463,31 @@ def run_cli(install_dir):
 
 
 if __name__ == "__main__":
-    # 支持命令行静默安装: NetOps_Setup.exe --install "D:\NetOps"
+    # 命令行参数处理
+    #   安装:   NetOps.exe --install "D:\NetOps"
+    #   卸载:   NetOps.exe --uninstall "D:\NetOps"
+    #   静默卸载: NetOps.exe --uninstall-silent "D:\NetOps"
     if len(sys.argv) >= 3 and sys.argv[1] == "--install":
         run_cli(sys.argv[2])
+    elif len(sys.argv) >= 3 and sys.argv[1] == "--uninstall-silent":
+        # 静默卸载（由控制面板调用，不弹窗）
+        perform_uninstall(sys.argv[2])
+    elif len(sys.argv) >= 3 and sys.argv[1] == "--uninstall":
+        # 交互式卸载（开始菜单/手动运行，弹窗确认）
+        try:
+            import tkinter as tk
+            from tkinter import messagebox
+            root = tk.Tk()
+            root.withdraw()
+            if messagebox.askyesno("确认卸载",
+                "确定要卸载 {} 吗？\n\n安装目录：{}\n\n（用户数据 config/logs/projects 等将被保留）".format(
+                    APP_FULL_NAME, sys.argv[2])):
+                perform_uninstall(sys.argv[2])
+                messagebox.showinfo("卸载完成", "已成功卸载 {}".format(APP_FULL_NAME))
+            root.destroy()
+        except Exception:
+            # tkinter 不可用时回退到静默卸载
+            perform_uninstall(sys.argv[2])
     else:
         run_gui()
 '''

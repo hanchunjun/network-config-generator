@@ -48,7 +48,7 @@ class ActivationDialog(QDialog):
         self._theme = ThemeEngine.get().current_theme
         self._setup_ui()
         self._apply_style()
-        ThemeEngine.get().theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
 
     def _setup_ui(self) -> None:
         """构建弹窗UI"""
@@ -254,6 +254,7 @@ class ActivationDialog(QDialog):
     def _on_theme_changed(self, theme_id: str) -> None:
         """主题切换时刷新样式。"""
         self._theme = ThemeEngine.get().current_theme
+        self.setStyleSheet(f"QDialog {{ background-color: {self._theme['card_bg']}; }}")
         self._apply_style()
         self.update()
 

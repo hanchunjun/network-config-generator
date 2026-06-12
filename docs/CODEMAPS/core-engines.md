@@ -292,55 +292,43 @@ AuditResult: findings[], audit_time_ms
 
 ---
 
-## theme_engine.py — 主题引擎（V0.3.5新增，V0.3.6增强，V0.3.7缓存优化）
+## theme_engine.py — 主题引擎（V0.4.3 简化为固定浅色主题）
 
-**职责：** 管理三套完整配色方案，提供全局QSS动态生成、信号广播、配置持久化。
+**职责：** 管理全局 QSS 样式表，统一控制所有容器背景色。主题切换已取消，固定使用浅色商务风格。
 
-### 核心数据结构
-```python
-Theme: Dict[str, str]  # 60+颜色变量，如 primary, nav_bg, text_main 等
-ThemeEngine: 单例类，_theme_id + _current_theme + _THEMES + theme_changed信号
-```
+### 核心设计
+- **单例模式**：`ThemeEngine.get()` 获取唯一实例
+- **固定浅色主题**：`Theme.LIGHT`（商务浅灰白风格），`apply(app)` 初始化全局 QSS
+- **`!important` 标记**：全局 QSS 中所有背景色使用 `!important`，强制覆盖局部 `setStyleSheet`
+- **容器背景色统一控制**：QScrollArea、QTabWidget::pane、QGroupBox、QLineEdit、QComboBox、QTableWidget、QTextEdit、QListWidget、QProgressBar、QStatusBar、QScrollBar、QMenu、QDialog、QSplitter handle、QLabel 等
 
-### 三套主题（每套60+颜色变量）
-| 主题ID | 名称 | 风格特征 |
-|--------|------|---------|
-| `vscode` | VSCode Dark | 深蓝黑底，直角，技术感，`#1E1E1E`/`#007ACC` |
-| `raycast` | Raycast | 紫橙渐变，毛玻璃，大圆角，`#1A1025`/`#FF6363` |
-| `business` | Business | 浅灰白底，品牌蓝，政企风，`#F5F6FA`/`#1565C0` |
+### 各页面职责
+- 只需设置页面自身背景色 + 刷新按钮样式
+- 不再需要 `findChildren` 遍历容器控件
+- 不再需要 `_group_style()`、`_combo_style()` 等方法（容器样式由全局 QSS 控制）
 
 ### 关键方法
 | 方法 | 说明 |
 |------|------|
-| `get()` | 获取单例实例（自动初始化默认主题） |
-| `apply(app, theme_id)` | 应用全局QSS样式表 |
-| `qss(component)` | 返回指定组件类型的QSS片段 |
-| `status_color(status)` | 返回状态灯颜色（success/warning/danger） |
+| `get()` | 获取单例实例 |
+| `apply(app)` | 应用全局 QSS 样式表（初始化时调用一次） |
+| `current_theme` | 返回当前主题配色数据（只读） |
+| `status_color(status)` | 返回状态灯颜色 |
 
-### 颜色变量体系（部分）
-| 变量类别 | 示例变量 |
-|---------|---------|
-| 品牌色 | `primary`, `primary_light`, `primary_hover`, `primary_pressed` |
-| 背景色 | `bg_main`, `card_bg`, `nav_bg`, `input_bg`, `code_bg`, `hover_bg` |
-| 文字色 | `text_main`, `text_primary`, `text_secondary`, `text_tertiary` |
-| 边框/分割 | `border`, `input_border`（V0.3.6新增，输入框专用，比普通border更亮）, `border_deep`, `border_deepest` |
-| 状态色 | `success`, `warning`, `danger`, `info` + 各状态 bg/hover 变体 |
-| 圆角 | `radius_sm`, `radius_md`, `radius_lg` |
+### 颜色变量（浅色主题）
+| 变量 | 色值 | 用途 |
+|------|------|------|
+| `page_bg` | `#F5F5F5` | 页面背景 |
+| `card_bg` | `#FFFFFF` | 卡片/面板背景 |
+| `input_bg` | `#FAFAFA` | 输入框背景 |
+| `primary` | `#1A73E8` | 主色（蓝） |
+| `text_main` | `#3C4043` | 正文文字 |
+| `border` | `#DADCE0` | 边框 |
 
 ### 配置持久化
 - 存储路径：`config/theme_config.json`
-- 格式：`{"theme_id": "business"}`（V0.3.6起默认主题为 business）
-- 切换主题时自动保存，启动时自动加载
-
-### V0.3.6 新增颜色变量
-| 变量 | 说明 | VS Code | Raycast | Business |
-|------|------|---------|---------|----------|
-| `input_border` | QLineEdit/QComboBox 未聚焦边框 | `#5A5A62` | `#6B6B73` | `#B0B0B8` |
-
-### V0.3.7 缓存优化
-- `_global_qss_cache: Dict[str, str]` — 全局 QSS 缓存，键为 `theme_id`
-- `_component_qss_cache: Dict[str, str]` — 组件 QSS 缓存，键为 `component@theme_id`
-- `apply()` 切换主题时自动清空缓存，避免旧样式残留
+- 格式：`{"theme": "light"}`
+- 兼容旧配置（`business`/`raycast` → `light`，`vscode` → `dark` 已废弃）
 
 ---
 

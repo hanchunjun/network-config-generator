@@ -84,7 +84,7 @@ class SubnetCalculatorPage(QWidget):
         self._setup_ui()
         self._apply_style()
         self._bind_events()
-        self._theme_engine.theme_changed.connect(self._on_theme_changed)
+        # 主题切换已取消，信号连接已移除
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
@@ -299,84 +299,31 @@ class SubnetCalculatorPage(QWidget):
         )
 
     def _apply_style(self):
+        """主题切换时刷新样式。全局 QSS 已统一控制容器背景色，此处只需设置页面背景 + 特殊控件。"""
         t = self._theme_engine.current_theme
         r_md = t['radius_md']
         r_sm = t['radius_sm']
-        self.setStyleSheet(
-            f"QLineEdit {{"
-            f"  border: 1px solid {t['border']}; border-radius: {r_md}px; padding: 2px 6px;"
-            f"  font-size: 12pt; background: {t['card_bg']};"
-            f"}}"
-            f"QLineEdit:focus {{ border-color: {t['border']}; }}"
-            f"QSpinBox {{"
-            f"  border: 1px solid {t['border']}; border-radius: {r_md}px; padding: 2px 6px;"
-            f"  font-size: 12pt; background: {t['card_bg']};"
-            f"}}"
-            f"QSpinBox:focus {{ border-color: {t['border']}; }}"
-            f"QPushButton[objectName=\"calcBtn\"] {{"
-            f"  background-color: transparent; color: {t['text_main']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r_md}px; font-size: 12pt; font-weight: bold;"
-            f"}}"
-            f"QPushButton[objectName=\"calcBtn\"]:hover {{"
-            f"  background-color: transparent; border-color: {t['border']};"
-            f"  color: {t['text_secondary']};"
-            f"}}"
-            f"QPushButton[objectName=\"calcBtn\"]:disabled {{"
-            f"  background-color: transparent; border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            f"}}"
-            f"QPushButton[objectName=\"divideBtn\"] {{"
-            f"  background-color: transparent; color: {t['text_main']};"
-            f"  border: 1px solid {t['border']};"
-            f"  border-radius: {r_md}px; font-size: 12pt; font-weight: bold;"
-            f"}}"
-            f"QPushButton[objectName=\"divideBtn\"]:hover {{"
-            f"  background-color: transparent; border-color: {t['border']};"
-            f"  color: {t['text_secondary']};"
-            f"}}"
-            f"QPushButton[objectName=\"divideBtn\"]:disabled {{"
-            f"  background-color: transparent; border-color: {t['border']};"
-            f"  color: {t['text_tertiary']};"
-            f"}}"
-            f"QPushButton[objectName=\"copyAllBtn\"] {{"
-            f"  background-color: transparent; color: {t['text_secondary']}; border: 1px solid {t['border']};"
-            f"  border-radius: {r_md}px; font-size: 11pt;"
-            f"}}"
-            f"QPushButton[objectName=\"copyAllBtn\"]:hover {{"
-            f"  background-color: transparent; border-color: {t['border_deep']};"
-            f"}}"
-            f"QTableWidget {{"
-            f"  gridline-color: {t['border']}; border: 1px solid {t['border']}; border-radius: {r_md}px;"
-            f"  font-size: 11pt;"
-            f"}}"
-            f"QTableWidget::item {{ padding: 4px; }}"
-            f"QHeaderView::section {{"
-            f"  background-color: {t['hover_bg']}; color: {t['text_secondary']}; font-weight: bold;"
-            f"  border: none; border-bottom: 1px solid {t['border']}; padding: 6px;"
-            f"}}"
-        )
-        # 输入区域样式
+        # 页面自身背景
+        self.setStyleSheet(f"SubnetCalculatorPage {{ background-color: {t['page_bg']}; font-family: {t['font_ui']}; }}")
+        # 输入区域样式（通过 objectName 查找，避免遍历）
         input_frame = self.findChild(QFrame, "inputArea")
         if input_frame:
             input_frame.setStyleSheet(
-                f"#inputArea {{"
-                f"  background-color: {t['input_bg']}; border: 1px solid {t['border']}; border-radius: {r_md}px;"
-                f"}}"
+                f"#inputArea {{ background-color: {t['input_bg']}; border: 1px solid {t['border']}; border-radius: {r_md}px; }}"
             )
-        # 标题样式
-        for lbl in self.findChildren(QLabel):
-            if lbl.text() in ("IP 地址:", "掩码位:", "需要划分数:"):
+        # 标题样式（通过 objectName 查找，避免遍历所有 QLabel）
+        for attr in ('_ip_label', '_mask_label', '_div_label'):
+            lbl = getattr(self, attr, None)
+            if lbl:
                 lbl.setStyleSheet(f"font-size: 12pt; color: {t['text_secondary']}; font-weight: 600;")
-            elif lbl.text() == ".":
-                lbl.setStyleSheet(f"color: {t['text_tertiary']};")
-            elif lbl.text() in ("计算结果", "子网划分"):
+        for attr in ('_result_title', '_div_title'):
+            lbl = getattr(self, attr, None)
+            if lbl:
                 lbl.setStyleSheet(
                     f"font-size: 12pt; font-weight: bold; color: {t['text_main']}; padding-left: 4px;"
                     f"border-left: 3px solid {t['primary']}; padding-left: 8px; margin-bottom: 10px;"
                 )
-        # 二进制表格样式
-        r_sm = t['radius_sm']
+        # 二进制表格样式（保存了引用，直接刷新）
         for cell in self.binary_cells.values():
             cell.setStyleSheet(
                 f"color: {t['text_main']}; background-color: {t['hover_bg']}; "
@@ -386,8 +333,8 @@ class SubnetCalculatorPage(QWidget):
             lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_tertiary']}; font-weight: bold;")
         for lbl in self._binary_row_labels:
             lbl.setStyleSheet(f"font-size: 10pt; color: {t['text_secondary']}; font-weight: bold;")
-        # 刷新所有卡片
-        for card in self.findChildren(CardFrame):
+        # 刷新所有卡片（保存了引用，直接刷新）
+        for card in self._cards:
             card.refresh_theme()
 
     def _on_theme_changed(self, theme_id: str) -> None:
