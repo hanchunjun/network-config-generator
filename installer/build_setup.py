@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 installer/build_setup.py
-从 dist/NetOps/ 生成带图标的自解压安装包 NetOps_Setup_0.4.0.exe
+从 dist/NetOps/ 生成带图标的自解压安装包 NetOps_Setup_0.4.3.exe
 
 原理：
   1. 将 dist/NetOps/ 打包为 data.zip
@@ -13,7 +13,7 @@ installer/build_setup.py
 用法：
   1. 先执行 pyinstaller NetworkConfigGenerator.spec --noconfirm
   2. 再执行 python installer/build_setup.py
-  3. 输出：installer/NetOps_Setup_0.4.0.exe
+  3. 输出：installer/NetOps_Setup_0.4.3.exe
 """
 
 import os
@@ -30,7 +30,7 @@ DIST_DIR = PROJECT_ROOT / "dist" / "NetOps"
 ASSETS_DIR = PROJECT_ROOT / "assets"
 ICON_FILE = ASSETS_DIR / "netops.ico"
 OUTPUT_DIR = PROJECT_ROOT / "installer"
-OUTPUT_EXE = OUTPUT_DIR / "NetOps_Setup_0.4.0.exe"
+OUTPUT_EXE = OUTPUT_DIR / "NetOps_Setup_0.4.3.exe"
 TEMP_DIR = Path(tempfile.mkdtemp(prefix="netops_sfx_"))
 
 APP_NAME = "NetOps"
@@ -168,7 +168,7 @@ def _register_uninstall(install_dir):
             key = winreg.CreateKeyEx(hkey, key_path, 0, winreg.KEY_WRITE)
             winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ,
                               APP_FULL_NAME)
-            winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "0.4.2")
+            winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "0.4.3")
             winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "NetOps")
             winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, install_dir)
             winreg.SetValueEx(key, "UninstallString", 0, winreg.REG_SZ, uninstall_cmd)
@@ -544,7 +544,7 @@ def build_setup_exe() -> None:
 if __name__ == "__main__":
     print("=" * 50)
     print("  NetOps Setup 安装包构建工具")
-    print("  版本: 0.4.1")
+    print("  版本: 0.4.3")
     print("  图标: 华文行楷 \"Net\" + 科技蓝渐变")
     print("=" * 50)
 

@@ -4,12 +4,12 @@
 ; 使用方法：
 ;   1. 先执行 pyinstaller NetworkConfigGenerator.spec --noconfirm 生成 dist/NetOps/
 ;   2. 用 Inno Setup 6 打开本脚本，编译即可生成安装包
-;   3. 输出：installer/NetOps_Setup_0.4.0.exe
+;   3. 输出：installer/NetOps_Setup_0.4.3.exe
 ; ============================================================
 
 #define MyAppName "NetOps"
 #define MyAppFullName "NetOps 企业网络自动化运维平台"
-#define MyAppVersion "0.4.0"
+#define MyAppVersion "0.4.3"
 #define MyAppPublisher "NetOps"
 #define MyAppExeName "NetOps.exe"
 
