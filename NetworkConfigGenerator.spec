@@ -67,6 +67,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     manifest='app.manifest',
+    version='version_info.txt',
 )
 
 coll = COLLECT(

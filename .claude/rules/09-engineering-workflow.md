@@ -1,4 +1,4 @@
-# 工程化规范全流程（V0.4.2）
+# 工程化规范全流程（V0.4.3）
 
 > 本文件收纳 CLAUDE.md 工程化规范章节，每次改动和打包必须按流程执行。
 
@@ -97,7 +97,7 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 - 开发工具依赖：`requirements-dev.txt`（pytest/mypy/bandit/radon）
 - 新增依赖后必须更新对应文件
 
-## 六、版本号管理规范（V0.4.2 教训）
+## 六、版本号管理规范（V0.4.3 教训）
 
 **每次版本升级，必须全量检查以下所有位置的版本号，确保一致：**
 
@@ -105,34 +105,34 @@ pyinstaller NetworkConfigGenerator.spec --noconfirm
 
 | # | 文件 | 位置 | 示例 |
 |---|------|------|------|
-| 1 | `CLAUDE.md` | 第 1 行标题 | `# NetOps V0.4.2 — 项目总纲` |
-| 2 | `main.py` | 文件头注释 | `V0.4.2 Logo设计 + 安装包` |
-| 3 | `src/ui/main_window.py` | 窗口标题（3处） | `'NetOps 企业网络自动化运维平台 V0.4.2'` |
-| 4 | `src/ui/main_window.py` | 关于对话框版本号 | `version_str = 'V0.4.2' + (' 试用版' if ...)` |
-| 5 | `src/ui/admin_tool_window.py` | 窗口标题 | `"NetOps 管理员制码工具 V0.4.2 — 老韩专用"` |
-| 6 | `DESIGN.md` | 标题 + 维护信息 | `V0.4.2` / `2026-05-30` |
-| 7 | `.claude/rules/05-dev-build-rule.md` | 标题 | `V0.4.2` |
-| 8 | `.claude/rules/10-version-history.md` | 标题 + 新增条目 | `V0.4.2 Logo 设计版` |
-| 9 | `.claude/rules/03-module-spec.md` | 标题 | `V0.4.2` |
-| 10 | `.claude/rules/04-user-workflow.md` | 标题 | `V0.4.2` |
-| 11 | `.claude/rules/06-safety-rule.md` | 标题 + 底部版本信息 | `V0.4.2` |
-| 12 | `.claude/rules/01-architecture-dir.md` | 标题 | `V0.4.2` |
-| 13 | `.claude/rules/08-activation-plan.md` | 标题 | `V0.4.2` |
-| 14 | `.claude/rules/09-engineering-workflow.md` | 标题 | `V0.4.2` |
-| 15 | `.claude/rules/11-user-guide.md` | 标题 | `V0.4.2` |
-| 16 | `.claude/rules/12-qss-theme-signal-spec.md` | 标题 + 底部版本 | `V0.4.2` |
-| 17 | `.claude/rules/07-v2-architecture-plan.md` | 状态注释 | `V0.4.2` |
-| 18 | `docs/CODEMAPS/INDEX.md` | 版本 + 日期 | `V0.4.2` / `2026-05-30` |
-| 19 | `docs/CODEMAPS/build-deploy.md` | 版本 + 日期 + 版本表 | `V0.4.2` |
-| 20 | `docs/CODEMAPS/architecture.md` | 版本 + 日期 | `V0.4.2` |
-| 21 | `docs/CODEMAPS/ui-pages.md` | 版本 + 日期 | `V0.4.2` |
-| 22 | `docs/CODEMAPS/core-engines.md` | 版本 + 日期 | `V0.4.2` |
-| 23 | `docs/CODEMAPS/data-flow.md` | 版本 + 日期 | `V0.4.2` |
-| 24 | `docs/CODEMAPS/ai-agents.md` | 版本 + 日期 | `V0.4.2` |
-| 25 | `docs/CODEMAPS/utils.md` | 版本 + 日期 | `V0.4.2` |
-| 26 | `installer/build_setup.py` | 版本号 + 输出文件名 | `V0.4.2` / `NetOps_Setup_0.4.1.exe` |
+| 1 | `CLAUDE.md` | 第 1 行标题 | `# NetOps V0.4.3 — 项目总纲` |
+| 2 | `main.py` | 文件头注释 | `V0.4.3 Logo设计 + 安装包` |
+| 3 | `src/ui/main_window.py` | 窗口标题（3处） | `'NetOps 企业网络自动化运维平台 V0.4.3'` |
+| 4 | `src/ui/main_window.py` | 关于对话框版本号 | `version_str = 'V0.4.3' + (' 试用版' if ...)` |
+| 5 | `src/ui/admin_tool_window.py` | 窗口标题 | `"NetOps 管理员制码工具 V0.4.3 — 老韩专用"` |
+| 6 | `DESIGN.md` | 标题 + 维护信息 | `V0.4.3` / `2026-05-30` |
+| 7 | `.claude/rules/05-dev-build-rule.md` | 标题 | `V0.4.3` |
+| 8 | `.claude/rules/10-version-history.md` | 标题 + 新增条目 | `V0.4.3 Logo 设计版` |
+| 9 | `.claude/rules/03-module-spec.md` | 标题 | `V0.4.3` |
+| 10 | `.claude/rules/04-user-workflow.md` | 标题 | `V0.4.3` |
+| 11 | `.claude/rules/06-safety-rule.md` | 标题 + 底部版本信息 | `V0.4.3` |
+| 12 | `.claude/rules/01-architecture-dir.md` | 标题 | `V0.4.3` |
+| 13 | `.claude/rules/08-activation-plan.md` | 标题 | `V0.4.3` |
+| 14 | `.claude/rules/09-engineering-workflow.md` | 标题 | `V0.4.3` |
+| 15 | `.claude/rules/11-user-guide.md` | 标题 | `V0.4.3` |
+| 16 | `.claude/rules/12-qss-theme-signal-spec.md` | 标题 + 底部版本 | `V0.4.3` |
+| 17 | `.claude/rules/07-v2-architecture-plan.md` | 状态注释 | `V0.4.3` |
+| 18 | `docs/CODEMAPS/INDEX.md` | 版本 + 日期 | `V0.4.3` / `2026-05-30` |
+| 19 | `docs/CODEMAPS/build-deploy.md` | 版本 + 日期 + 版本表 | `V0.4.3` |
+| 20 | `docs/CODEMAPS/architecture.md` | 版本 + 日期 | `V0.4.3` |
+| 21 | `docs/CODEMAPS/ui-pages.md` | 版本 + 日期 | `V0.4.3` |
+| 22 | `docs/CODEMAPS/core-engines.md` | 版本 + 日期 | `V0.4.3` |
+| 23 | `docs/CODEMAPS/data-flow.md` | 版本 + 日期 | `V0.4.3` |
+| 24 | `docs/CODEMAPS/ai-agents.md` | 版本 + 日期 | `V0.4.3` |
+| 25 | `docs/CODEMAPS/utils.md` | 版本 + 日期 | `V0.4.3` |
+| 26 | `installer/build_setup.py` | 版本号 + 输出文件名 | `V0.4.3` / `NetOps_Setup_0.4.1.exe` |
 | 27 | `installer/NetOps_Setup.iss` | `AppVersion` + `OutputBaseFilename` | `0.4.1` |
-| 28 | `~/.claude/projects/.../memory/project.md` | 版本字段 | `V0.4.2` |
+| 28 | `~/.claude/projects/.../memory/project.md` | 版本字段 | `V0.4.3` |
 
 ### 检查命令
 
@@ -146,7 +146,7 @@ grep -rn "V0\.[0-9]\+\.[0-9]\+\|版本.*V0\.\|version.*0\." \
 
 ### 教训
 
-> V0.4.2 发布时，因版本号未全量同步，导致安装包内关于对话框仍显示 V0.3.0，
+> V0.4.3 发布时，因版本号未全量同步，导致安装包内关于对话框仍显示 V0.3.0，
 > 窗口标题也未更新。事后不得不单独提交修复。
 > **版本升级必须一次性同步所有位置，不得遗漏。**
 
@@ -186,5 +186,5 @@ grep -rn "V0\.[0-9]\+\.[0-9]\+\|版本.*V0\.\|version.*0\." \
 
 ### 教训
 
-> V0.4.2 多次出现"改了代码忘了打包"、"改了规范忘了更新代码"、"版本号漏更新"等问题。
+> V0.4.3 多次出现"改了代码忘了打包"、"改了规范忘了更新代码"、"版本号漏更新"等问题。
 > **每次改动后必须自动走完整个流程，不需要用户提醒。**

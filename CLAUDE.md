@@ -41,7 +41,7 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 8. 日志：`logger`，禁止 `print()`
 9. 试用模式：未激活仅开放锐捷接入交换机和命令生成
 
-## Logo 与图标（V0.4.2）
+## Logo 与图标（V0.4.3）
 
 | 项目 | 内容 |
 |------|------|
@@ -51,7 +51,7 @@ Python 3.11 · PyQt5 · AES-GCM加密 · PyInstaller打包 · DPI三层控制(96
 | 预览 | `assets/netops_preview.png` |
 | 生成脚本 | `scripts/generate_icon.py`（可复用，支持 `--preview`） |
 
-## 按钮规范（V0.4.2）
+## 按钮规范（V0.4.3）
 
 > 详见 DESIGN.md §4.1
 

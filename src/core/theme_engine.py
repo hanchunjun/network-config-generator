@@ -373,13 +373,13 @@ class ThemeEngine(QObject):
 
     def status_color(self, status: str) -> str:
         """获取状态指示颜色。"""
-        _map = {
-            "ready": self._current["status_ready"],
-            "running": self._current["status_running"],
-            "done": self._current["status_done"],
-            "error": self._current["status_error"],
-            "online": self._current["device_online"],
-            "offline": self._current["device_offline"],
-            "testing": self._current["device_testing"],
+        _map: dict[str, str] = {
+            "ready": str(self._current["status_ready"]),
+            "running": str(self._current["status_running"]),
+            "done": str(self._current["status_done"]),
+            "error": str(self._current["status_error"]),
+            "online": str(self._current["device_online"]),
+            "offline": str(self._current["device_offline"]),
+            "testing": str(self._current["device_testing"]),
         }
-        return _map.get(status, self._current["text_tertiary"])
+        return _map.get(status, str(self._current["text_tertiary"]))

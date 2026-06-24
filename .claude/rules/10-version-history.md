@@ -13,7 +13,7 @@
 - ✅ **修复模型设置页面**：添加缺失的 `_secondary_btn_style` 和 `_primary_btn_style` 方法
 - ✅ **文档更新**：CLAUDE.md、DESIGN.md、CHANGELOG.md、CODEMAPS 全部同步更新
 
-## V0.4.2 按钮样式统一版（2026-05-30）
+## V0.4.3 按钮样式统一版（2026-05-30）
 
 - ✅ **按钮样式统一**：所有页面按钮默认灰色边框+灰色文字，hover 时才显示对应颜色（蓝色/红色）
 - ✅ **DESIGN.md 更新**：btn_primary/btn_default/btn_danger 默认边框统一为 `border_deep`（灰色）
